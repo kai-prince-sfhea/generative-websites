@@ -6,6 +6,8 @@ Divs, offers introductory/advanced views, and orders pedagogical prerequisites
 without a language model. This is experimental local source; it is not a supported
 release or a claim of educational benefit. The bounded GW-0 development milestone
 is separate from the wider research roadmap and your acceptance of the extension.
+It is intended for authors of teaching and research pages who want readers to
+choose reviewed explanations and explore preparation without losing their route.
 
 ## Try the local example
 
@@ -66,6 +68,7 @@ The extension supplies view anchors such as `sets--introductory`; do not author
 view IDs. IDs start with an ASCII letter, contain letters/digits/`._:-`, and
 are at most 128 bytes. Concept IDs identify a scoped concept, not an automatic
 equivalence assertion. Update object/view revisions after editorial changes.
+`constructor` and `prototype` are reserved and cannot be object/reference IDs.
 Keep heading IDs distinct from object IDs, as `sets-title` above; native automatic
 heading IDs can otherwise collide with a Div of the same name. Objects and route
 panels cannot be nested inside each other.
@@ -139,6 +142,12 @@ validated; an owner absent or unreviewed on the current page produces a warning
 and is not bound to that page's catalogue. Check these warnings for misspelled
 IDs. A reference from a selected object to an unavailable target still blocks
 that branch. Routes do not traverse objects on other pages in GW-0.
+
+Quarto resolves project, directory, document, format, profile and metadata-file
+settings before the filter reads its effective metadata. Use Quarto's normal
+overrides; the extension does not read a separate configuration file or replace
+your project settings. The recorded checks exercise these layers separately,
+including document overrides of project settings, on Quarto 1.11.5 pre-release.
 
 The prerequisite example and `bijections` goal below use all four objects in
 `example.qmd`. For a page containing only the `sets` object above, omit that
@@ -241,6 +250,11 @@ links and fenced Divs remain native Quarto source. There are no caches to clear.
 The configuration and route-file APIs remain experimental. Version-1 restoration
 requires the exact snapshot; re-rendered changes may require a newly built route.
 This is intentional stale-content refusal, not a route migration service.
+Experimental 0.x versions may change authoring or route-file contracts. Any
+incompatible change must be documented in the changelog with replacement syntax
+or an explicit refusal/migration policy. Preserve your native source; after an
+incompatible change, review the new instructions and build/download a new route.
+There is no automatic migration or compatibility promise for an old route file.
 
 This first slice is page-local and deterministic. Cross-page graph adapters,
 reviewed replaceable spans, translation, AI proposals, Sandbox interchange,
@@ -261,9 +275,45 @@ retained. Content authored using the extension has its own rights; using this
 software does not make that content FAIR, OER or openly licensed. No model,
 third-party runtime library or Argumentation Sandbox source is bundled.
 
-**AI transparency:** OpenAI Codex materially assisted the research interpretation,
+## AI assistance and verification
+
+Kai Prince directed the project and selected its aims. **OpenAI Codex materially
+assisted** the research interpretation,
 architecture, source, tests, expected-result design and documentation. Tests
 written with the implementation are not independent semantic or accessibility
 evaluation. No AI inference runs while rendering or using GW-0, and AI assistance
 does not imply University of Manchester approval or replace applicable human
 review and Responsible AI guidance.
+
+The example is deliberately synthetic and AI-assisted. Its review fields
+demonstrate authoring syntax; they are not records of independent human approval.
+Authors remain responsible for checking content, rights, publication scope and
+the institutional rules applicable to their use. Automated checks do not establish
+originality of every contribution, mathematical correctness or learning benefit.
+
+The recorded 0.0.3 checks passed 65 Node tests, 85 structural-schema cases,
+23 installed-lifecycle groups, 16 compatibility groups plus a separately
+classified native CJK-loader observation, eight native activity groups, and
+29 actual-browser groups across the route, activity and visibility fixtures.
+Seven preview/watch groups and six native-output parity groups also passed.
+These checks used Windows, Quarto 1.11.5 pre-release and Edge 155.0.4283.45 where
+applicable. Native Quarto suites ran serially; concurrent project renders and
+other platforms/versions remain unverified. Independent content review, manual
+keyboard/screen-reader acceptance and educational evaluation remain open.
+
+Developer tests, fixtures, benchmarks, plans and raw receipts are intentionally
+outside this lean source distribution and are not publicly available from this
+folder. This checkout alone cannot reproduce the full internal suite or its
+performance measurements. You can reproduce the local installation and supplied
+`example.qmd` workflow using the distributed files and Quarto. External
+reproduction of the full suite requires a separately shared, versioned developer
+workspace and its recorded tools/evidence; no bundled test runner is advertised.
+
+## Reporting problems
+
+Use the repository's issue tracker once it is available for reproducible,
+non-sensitive bugs, preferably with a small synthetic example, Quarto/browser
+versions and expected/observed behaviour. Do not post credentials, confidential
+content, learner records or unmitigated vulnerability details in public issues.
+No dedicated confidential security-reporting channel is currently advertised;
+request a private reporting route without disclosing the vulnerability itself.

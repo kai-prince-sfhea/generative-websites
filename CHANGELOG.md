@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — public repository preparation
+
+- Clarify intended users, native metadata layering, reserved identifiers and the
+  experimental migration policy without changing the 0.0.3 runtime.
+- Expand the material AI-assistance disclosure, synthetic-content review limits,
+  tested scope, external full-suite availability and safe problem reporting.
+- Keep developer documentation, tests and generated evidence outside the source
+  package; repository creation and upload remain separate actions.
+
 ## 0.0.3 — 12 October 2026
 
 - Provide an installed versioned structural reference schema for authoring
