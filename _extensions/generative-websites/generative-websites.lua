@@ -3,10 +3,21 @@
 -- Quarto's enhanced Lua error() logs and may continue; assert is a hard failure.
 local function fail(message) assert(false, 'generative-websites: ' .. message) end
 local function has(el, name) return el.classes and el.classes:includes(name) end
+-- Match JavaScript trim/whitespace by code point, not Windows locale byte classes.
+local function whitespace(cp)
+  return cp and (cp >= 9 and cp <= 13 or cp == 32 or cp == 160 or cp == 5760 or
+    cp >= 8192 and cp <= 8202 or cp == 8232 or cp == 8233 or cp == 8239 or
+    cp == 8287 or cp == 12288 or cp == 65279)
+end
 local function text(value, field, limit)
   if value == nil then fail(field .. ' is required') end
   local value = pandoc.utils.stringify(value)
-  if value:match('^%s*$') or value ~= value:match('^%s*(.-)%s*$') or #value > limit or value:find('%c') or value:find(string.char(127),1,true) then
+  local first,last,control
+  for _,cp in utf8.codes(value) do
+    first=first or cp;last=cp
+    if cp < 32 or cp == 127 then control=true end
+  end
+  if not first or whitespace(first) or whitespace(last) or #value > limit or control then
     fail(field .. ' requires nonblank text within ' .. limit .. ' UTF-8 bytes, without control characters')
   end
   return value
@@ -154,7 +165,9 @@ local function process(doc)
       -- This runs after native visibility, before adding generated labels/IDs.
       source_digests[#source_digests+1]={id=id,digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(el.content),'json'))}
       local concept=text(el.attributes['concept-id'],'concept-id for #' .. id,512)
-      if not concept:match('^[A-Za-z][A-Za-z0-9+%.%-]*:.+') or concept:find('[%s<>"\']') then
+      local unsafe=false
+      for _,cp in utf8.codes(concept) do if whitespace(cp) then unsafe=true end end
+      if not concept:match('^[A-Za-z][A-Za-z0-9+%.%-]*:.+') or unsafe or concept:find('[<>"\']') then
         fail('concept-id must be a scoped URI without whitespace or unsafe delimiters')
       end
       local item={id=id,conceptId=concept,revision=text(el.attributes.revision,'revision for #' .. id,128),
@@ -191,8 +204,9 @@ local function process(doc)
   if #objects == 0 then fail('a route panel requires at least one explicitly reviewed learning object') end
   for key,value in pairs(options.prerequisites) do
     local id=identifier(key,'prerequisite owner')
-    if not selected[id] then fail('prerequisites owner #' .. id .. ' is missing or unreviewed') end
-    selected[id].prerequisite=prerequisite(value,1)
+    local expression=prerequisite(value,1)
+    if selected[id] then selected[id].prerequisite=expression
+    else quarto.log.warning('generative-websites: prerequisite owner #' .. id .. ' is absent or unreviewed on this page; its project entry is not bound here') end
   end
   local goal=panels[1].attributes.goal and identifier(panels[1].attributes.goal,'route goal') or objects[1].id
   if not selected[goal] then fail('route goal #' .. goal .. ' is missing or unreviewed') end
@@ -225,9 +239,11 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.1',
-    scripts={{path='generative-websites.js',attribs={type='module'}}},
-    stylesheets={'generative-websites.css'},resources={'route.js'}}) end
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.2',
+    -- Original modules are preassembled at development time; no relative imports
+    -- remain when Pandoc embeds the browser entry in a data URL.
+    scripts={{path='generative-websites-browser.js',attribs={type='module'}}},
+    stylesheets={'generative-websites.css'}}) end
   return doc
 end
 return {Pandoc=process}

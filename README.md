@@ -1,10 +1,11 @@
 # Generative Websites
 
 Compose learning routes from explicitly reviewed Quarto content. This experimental
-**0.0.1 / GW-0** prototype keeps authored prose and mathematics in native fenced
+**0.0.2 / GW-0** implementation keeps authored prose and mathematics in native fenced
 Divs, offers introductory/advanced views, and orders pedagogical prerequisites
-without a language model. Development has started locally; it is not a supported
-release or a claim of educational benefit.
+without a language model. This is experimental local source; it is not a supported
+release or a claim of educational benefit. The bounded GW-0 development milestone
+is separate from the wider research roadmap and your acceptance of the extension.
 
 ## Try the local example
 
@@ -103,7 +104,15 @@ A leaf object needs no entry. Missing/unreviewed targets, cycles and incompatibl
 contexts block the affected branch. An unavailable alternative does not prevent
 a different feasible OR branch. The policy is deterministic; it does not claim
 shortest paths, optimal difficulty or verification of the author's dependencies.
-An unknown prerequisite owner is a configuration error.
+A project-wide map may describe several pages. Every entry is structurally
+validated; an owner absent or unreviewed on the current page produces a warning
+and is not bound to that page's catalogue. Check these warnings for misspelled
+IDs. A reference from a selected object to an unavailable target still blocks
+that branch. Routes do not traverse objects on other pages in GW-0.
+
+The prerequisite example and `bijections` goal below use all four objects in
+`example.qmd`. For a page containing only the `sets` object above, omit that
+prerequisite map and use `goal="sets"`.
 
 Add one panel per page:
 
@@ -120,22 +129,43 @@ produce actionable render errors. Limits are 50 objects, 512 prerequisite
 expression nodes, depth 16, and 20,000 object visits per route search.
 
 Readers choose a goal, mark starting knowledge, build a route, inspect each
-item's reason, move between steps and switch reviewed levels. Known prerequisites
+item's reason, move between steps and switch reviewed levels. Move earlier/later
+buttons allow independent steps to be reordered while retaining prerequisite
+order, the selected OR alternatives and the goal at the end. Known prerequisites
 skip their own preparation subgraphs; the selected goal and its prerequisites
 are still planned even when the goal is marked known. Exploring
 another concept pauses the route. Nested return restores the enclosing step,
-level, draft controls, focus and scroll position. Reset restores all native
+level, draft controls, native disclosure state, focus and scroll position.
+An in-content Return to saved position button avoids travelling to the panel
+to leave an exploration. Reset restores all native
 views. State stays in page memory and disappears on navigation/reload; no learner
 account, diagnosis, telemetry or browser storage is required.
 
-Download route JSON records the fixed snapshot, selected revisions, route and
-starting knowledge. It is a local reader download, contains no source corpus,
-and cannot currently be re-imported. Both authored views and a default ordered
-route remain in native HTML/Word without JavaScript. If route construction fails,
+Download route JSON records the fixed snapshot, selected revisions, route order,
+starting knowledge, level and current step. Restore a saved route reads that file
+locally, replans from the current catalogue and rejects stale revisions, changed
+branches, broken prerequisite order or malformed data without replacing the
+working route. The version-1 file is bounded to 256 KiB and contains no source
+corpus. It can contain personally meaningful goals and self-reported knowledge;
+review it before sharing. Files are never uploaded or stored by the extension.
+Save or restore after returning from any open exploration.
+
+Both authored views and a default ordered route remain in native HTML/Word/ePub
+without JavaScript. Native links and route steps reveal relevant closed details
+and Quarto callouts; explicit authored hidden boundaries are respected. Printing
+temporarily exposes both labelled views and restores the reader's view and
+disclosure selections afterwards. If route construction fails,
 the prose remains available with the reason. External assets already requested
 by your Quarto format, such as its default math renderer, remain that format's
 configuration; this extension makes no remote API/model requests. Its packaged
 JavaScript/CSS are served by your site.
+
+The delivered browser entry is assembled from the original modules during
+development, so `embed-resources: true` can embed it without unresolved relative
+imports. No build tooling is needed by authors. Quarto's other resources remain
+governed by its format options; an embedded extension entry alone does not prove
+that an entire website works offline. Preview or a web server is the usual way
+to view interactive output.
 
 ## Disable, update or remove
 
@@ -156,6 +186,19 @@ After removal, remove the filter from your YAML before rendering. Your prose,
 links and fenced Divs remain native Quarto source. There are no caches to clear.
 
 ## Current boundaries and rights
+
+| Verified scope on this host | Boundary |
+|---|---|
+| Windows; Quarto 1.11.5 pre-release | Other versions/platforms remain unverified. |
+| Document and website HTML; nested pages; native preview/watch | Normal metadata layers, existing hooks, theme and includes are preserved in the recorded fixtures. |
+| HTML with `embed-resources: true` | Browser entry executes after Quarto transforms/embeds it; whole-site offline/CSP acceptance is separate. |
+| Word and ePub | Static route and both labelled views; no interactive controls. |
+| Unicode prose/labels; spaces and Latin-1 input filenames | ASCII object IDs are required. A CJK consumer-directory path hit an independently reproduced native filter-loader encoding failure on this host. |
+| Page memory plus explicit local route files | No persistent learner profile, account or automatic storage; route v0 exports from 0.0.1 are unsupported. |
+
+The configuration and route-file APIs remain experimental. Version-1 restoration
+requires the exact snapshot; re-rendered changes may require a newly built route.
+This is intentional stale-content refusal, not a route migration service.
 
 This first slice is page-local and deterministic. Cross-page graph adapters,
 reviewed replaceable spans, translation, AI proposals, Sandbox interchange,

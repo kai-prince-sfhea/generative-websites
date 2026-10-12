@@ -1,5 +1,7 @@
 // Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
 import {validateCatalog, planRoute} from './route.js';
+import {createRouteRecord, parseRouteRecord, reorderRoute, MAX_ROUTE_RECORD_BYTES} from './session.js';
+import {createVisibilityManager} from './navigation.js';
 
 const mounted = new WeakMap();
 export const MAX_EXCURSIONS = 64;
@@ -85,16 +87,16 @@ export function resolveNativeViews(catalog, doc = document) {
   return objects;
 }
 
-/** Resolve only fragments inside this validated catalogue's native views. */
+/** Resolve fragments in validated views or their object's common native content. */
 export function resolveNativeFragment(hash, native, doc = document) {
   if (typeof hash !== 'string' || !hash.startsWith('#') || hash.length === 1) return null;
   let id;
   try {id = decodeURIComponent(hash.slice(1));} catch {return null;}
   const target = doc.getElementById(id);
   const owner = target?.closest?.('.learning-view');
-  if (!owner) return null;
-  for (const {views} of native.values()) {
+  for (const {node, views} of native.values()) {
     for (const [level, view] of views) if (view === owner) return {target, level};
+    if (target && (target === node || node?.contains?.(target))) return {target, level: null};
   }
   return null;
 }
@@ -151,6 +153,7 @@ export function enhance(panel) {
   const restoreViews = () => {
     for (const [view, hidden] of initialViews) view.hidden = hidden;
   };
+  const visibility = createVisibilityManager(native, panel.ownerDocument);
   const objects = new Map(catalog.objects.map(object => [object.id, object]));
   const objectOptions = catalog.objects.map(object => ({value: object.id, label: object.label}));
   const controls = element('form', undefined, 'generative-websites-controls');
@@ -178,9 +181,14 @@ export function enhance(panel) {
   const reset = button('Reset');
   const exportRoute = button('Download route JSON');
   exportRoute.disabled = true;
+  const importLabel = element('label', 'Restore a saved route ', 'generative-websites-import');
+  const importRoute = element('input');
+  importRoute.type = 'file';
+  importRoute.accept = '.json,application/json';
+  importLabel.append(importRoute);
   const actions = element('div', undefined, 'generative-websites-actions');
   actions.append(build, reset, exportRoute);
-  controls.append(goal.label, expertise.label, knownField, actions);
+  controls.append(goal.label, expertise.label, knownField, actions, importLabel);
 
   const status = element('p', undefined, 'generative-websites-status');
   status.setAttribute('role', 'status');
@@ -216,9 +224,20 @@ export function enhance(panel) {
   let level = catalog.defaultLevel;
   let activeObject = null;
   let disposed = false;
+  let actionEpoch = 0;
   const excursions = createExcursionStack();
   let routeLinks = [];
   const downloadURLs = new Set();
+  const downloadTimers = new Set();
+  const returnBars = new Map();
+  for (const [id, {node}] of native) {
+    const bar = element('div', undefined, 'generative-websites-return');
+    const returnButton = button('Return to saved position');
+    bar.hidden = true;
+    bar.append(returnButton);
+    node.prepend(bar);
+    returnBars.set(id, {bar, returnButton});
+  }
   const knownValues = () => [...knownInputs].filter(([, input]) => input.checked).map(([id]) => id);
   const applyLevel = () => {
     for (const {views} of native.values()) {
@@ -229,13 +248,27 @@ export function enhance(panel) {
   const followNativeFragment = (hash, scroll = false) => {
     const fragment = resolveNativeFragment(hash, native, panel.ownerDocument);
     if (!fragment) return;
-    if (level !== fragment.level) {
+    const oldLevel = level;
+    const oldFocus = panel.ownerDocument.activeElement;
+    if (fragment.level && level !== fragment.level) {
       level = fragment.level;
       expertise.select.value = level;
       if (route) applyLevel();
       status.textContent = route
         ? `Native link selected reviewed ${level} views. Your route and its prerequisites are unchanged.`
         : `Native link selected the reviewed ${level} level. All authored views remain available until you build a route.`;
+    }
+    const revealed = visibility.reveal(fragment.target);
+    if (!revealed.ok) {
+      level = oldLevel; expertise.select.value = oldLevel;
+      if (route) applyLevel();
+      status.textContent = revealed.message; return;
+    }
+    actionEpoch++;
+    if (oldFocus?.closest?.('.learning-view')?.hidden) {
+      if (!initialTabIndices.has(fragment.target)) initialTabIndices.set(fragment.target, fragment.target.getAttribute('tabindex'));
+      if (!fragment.target.hasAttribute('tabindex')) fragment.target.tabIndex = -1;
+      fragment.target.focus({preventScroll: true});
     }
     // Initial fragment navigation can have occurred while its target was hidden.
     // Reveal and scroll to the native target without moving reader focus.
@@ -244,9 +277,12 @@ export function enhance(panel) {
   const focusObject = id => {
     const item = native.get(id);
     if (!item) return;
+    const revealed = visibility.reveal(item.views.get(level));
+    if (!revealed.ok) {status.textContent = revealed.message; return false;}
     if (!item.node.hasAttribute('tabindex')) item.node.tabIndex = -1;
     item.node.focus({preventScroll: true});
     item.node.scrollIntoView({block: 'start', behavior: 'instant'});
+    return true;
   };
   const updatePosition = () => {
     const count = route?.steps.length || 0;
@@ -259,9 +295,13 @@ export function enhance(panel) {
     next.disabled = !route || excursions.depth > 0 || cursor >= count - 1 || count === 0;
     build.disabled = excursions.depth > 0;
     back.disabled = excursions.depth === 0;
-    for (const {link} of routeLinks) {
+    exportRoute.disabled = !route || excursions.depth > 0;
+    importRoute.disabled = excursions.depth > 0;
+    for (const {id, bar} of [...returnBars].map(([id, value]) => ({id, ...value}))) bar.hidden = excursions.depth === 0 || id !== activeObject;
+    for (const {link, moves} of routeLinks) {
       if (excursions.depth) link.setAttribute('aria-disabled', 'true');
       else link.removeAttribute('aria-disabled');
+      for (const {node, allowed} of moves) node.disabled = !allowed || excursions.depth > 0;
     }
     if (!route) position.textContent = 'No route selected.';
     else if (count === 0) position.textContent = 'The selected goal is already included in your starting knowledge.';
@@ -272,6 +312,9 @@ export function enhance(panel) {
   };
   const selectStep = (index, moveFocus = true) => {
     if (!route || excursions.depth || !Number.isSafeInteger(index) || index < 0 || index >= route.steps.length) return;
+    const revealed = visibility.reveal(native.get(route.steps[index].id).views.get(level));
+    if (!revealed.ok) {status.textContent = revealed.message; return;}
+    actionEpoch++;
     cursor = index;
     activeObject = route.steps[index].id;
     updatePosition();
@@ -284,15 +327,35 @@ export function enhance(panel) {
       const item = element('li');
       const link = element('a', objects.get(step.id).label);
       const reason = element('span', ` — ${step.reason}`, 'generative-websites-reason');
-      routeLinks.push({id: step.id, link});
+      const moves = [];
+      const moveActions = element('span', undefined, 'generative-websites-reorder');
+      for (const [delta, label] of [[-1, 'earlier'], [1, 'later']]) {
+        const move = button(`Move ${label}`);
+        move.setAttribute('aria-label', `Move ${objects.get(step.id).label} ${label}`);
+        move.dataset.moveId = step.id;
+        move.dataset.moveDelta = String(delta);
+        let allowed = false;
+        const target = index + delta;
+        if (target >= 0 && target < route.steps.length) {
+          const ids = route.steps.map(item => item.id);
+          [ids[index], ids[target]] = [ids[target], ids[index]];
+          try {reorderRoute(catalog, route, ids); allowed = true;} catch { /* Dependencies stay in order. */ }
+        }
+        move.disabled = !allowed;
+        move.title = allowed ? 'Keep the selected goal, concepts and prerequisite choices.' : 'This move would break prerequisite order or move the goal before its preparation.';
+        moves.push({node: move, allowed});
+        moveActions.append(move);
+      }
+      routeLinks.push({id: step.id, link, moves});
       link.dataset.routeIndex = String(index);
-      item.append(link, reason);
+      item.append(link, reason, moveActions);
       routeList.append(item);
     }
     updatePosition();
   };
   const makeRoute = () => {
     if (excursions.depth) return;
+    actionEpoch++;
     try {
       const result = planRoute(catalog, {goal: goal.select.value, known: knownValues()});
       if (!result.ok) {
@@ -324,14 +387,19 @@ export function enhance(panel) {
   const cleanup = () => {
     if (disposed) return;
     disposed = true;
+    actionEpoch++;
     controller.abort();
     restoreViews();
+    visibility.dispose();
+    for (const {bar} of returnBars.values()) bar.remove();
     for (const [node, tabindex] of initialTabIndices) {
       if (tabindex === null) node.removeAttribute('tabindex');
       else node.setAttribute('tabindex', tabindex);
     }
     for (const url of downloadURLs) URL.revokeObjectURL(url);
     downloadURLs.clear();
+    for (const timer of downloadTimers) clearTimeout(timer);
+    downloadTimers.clear();
     slot.replaceChildren(...previousChildren);
     slot.hidden = previousHidden;
     mounted.delete(panel);
@@ -349,7 +417,28 @@ export function enhance(panel) {
     if (hash) followNativeFragment(hash);
   }, {signal: controller.signal});
   listen(controls, 'submit', event => {event.preventDefault(); makeRoute();});
+  listen(controls, 'change', event => {if (event.target !== importRoute) actionEpoch++;});
   listen(routeList, 'click', event => {
+    const move = event.target.closest?.('button[data-move-id]');
+    if (move && route && !excursions.depth && !move.disabled) {
+      const id = move.dataset.moveId;
+      const ids = route.steps.map(step => step.id);
+      const index = ids.indexOf(id), target = index + Number(move.dataset.moveDelta);
+      [ids[index], ids[target]] = [ids[target], ids[index]];
+      try {
+        const updated = reorderRoute(catalog, route, ids);
+        actionEpoch++;
+        route = updated;
+        cursor = ids.indexOf(activeObject);
+        if (cursor < 0) cursor = 0;
+        renderRoute(); applyLevel();
+        const restored = routeLinks.find(item => item.id === id)?.moves.find(item => item.node.dataset.moveDelta === move.dataset.moveDelta)?.node;
+        if (restored && !restored.disabled) restored.focus({preventScroll: true});
+        else routeLinks.find(item => item.id === id)?.link.focus({preventScroll: true});
+        status.textContent = 'Route reordered. Its selected concepts, prerequisite choices and current concept are unchanged.';
+      } catch (error) {status.textContent = `Route unchanged: ${error.message}`;}
+      return;
+    }
     const link = event.target.closest?.('a[data-route-index]');
     if (!link || !routeList.contains(link)) return;
     // Native hrefs remain useful when the enhancement has been removed.
@@ -374,24 +463,30 @@ export function enhance(panel) {
       status.textContent = 'Build a valid route before opening a concept exploration. All authored views remain available below.';
       return;
     }
+    const savedVisibility = visibility.capture();
     try {
+      if (excursions.depth >= MAX_EXCURSIONS) throw new RangeError(`At most ${MAX_EXCURSIONS} nested concept explorations can be open. Return before opening another.`);
+      const revealed = visibility.reveal(native.get(exploreChoice.select.value).views.get(level));
+      if (!revealed.ok) {status.textContent = revealed.message; return;}
       excursions.push({
         cursor, activeObject, level, goal: goal.select.value, known: knownValues(),
         explore: exploreChoice.select.value, focus: document.activeElement,
-        x: window.scrollX, y: window.scrollY
+        x: window.scrollX, y: window.scrollY, visibility: savedVisibility
       });
     } catch (error) {
+      visibility.restore(savedVisibility);
       status.textContent = error.message;
       return;
     }
+    actionEpoch++;
     activeObject = exploreChoice.select.value;
     updatePosition();
-    focusObject(activeObject);
-    status.textContent = `Exploring ${objects.get(activeObject).label}. Return restores your previous position and selections.`;
+    if (focusObject(activeObject)) status.textContent = `Exploring ${objects.get(activeObject).label}. Return restores your previous position and selections.`;
   });
-  listen(back, 'click', () => {
+  const returnFromExploration = () => {
     const saved = excursions.pop();
     if (!saved) return;
+    actionEpoch++;
     cursor = saved.cursor;
     activeObject = saved.activeObject;
     level = saved.level;
@@ -401,12 +496,16 @@ export function enhance(panel) {
     for (const [id, input] of knownInputs) input.checked = known.has(id);
     exploreChoice.select.value = saved.explore;
     applyLevel();
+    visibility.restore(saved.visibility);
     updatePosition();
     if (saved.focus?.isConnected && typeof saved.focus.focus === 'function') saved.focus.focus({preventScroll: true});
     window.scrollTo({left: saved.x, top: saved.y, behavior: 'instant'});
     status.textContent = excursions.depth ? `Returned to exploration of ${objects.get(activeObject).label}.` : 'Returned to your learning route. Previous position and selections restored.';
-  });
+  };
+  listen(back, 'click', returnFromExploration);
+  for (const {returnButton} of returnBars.values()) listen(returnButton, 'click', returnFromExploration);
   listen(reset, 'click', () => {
+    actionEpoch++;
     excursions.clear();
     route = null;
     cursor = 0;
@@ -417,23 +516,17 @@ export function enhance(panel) {
     exploreChoice.select.value = catalog.objects[0].id;
     for (const input of knownInputs.values()) input.checked = false;
     restoreViews();
+    visibility.reset();
+    importRoute.value = '';
     exportRoute.disabled = true;
     renderRoute();
     status.textContent = 'Route controls reset to the authored defaults and all authored views restored. Build a route to select a reviewed level again. No reader state is stored between visits.';
   });
   listen(exportRoute, 'click', () => {
-    if (!route) return;
-    const data = {
-      version: 0, language: catalog.language, snapshot: catalog.snapshot,
-      goal: route.goal, known: route.known, level,
-      steps: route.steps, choices: route.choices,
-      revisions: route.steps.map(step => {
-        const object = objects.get(step.id);
-        const view = object.views.find(view => view.level === level);
-        return {id: object.id, revision: object.revision, view: {level, revision: view.revision, digest: view.digest}};
-      })
-    };
-    const url = URL.createObjectURL(new Blob([`${JSON.stringify(data, null, 2)}\n`], {type: 'application/json'}));
+    if (!route || excursions.depth) return;
+    try {
+    const data = createRouteRecord(catalog, route, {level, cursor});
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], {type: 'application/json'}));
     downloadURLs.add(url);
     const link = element('a');
     link.href = url;
@@ -442,10 +535,48 @@ export function enhance(panel) {
     slot.append(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
-    downloadURLs.delete(url);
-    status.textContent = 'Route downloaded with its content snapshot and selected revisions. This file does not include the reviewed content itself.';
+    const timer = setTimeout(() => {
+      URL.revokeObjectURL(url); downloadURLs.delete(url); downloadTimers.delete(timer);
+    }, 60000);
+    downloadTimers.add(timer);
+    status.textContent = 'Route download requested with its snapshot, current step and selected revisions. The file contains route settings, not reviewed content.';
+    } catch (error) {status.textContent = `Route download unavailable; your route is unchanged. ${error.message}`;}
   });
+  listen(importRoute, 'change', async () => {
+    const file = importRoute.files?.[0];
+    if (!file || excursions.depth) return;
+    const epoch = ++actionEpoch;
+    try {
+      if (file.size > MAX_ROUTE_RECORD_BYTES) throw new RangeError(`Route JSON must not exceed ${MAX_ROUTE_RECORD_BYTES} bytes.`);
+      const text = await file.text();
+      if (disposed || excursions.depth || epoch !== actionEpoch) return;
+      const restored = parseRouteRecord(catalog, text);
+      route = restored.route; cursor = restored.cursor; level = restored.level;
+      activeObject = route.steps[cursor].id;
+      goal.select.value = route.goal; expertise.select.value = level;
+      const known = new Set(route.known);
+      for (const [id, input] of knownInputs) input.checked = known.has(id);
+      renderRoute(); applyLevel();
+      status.textContent = 'Saved route restored against this exact reviewed snapshot. No file was uploaded. Select a step to continue.';
+    } catch (error) {if (!disposed && epoch === actionEpoch) status.textContent = `Saved route refused; your current route is unchanged. ${error.message}`;}
+    finally {if (!disposed && epoch === actionEpoch) importRoute.value = '';}
+  });
+  let printing = false, printViews;
+  const printStart = () => {
+    if (printing || disposed) return;
+    printing = true;
+    printViews = new Map([...initialViews.keys()].map(view => [view, view.hidden]));
+    restoreViews(); visibility.printStart();
+  };
+  const printEnd = () => {
+    if (!printing) return;
+    visibility.printEnd();
+    for (const [view, hidden] of printViews) view.hidden = hidden;
+    printing = false;
+  };
+  listen(window, 'beforeprint', printStart);
+  listen(window, 'afterprint', printEnd);
+  if (typeof window.matchMedia === 'function') listen(window.matchMedia('print'), 'change', event => event.matches ? printStart() : printEnd());
   // Building the authored default never moves the reader's focus or scroll position.
   makeRoute();
   // A deep link is an explicit native navigation choice, independent of route planning.
