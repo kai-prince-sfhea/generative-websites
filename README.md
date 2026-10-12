@@ -81,6 +81,36 @@ Do not place confidential content in a public page or enable native source
 downloads without reviewing their contents. No review is inferred from styling,
 successful rendering or an AI suggestion.
 
+## Author a learning activity
+
+Put the observable objective, task and shared assumptions in ordinary Markdown
+inside the object, outside its two views. Use the views to offer different
+explanations of that same task. Native Quarto callouts can provide ordered hints
+and a labelled, explained solution. The example leaves their bodies open so they
+remain readable without JavaScript or disclosure controls. Native collapsed
+callouts need their own keyboard and no-JavaScript checks before use; the tested
+Quarto version's default collapsed headers did not provide those behaviours.
+Include a transfer question or counterexample that exposes a plausible
+misconception. See the complete bijections activity in [example.qmd](example.qmd).
+These are authoring conventions, not additional required configuration or a
+grading engine; update the object revision when shared content changes.
+
+Invite readers to try a question before requesting help, and let them choose
+their support. Solutions are delivered with the page: search, native
+source, print, Word and ePub can expose them. They do not protect assessment
+answers. A visit, level choice or revealed solution does not demonstrate mastery.
+The starting-knowledge choices are self-reported preparation, and the extension
+does not infer ability or mark an answer correct. No learner response is collected.
+
+Keep source, creator, licence and adaptation notes visible with reused material.
+The synthetic example is original Apache-2.0 source with material Codex
+assistance; its review fields demonstrate syntax rather than independent
+validation. Your teaching content and each reused component need their own
+rights decision. Downloaded route JSON contains settings, not an editable OER
+corpus or a verified record of achievement. Structured pedagogical metadata,
+reviewed interest variants, portable OER bundles and external activity adapters
+remain separate planned work.
+
 ## Declare preparation and add controls
 
 Prerequisites are pedagogical preparation, distinct from mathematical proof

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — authoring refinements
+
+- Add shared observable objectives and an ungraded bijections activity with
+  progressive native hints, an explained solution and a codomain counterexample.
+- Leave support callouts open after keyboard/no-JavaScript checks exposed
+  inaccessible native collapsed headers/bodies on the tested Quarto version.
+- Document self-reported preparation, learner-selected assistance and separate
+  content rights; route settings are not mastery records or reusable OER bundles.
+- Retain the 0.0.2 runtime and experimental API. Example object revisions change
+  with their common authored content, so earlier example routes become stale.
+
 ## 0.0.2 — 12 October 2026
 
 - Complete the bounded GW-0 route workflow with prerequisite-safe reordering and
