@@ -1,0 +1,9 @@
+Generative Websites
+Copyright 2026 Kai Prince
+
+Original experimental Quarto extension source, licensed under Apache-2.0.
+Material AI assistance: OpenAI Codex assisted architecture, implementation,
+tests, documentation and expected-result design. Author review declarations
+in example content are illustrative metadata, not independent acceptance.
+Quarto and Pandoc are external prerequisites and are not bundled.
+Content authored with this extension retains its own rights and review status.

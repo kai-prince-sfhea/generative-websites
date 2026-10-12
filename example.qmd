@@ -1,0 +1,91 @@
+---
+title: "A route to bijections"
+lang: en
+filters:
+  - generative-websites
+generative-websites:
+  prerequisites:
+    functions: sets
+    bijections:
+      all:
+        - functions
+        - any:
+            - unavailable-logic-course
+            - proofs
+---
+
+This synthetic authoring example demonstrates the controls. Its review declarations
+illustrate the contract; they do not record independent mathematical or learner review.
+The first alternative for proof preparation is deliberately unavailable, so the
+route uses the authored proof-pattern object.
+
+::: {.generative-route goal="bijections" level="introductory"}
+## Choose a learning route
+
+Select a goal and knowledge you already have. Explore an unfamiliar concept and
+return to your original route.
+:::
+
+:::: {#sets .learning-object concept-id="urn:example:concept:sets" revision="sets-1" label="Sets" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+## Sets {#sets-title}
+
+::: {.learning-view level="introductory" revision="sets-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+A set is a collection of objects. We write $x \in A$ when $x$ belongs to $A$.
+For example, $A=\{1,2\}$ contains two elements.
+:::
+
+::: {.learning-view level="advanced" revision="sets-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+Here sets are used in ordinary elementary mathematics. Membership is denoted
+by $\in$, and $A\subseteq B$ means every element of $A$ is an element of $B$.
+No foundational axiom system is supplied by this example.
+:::
+::::
+
+:::: {#functions .learning-object concept-id="urn:example:concept:functions" revision="functions-1" label="Functions" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+## Functions {#functions-title}
+
+::: {.learning-view level="introductory" revision="functions-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+A function $f:A\to B$ assigns exactly one element of $B$ to each element of $A$.
+For example, $f:\{1,2\}\to\{2,4\}$ with $f(x)=2x$ is a function.
+Review [sets](#sets) if the domain and codomain are unfamiliar.
+:::
+
+::: {.learning-view level="advanced" revision="functions-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+A function $f:A\to B$ is a total, single-valued relation from $A$ to $B$:
+for every $a\in A$ there exists exactly one $b\in B$ with $(a,b)\in f$.
+Its domain and codomain are part of the specified function.
+:::
+::::
+
+:::: {#proofs .learning-object concept-id="urn:example:concept:proof-patterns" revision="proofs-1" label="Proof patterns" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+## Proof patterns {#proofs-title}
+
+::: {.learning-view level="introductory" revision="proofs-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+To prove a statement holds for every element, start with an arbitrary element
+and justify the required conclusion. A worked example alone does not prove
+a statement about every element.
+:::
+
+::: {.learning-view level="advanced" revision="proofs-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+For universal introduction, choose an arbitrary element satisfying the stated
+domain assumptions and derive the predicate without additional restrictions
+on that element. This is pedagogical preparation, not a formal proof checker.
+:::
+::::
+
+:::: {#bijections .learning-object concept-id="urn:example:concept:bijections" revision="bijections-1" label="Bijections" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+## Bijections {#bijections-title}
+
+::: {.learning-view level="introductory" revision="bijections-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+A bijection $f:A\to B$ pairs the elements of $A$ and $B$ one to one:
+different inputs have different outputs, and every element of $B$ is reached.
+The function $f(x)=2x$ from $\{1,2\}$ to $\{2,4\}$ is a bijection.
+:::
+
+::: {.learning-view level="advanced" revision="bijections-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+A bijection $f:A\to B$ is injective and surjective:
+$f(a)=f(a')\Rightarrow a=a'$ for $a,a'\in A$, and
+$\forall b\in B\,\exists a\in A\;(f(a)=b)$.
+The domain and codomain, including the quantifiers above, remain fixed across views.
+:::
+::::

@@ -1,0 +1,8 @@
+title: Generative Websites
+author: Kai Prince
+version: 0.0.1
+quarto-required: '>=1.11.5'
+contributes:
+  filters:
+    - at: post-render
+      path: generative-websites.lua

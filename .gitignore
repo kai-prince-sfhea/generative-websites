@@ -1,0 +1,12 @@
+.quarto/
+_freeze/
+*_files/
+*.html
+*.docx
+*.epub
+*.pdf
+_site/
+node_modules/
+.env
+.env.*
+*.log
