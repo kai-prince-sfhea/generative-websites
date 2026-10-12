@@ -148,6 +148,9 @@ settings before the filter reads its effective metadata. Use Quarto's normal
 overrides; the extension does not read a separate configuration file or replace
 your project settings. The recorded checks exercise these layers separately,
 including document overrides of project settings, on Quarto 1.11.5 pre-release.
+Document metadata can override lower-priority metadata-file values. To disable
+a page that defines its own `generative-websites` map, put `enabled: false`
+in that map; do not assume a separate metadata file overrides it.
 
 The prerequisite example and `bijections` goal below use all four objects in
 `example.qmd`. For a page containing only the `sets` object above, omit that

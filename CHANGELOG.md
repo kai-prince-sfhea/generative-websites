@@ -4,6 +4,8 @@
 
 - Clarify intended users, native metadata layering, reserved identifiers and the
   experimental migration policy without changing the 0.0.3 runtime.
+- Explain document metadata precedence when disabling a page that defines its
+  own extension settings; a separate metadata file is not a forced override.
 - Expand the material AI-assistance disclosure, synthetic-content review limits,
   tested scope, external full-suite availability and safe problem reporting.
 - Keep developer documentation, tests and generated evidence outside the source
