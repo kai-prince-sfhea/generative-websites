@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:quarto:generative-websites:config:v1",
+  "title": "Generative Websites authoring configuration v1",
+  "description": "Structural reference schema for the value of generative-websites metadata, not an entire Quarto document or the catalog/route-file formats.",
+  "$comment": "Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0. This schema adds no automatic Quarto editor integration. Validate JSON-compatible metadata values; Quarto's MetaMap/MetaList conversion and effective metadata layering are separate. Runtime additionally enforces at most 512 prerequisite expression nodes across the page configuration and depth 16, UTF-8 byte/text rules, page binding, reviewed-object availability, compatible contexts and route limits. Reference-schema validation does not establish those checks or pedagogical correctness.",
+  "type": "object",
+  "if": {
+    "required": ["enabled"],
+    "properties": {"enabled": {"const": false}}
+  },
+  "then": {
+    "$comment": "Explicit enabled: false bypasses all other stale options, including malformed prerequisites and unknown keys, exactly as the runtime's deactivation path does."
+  },
+  "else": {
+    "properties": {
+      "enabled": {"type": "boolean", "default": true},
+      "prerequisites": {
+        "type": "object",
+        "default": {},
+        "propertyNames": {"$ref": "#/$defs/identifier"},
+        "additionalProperties": {"$ref": "#/$defs/expression"}
+      }
+    },
+    "additionalProperties": false
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "description": "Native object/reference ID: ASCII letter first, at most 128 ASCII characters; constructor and prototype are reserved.",
+      "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}(?![\\s\\S])",
+      "not": {"enum": ["constructor", "prototype"]}
+    },
+    "expression": {
+      "oneOf": [
+        {"$ref": "#/$defs/identifier"},
+        {
+          "type": "object",
+          "required": ["all"],
+          "properties": {"all": {"$ref": "#/$defs/group"}},
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["any"],
+          "properties": {"any": {"$ref": "#/$defs/group"}},
+          "additionalProperties": false
+        }
+      ]
+    },
+    "group": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {"$ref": "#/$defs/expression"}
+    }
+  }
+}

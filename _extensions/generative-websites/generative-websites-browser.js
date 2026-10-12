@@ -349,8 +349,9 @@ function currentRoute(catalog, route) {
   for (const [index, step] of route.steps.entries()) {
     if (reasons.get(step.id) !== step.reason) fail(`route.steps[${index}]`, 'object or reason does not match the current planner');
   }
-  validateOrder(catalog, canonical, route.steps.map(step => step.id));
-  return canonical;
+  const constraints = orderConstraints(catalog, canonical);
+  validateOrder(canonical, route.steps.map(step => step.id), constraints);
+  return {canonical, constraints};
 }
 
 /**
@@ -360,17 +361,10 @@ function currentRoute(catalog, route) {
  * Reordering then checks these fixed references, rather than choosing a new OR
  * alternative from whichever objects happen to precede the proposed position.
  */
-function validateOrder(catalog, canonical, orderedIds) {
-  dataArray(orderedIds, 'order', 1, 50);
-  orderedIds.forEach((id, index) => identifier(id, `order[${index}]`));
+function orderConstraints(catalog, canonical) {
   const canonicalIds = canonical.steps.map(step => step.id);
-  const expected = new Set(canonicalIds);
-  if (orderedIds.length !== canonicalIds.length || new Set(orderedIds).size !== orderedIds.length ||
-      orderedIds.some(id => !expected.has(id))) fail('order', 'must contain each planned object exactly once');
-  if (orderedIds.at(-1) !== canonical.goal) fail('order', 'the selected goal must remain the final step');
   const objects = new Map(catalog.objects.map(object => [object.id, object]));
   const originalPositions = new Map(canonicalIds.map((id, index) => [id, index]));
-  const proposedPositions = new Map(orderedIds.map((id, index) => [id, index]));
   const known = new Set(canonical.known.filter(id => id !== canonical.goal));
   const context = objects.get(canonical.goal).context;
   const selectedReferences = (expression, ownerPosition) => {
@@ -396,11 +390,25 @@ function validateOrder(catalog, canonical, orderedIds) {
     }
     return null;
   };
+  const dependencies = new Map();
   for (const [index, id] of canonicalIds.entries()) {
     const expression = objects.get(id).prerequisite;
     if (expression === null) continue;
-    const dependencies = selectedReferences(expression, index);
-    if (dependencies === null) fail('order', `cannot establish the fixed prerequisites for ${id}`);
+    const selected = selectedReferences(expression, index);
+    if (selected === null) fail('order', `cannot establish the fixed prerequisites for ${id}`);
+    dependencies.set(id, new Set(selected));
+  }
+  return {ids: canonicalIds, expected: new Set(canonicalIds), dependencies};
+}
+
+function validateOrder(canonical, orderedIds, constraints) {
+  dataArray(orderedIds, 'order', 1, 50);
+  orderedIds.forEach((id, index) => identifier(id, `order[${index}]`));
+  if (orderedIds.length !== constraints.ids.length || new Set(orderedIds).size !== orderedIds.length ||
+      orderedIds.some(id => !constraints.expected.has(id))) fail('order', 'must contain each planned object exactly once');
+  if (orderedIds.at(-1) !== canonical.goal) fail('order', 'the selected goal must remain the final step');
+  const proposedPositions = new Map(orderedIds.map((id, index) => [id, index]));
+  for (const [id, dependencies] of constraints.dependencies) {
     for (const dependency of dependencies) {
       if (proposedPositions.get(dependency) >= proposedPositions.get(id)) {
         fail('order', `${dependency} must precede ${id}; the recorded prerequisite choices are fixed`);
@@ -410,15 +418,31 @@ function validateOrder(catalog, canonical, orderedIds) {
 }
 
 /** Return an independent route; rejected changes never mutate the current one. */
-function orderedCanonical(catalog, canonical, orderedIds) {
-  validateOrder(catalog, canonical, orderedIds);
+function orderedCanonical(canonical, orderedIds, constraints) {
+  validateOrder(canonical, orderedIds, constraints);
   const steps = new Map(canonical.steps.map(step => [step.id, step]));
   return {...canonical, known: [...canonical.known],
     steps: orderedIds.map(id => ({...steps.get(id)})), choices: structuredClone(canonical.choices)};
 }
 
 function reorderRoute(catalog, route, orderedIds) {
-  return orderedCanonical(catalog, currentRoute(catalog, route), orderedIds);
+  const {canonical, constraints} = currentRoute(catalog, route);
+  return orderedCanonical(canonical, orderedIds, constraints);
+}
+
+/**
+ * Describe every adjacent move using one freshly validated route and one set of
+ * fixed prerequisites. In an already valid order, swapping adjacent objects can
+ * only invert a dependency between that pair or displace the final goal.
+ * Nothing is cached across calls: mutable direct API inputs are checked again.
+ */
+function adjacentMovePermissions(catalog, route) {
+  const {canonical, constraints} = currentRoute(catalog, route);
+  const ids = route.steps.map(step => step.id);
+  const allowed = (left, right) => right !== canonical.goal && !constraints.dependencies.get(right)?.has(left);
+  return ids.map((id, index) => ({id,
+    earlier: index > 0 && allowed(ids[index - 1], id),
+    later: index < ids.length - 1 && allowed(id, ids[index + 1])}));
 }
 
 function selectedRevisions(catalog, route, level) {
@@ -442,8 +466,8 @@ function createRouteRecord(catalog, route, options) {
   if (keys.some(key => !['level', 'cursor', 'order'].includes(key))) fail('options', 'unknown field');
   const requiredOptions = Object.hasOwn(options, 'order') ? ['level', 'cursor', 'order'] : ['level', 'cursor'];
   dataRecord(options, requiredOptions, 'options');
-  const canonical = currentRoute(catalog, route);
-  const current = orderedCanonical(catalog, canonical, Object.hasOwn(options, 'order') ? options.order : route.steps.map(step => step.id));
+  const {canonical, constraints} = currentRoute(catalog, route);
+  const current = orderedCanonical(canonical, Object.hasOwn(options, 'order') ? options.order : route.steps.map(step => step.id), constraints);
   position(options.level, options.cursor, current.steps.length);
   const record = {version: 1, language: catalog.language, snapshot: catalog.snapshot, goal: current.goal,
     known: [...current.known], level: options.level, cursor: options.cursor,
@@ -477,7 +501,7 @@ function restoreRouteRecord(catalog, record) {
   if (!canonical.ok) fail('record', 'the requested route is unavailable in this reviewed catalogue');
   sameData(record.known, canonical.known, 'record.known');
   sameData(record.choices, canonical.choices, 'record.choices');
-  const route = orderedCanonical(catalog, canonical, record.steps);
+  const route = orderedCanonical(canonical, record.steps, orderConstraints(catalog, canonical));
   position(record.level, record.cursor, record.steps.length);
   sameData(record.revisions, selectedRevisions(catalog, canonical, record.level), 'record.revisions');
   if (UTF8.encode(JSON.stringify(record)).length > MAX_ROUTE_RECORD_BYTES) fail('record', `exceeds ${MAX_ROUTE_RECORD_BYTES} UTF-8 bytes`);
@@ -493,7 +517,7 @@ function parseRouteRecord(catalog, text) {
   return restoreRouteRecord(catalog, record);
 }
 
-return {MAX_ROUTE_RECORD_BYTES,reorderRoute,createRouteRecord,restoreRouteRecord,parseRouteRecord};
+return {MAX_ROUTE_RECORD_BYTES,reorderRoute,adjacentMovePermissions,createRouteRecord,restoreRouteRecord,parseRouteRecord};
 })();
 
 const navigation = (() => {
@@ -507,7 +531,8 @@ const ancestry = target => {
   for (let node = target; node; node = node.parentElement) nodes.push(node);
   return nodes;
 };
-const concealed = node => node.hidden || node.getAttribute('aria-hidden')?.toLowerCase() === 'true';
+const concealed = node => node.hidden || node.getAttribute('aria-hidden')?.toLowerCase() === 'true' ||
+  node.inert || node.getAttribute('inert') !== null;
 
 /**
  * Reveal native destinations without changing authored hidden/privacy boundaries.
@@ -561,6 +586,20 @@ function createVisibilityManager(native, doc = document) {
     }
   };
   const baseline = read();
+  // A native tab pane or an author stylesheet can conceal a destination without
+  // setting hidden/aria-hidden. Check styles after opening supported containers:
+  // a closed details/collapse is revealable, while an inactive tab must still be
+  // activated through its author's control. Geometry alone would misclassify
+  // display:contents and empty native anchors.
+  const cssConcealed = nodes => {
+    const view = doc.defaultView;
+    if (typeof view?.getComputedStyle !== 'function') return false;
+    return nodes.some(node => {
+      const style = view.getComputedStyle(node);
+      return style.display === 'none' || style.visibility === 'hidden' ||
+        style.visibility === 'collapse' || style.contentVisibility === 'hidden';
+    });
+  };
   const updateControls = changed => {
     for (const [control, targets] of controls) {
       if (!targets.some(target => changed.has(target))) continue;
@@ -598,13 +637,23 @@ function createVisibilityManager(native, doc = document) {
       const nodes = ancestry(target);
       if (nodes.some(concealed)) return {
         ok: false,
-        message: 'This destination is inside authored hidden content. Choose another reviewed view or make that content visible using its author-provided control.'
+        message: 'This destination is inside authored hidden or inert content. Choose another reviewed view or make that content visible using its author-provided control.'
       };
       const relevant = nodes.filter(node => disclosures.has(node));
       if (relevant.some(node => node.classList.contains('collapsing'))) return {
         ok: false, message: 'A native callout is still opening or closing. Try this destination again when the transition finishes.'
       };
-      open(relevant);
+      const previous = read();
+      try {
+        open(relevant);
+        if (cssConcealed(nodes)) {
+          write(previous);
+          return {ok: false, message: 'This destination is still hidden by its page styles or inactive tab. Make it visible using its author-provided control, then try this destination again.'};
+        }
+      } catch {
+        write(previous);
+        return {ok: false, message: 'This destination could not be checked for visibility. Make it visible using its author-provided control, then try this destination again.'};
+      }
       return {ok: true};
     },
     capture,
@@ -643,7 +692,7 @@ return {createVisibilityManager};
 const generative_websites = (() => {
 // Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
 const {validateCatalog, planRoute} = route;
-const {createRouteRecord, parseRouteRecord, reorderRoute, MAX_ROUTE_RECORD_BYTES} = session;
+const {createRouteRecord, parseRouteRecord, reorderRoute, adjacentMovePermissions, MAX_ROUTE_RECORD_BYTES} = session;
 const {createVisibilityManager} = navigation;
 
 const mounted = new WeakMap();
@@ -940,7 +989,7 @@ function enhance(panel) {
     back.disabled = excursions.depth === 0;
     exportRoute.disabled = !route || excursions.depth > 0;
     importRoute.disabled = excursions.depth > 0;
-    for (const {id, bar} of [...returnBars].map(([id, value]) => ({id, ...value}))) bar.hidden = excursions.depth === 0 || id !== activeObject;
+    for (const [id, {bar}] of returnBars) bar.hidden = excursions.depth === 0 || id !== activeObject;
     for (const {link, moves} of routeLinks) {
       if (excursions.depth) link.setAttribute('aria-disabled', 'true');
       else link.removeAttribute('aria-disabled');
@@ -964,6 +1013,9 @@ function enhance(panel) {
     if (moveFocus) focusObject(activeObject);
   };
   const renderRoute = () => {
+    // Prepare fixed prerequisites once for the display. An actual move still
+    // calls reorderRoute and validates fresh author/route state before commit.
+    const permissions = route ? adjacentMovePermissions(catalog, route) : [];
     routeList.replaceChildren();
     routeLinks = [];
     if (route) for (const [index, step] of route.steps.entries()) {
@@ -977,13 +1029,7 @@ function enhance(panel) {
         move.setAttribute('aria-label', `Move ${objects.get(step.id).label} ${label}`);
         move.dataset.moveId = step.id;
         move.dataset.moveDelta = String(delta);
-        let allowed = false;
-        const target = index + delta;
-        if (target >= 0 && target < route.steps.length) {
-          const ids = route.steps.map(item => item.id);
-          [ids[index], ids[target]] = [ids[target], ids[index]];
-          try {reorderRoute(catalog, route, ids); allowed = true;} catch { /* Dependencies stay in order. */ }
-        }
+        const allowed = permissions[index][label];
         move.disabled = !allowed;
         move.title = allowed ? 'Keep the selected goal, concepts and prerequisite choices.' : 'This move would break prerequisite order or move the goal before its preparation.';
         moves.push({node: move, allowed});

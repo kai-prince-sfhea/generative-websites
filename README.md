@@ -1,7 +1,7 @@
 # Generative Websites
 
 Compose learning routes from explicitly reviewed Quarto content. This experimental
-**0.0.2 / GW-0** implementation keeps authored prose and mathematics in native fenced
+**0.0.3 / GW-0** implementation keeps authored prose and mathematics in native fenced
 Divs, offers introductory/advanced views, and orders pedagogical prerequisites
 without a language model. This is experimental local source; it is not a supported
 release or a claim of educational benefit. The bounded GW-0 development milestone
@@ -158,6 +158,14 @@ extension browser assets. Unknown configuration keys and malformed annotations
 produce actionable render errors. Limits are 50 objects, 512 prerequisite
 expression nodes, depth 16, and 20,000 object visits per route search.
 
+The installed [configuration reference schema](_extensions/generative-websites/config-v1.schema.json)
+describes the **value of `generative-websites` metadata**, using JSON Schema
+Draft 2020-12. A compatible validator can check its structure after YAML-to-JSON
+conversion. It is not automatically registered with Quarto or your editor.
+Runtime validation also checks total expression count/depth, byte limits, page
+binding and available reviewed content; passing the schema does not establish
+those checks or the correctness of authored prerequisites.
+
 Readers choose a goal, mark starting knowledge, build a route, inspect each
 item's reason, move between steps and switch reviewed levels. Move earlier/later
 buttons allow independent steps to be reordered while retaining prerequisite
@@ -182,7 +190,11 @@ Save or restore after returning from any open exploration.
 
 Both authored views and a default ordered route remain in native HTML/Word/ePub
 without JavaScript. Native links and route steps reveal relevant closed details
-and Quarto callouts; explicit authored hidden boundaries are respected. Printing
+and Quarto callouts; explicit authored hidden boundaries are respected. Route
+navigation refuses destinations concealed by an inactive native tab, author
+styles or `inert`, and leaves the current route position and disclosure state
+unchanged. Use the page's author-provided control to reveal the destination,
+then retry. Native tabs are not activated automatically. Printing
 temporarily exposes both labelled views and restores the reader's view and
 disclosure selections afterwards. If route construction fails,
 the prose remains available with the reason. External assets already requested

@@ -137,6 +137,7 @@ local function process(doc)
   local options=config(doc.meta)
   if not options.enabled then return doc end
   local anchors, objects, panels, selected, all_objects, source_digests = {}, array(), {}, {}, {}, array()
+  local selected_originals = {}
   local function record(el)
     if el.identifier and el.identifier ~= '' then anchors[el.identifier]=(anchors[el.identifier] or 0)+1 end
     if el.t ~= 'Div' then return end
@@ -199,6 +200,7 @@ local function process(doc)
       if not levels.introductory or not levels.advanced then fail('#' .. id .. ' requires one direct introductory and one direct advanced view') end
       objects[#objects+1]=item
       selected[id]=item
+      selected_originals[id]=el
     end
   end
   if #objects == 0 then fail('a route panel requires at least one explicitly reviewed learning object') end
@@ -228,7 +230,7 @@ local function process(doc)
   doc.blocks=doc.blocks:walk({Div=function(el)
     if has(el,'learning-object') and selected[el.identifier] then
       -- Replace with the enriched original AST, never model/generated prose.
-      for _,original in ipairs(all_objects) do if original.identifier == el.identifier then return original end end
+      return selected_originals[el.identifier]
     elseif has(el,'generative-route') then
       el.content:insert(pandoc.Div(native,pandoc.Attr('',{'generative-websites-fallback'})))
       if html then
@@ -239,7 +241,7 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.2',
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.3',
     -- Original modules are preassembled at development time; no relative imports
     -- remain when Pandoc embeds the browser entry in a data URL.
     scripts={{path='generative-websites-browser.js',attribs={type='module'}}},

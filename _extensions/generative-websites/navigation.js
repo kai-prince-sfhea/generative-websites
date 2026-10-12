@@ -8,7 +8,8 @@ const ancestry = target => {
   for (let node = target; node; node = node.parentElement) nodes.push(node);
   return nodes;
 };
-const concealed = node => node.hidden || node.getAttribute('aria-hidden')?.toLowerCase() === 'true';
+const concealed = node => node.hidden || node.getAttribute('aria-hidden')?.toLowerCase() === 'true' ||
+  node.inert || node.getAttribute('inert') !== null;
 
 /**
  * Reveal native destinations without changing authored hidden/privacy boundaries.
@@ -62,6 +63,20 @@ export function createVisibilityManager(native, doc = document) {
     }
   };
   const baseline = read();
+  // A native tab pane or an author stylesheet can conceal a destination without
+  // setting hidden/aria-hidden. Check styles after opening supported containers:
+  // a closed details/collapse is revealable, while an inactive tab must still be
+  // activated through its author's control. Geometry alone would misclassify
+  // display:contents and empty native anchors.
+  const cssConcealed = nodes => {
+    const view = doc.defaultView;
+    if (typeof view?.getComputedStyle !== 'function') return false;
+    return nodes.some(node => {
+      const style = view.getComputedStyle(node);
+      return style.display === 'none' || style.visibility === 'hidden' ||
+        style.visibility === 'collapse' || style.contentVisibility === 'hidden';
+    });
+  };
   const updateControls = changed => {
     for (const [control, targets] of controls) {
       if (!targets.some(target => changed.has(target))) continue;
@@ -99,13 +114,23 @@ export function createVisibilityManager(native, doc = document) {
       const nodes = ancestry(target);
       if (nodes.some(concealed)) return {
         ok: false,
-        message: 'This destination is inside authored hidden content. Choose another reviewed view or make that content visible using its author-provided control.'
+        message: 'This destination is inside authored hidden or inert content. Choose another reviewed view or make that content visible using its author-provided control.'
       };
       const relevant = nodes.filter(node => disclosures.has(node));
       if (relevant.some(node => node.classList.contains('collapsing'))) return {
         ok: false, message: 'A native callout is still opening or closing. Try this destination again when the transition finishes.'
       };
-      open(relevant);
+      const previous = read();
+      try {
+        open(relevant);
+        if (cssConcealed(nodes)) {
+          write(previous);
+          return {ok: false, message: 'This destination is still hidden by its page styles or inactive tab. Make it visible using its author-provided control, then try this destination again.'};
+        }
+      } catch {
+        write(previous);
+        return {ok: false, message: 'This destination could not be checked for visibility. Make it visible using its author-provided control, then try this destination again.'};
+      }
       return {ok: true};
     },
     capture,

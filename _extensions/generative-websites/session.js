@@ -121,8 +121,9 @@ function currentRoute(catalog, route) {
   for (const [index, step] of route.steps.entries()) {
     if (reasons.get(step.id) !== step.reason) fail(`route.steps[${index}]`, 'object or reason does not match the current planner');
   }
-  validateOrder(catalog, canonical, route.steps.map(step => step.id));
-  return canonical;
+  const constraints = orderConstraints(catalog, canonical);
+  validateOrder(canonical, route.steps.map(step => step.id), constraints);
+  return {canonical, constraints};
 }
 
 /**
@@ -132,17 +133,10 @@ function currentRoute(catalog, route) {
  * Reordering then checks these fixed references, rather than choosing a new OR
  * alternative from whichever objects happen to precede the proposed position.
  */
-function validateOrder(catalog, canonical, orderedIds) {
-  dataArray(orderedIds, 'order', 1, 50);
-  orderedIds.forEach((id, index) => identifier(id, `order[${index}]`));
+function orderConstraints(catalog, canonical) {
   const canonicalIds = canonical.steps.map(step => step.id);
-  const expected = new Set(canonicalIds);
-  if (orderedIds.length !== canonicalIds.length || new Set(orderedIds).size !== orderedIds.length ||
-      orderedIds.some(id => !expected.has(id))) fail('order', 'must contain each planned object exactly once');
-  if (orderedIds.at(-1) !== canonical.goal) fail('order', 'the selected goal must remain the final step');
   const objects = new Map(catalog.objects.map(object => [object.id, object]));
   const originalPositions = new Map(canonicalIds.map((id, index) => [id, index]));
-  const proposedPositions = new Map(orderedIds.map((id, index) => [id, index]));
   const known = new Set(canonical.known.filter(id => id !== canonical.goal));
   const context = objects.get(canonical.goal).context;
   const selectedReferences = (expression, ownerPosition) => {
@@ -168,11 +162,25 @@ function validateOrder(catalog, canonical, orderedIds) {
     }
     return null;
   };
+  const dependencies = new Map();
   for (const [index, id] of canonicalIds.entries()) {
     const expression = objects.get(id).prerequisite;
     if (expression === null) continue;
-    const dependencies = selectedReferences(expression, index);
-    if (dependencies === null) fail('order', `cannot establish the fixed prerequisites for ${id}`);
+    const selected = selectedReferences(expression, index);
+    if (selected === null) fail('order', `cannot establish the fixed prerequisites for ${id}`);
+    dependencies.set(id, new Set(selected));
+  }
+  return {ids: canonicalIds, expected: new Set(canonicalIds), dependencies};
+}
+
+function validateOrder(canonical, orderedIds, constraints) {
+  dataArray(orderedIds, 'order', 1, 50);
+  orderedIds.forEach((id, index) => identifier(id, `order[${index}]`));
+  if (orderedIds.length !== constraints.ids.length || new Set(orderedIds).size !== orderedIds.length ||
+      orderedIds.some(id => !constraints.expected.has(id))) fail('order', 'must contain each planned object exactly once');
+  if (orderedIds.at(-1) !== canonical.goal) fail('order', 'the selected goal must remain the final step');
+  const proposedPositions = new Map(orderedIds.map((id, index) => [id, index]));
+  for (const [id, dependencies] of constraints.dependencies) {
     for (const dependency of dependencies) {
       if (proposedPositions.get(dependency) >= proposedPositions.get(id)) {
         fail('order', `${dependency} must precede ${id}; the recorded prerequisite choices are fixed`);
@@ -182,15 +190,31 @@ function validateOrder(catalog, canonical, orderedIds) {
 }
 
 /** Return an independent route; rejected changes never mutate the current one. */
-function orderedCanonical(catalog, canonical, orderedIds) {
-  validateOrder(catalog, canonical, orderedIds);
+function orderedCanonical(canonical, orderedIds, constraints) {
+  validateOrder(canonical, orderedIds, constraints);
   const steps = new Map(canonical.steps.map(step => [step.id, step]));
   return {...canonical, known: [...canonical.known],
     steps: orderedIds.map(id => ({...steps.get(id)})), choices: structuredClone(canonical.choices)};
 }
 
 export function reorderRoute(catalog, route, orderedIds) {
-  return orderedCanonical(catalog, currentRoute(catalog, route), orderedIds);
+  const {canonical, constraints} = currentRoute(catalog, route);
+  return orderedCanonical(canonical, orderedIds, constraints);
+}
+
+/**
+ * Describe every adjacent move using one freshly validated route and one set of
+ * fixed prerequisites. In an already valid order, swapping adjacent objects can
+ * only invert a dependency between that pair or displace the final goal.
+ * Nothing is cached across calls: mutable direct API inputs are checked again.
+ */
+export function adjacentMovePermissions(catalog, route) {
+  const {canonical, constraints} = currentRoute(catalog, route);
+  const ids = route.steps.map(step => step.id);
+  const allowed = (left, right) => right !== canonical.goal && !constraints.dependencies.get(right)?.has(left);
+  return ids.map((id, index) => ({id,
+    earlier: index > 0 && allowed(ids[index - 1], id),
+    later: index < ids.length - 1 && allowed(id, ids[index + 1])}));
 }
 
 function selectedRevisions(catalog, route, level) {
@@ -214,8 +238,8 @@ export function createRouteRecord(catalog, route, options) {
   if (keys.some(key => !['level', 'cursor', 'order'].includes(key))) fail('options', 'unknown field');
   const requiredOptions = Object.hasOwn(options, 'order') ? ['level', 'cursor', 'order'] : ['level', 'cursor'];
   dataRecord(options, requiredOptions, 'options');
-  const canonical = currentRoute(catalog, route);
-  const current = orderedCanonical(catalog, canonical, Object.hasOwn(options, 'order') ? options.order : route.steps.map(step => step.id));
+  const {canonical, constraints} = currentRoute(catalog, route);
+  const current = orderedCanonical(canonical, Object.hasOwn(options, 'order') ? options.order : route.steps.map(step => step.id), constraints);
   position(options.level, options.cursor, current.steps.length);
   const record = {version: 1, language: catalog.language, snapshot: catalog.snapshot, goal: current.goal,
     known: [...current.known], level: options.level, cursor: options.cursor,
@@ -249,7 +273,7 @@ export function restoreRouteRecord(catalog, record) {
   if (!canonical.ok) fail('record', 'the requested route is unavailable in this reviewed catalogue');
   sameData(record.known, canonical.known, 'record.known');
   sameData(record.choices, canonical.choices, 'record.choices');
-  const route = orderedCanonical(catalog, canonical, record.steps);
+  const route = orderedCanonical(canonical, record.steps, orderConstraints(catalog, canonical));
   position(record.level, record.cursor, record.steps.length);
   sameData(record.revisions, selectedRevisions(catalog, canonical, record.level), 'record.revisions');
   if (UTF8.encode(JSON.stringify(record)).length > MAX_ROUTE_RECORD_BYTES) fail('record', `exceeds ${MAX_ROUTE_RECORD_BYTES} UTF-8 bytes`);

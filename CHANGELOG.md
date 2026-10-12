@@ -1,6 +1,17 @@
 # Changelog
 
-## Unreleased — authoring refinements
+## 0.0.3 — 12 October 2026
+
+- Provide an installed versioned structural reference schema for authoring
+  metadata, with runtime-only checks and editor-integration boundaries explicit.
+- Refuse navigation to inactive tabs, CSS-concealed or inert destinations;
+  restore managed disclosures on refusal and preserve the reader's position.
+- Compute adjacent move permissions together, validating fresh inputs once per
+  display; requested moves, save and restore retain their validation checks.
+- Index selected native objects during the Lua walk and avoid allocating a
+  temporary return-control array on each position update.
+
+### Authoring refinements
 
 - Add shared observable objectives and an ungraded bijections activity with
   progressive native hints, an explained solution and a codomain counterexample.
@@ -8,7 +19,7 @@
   inaccessible native collapsed headers/bodies on the tested Quarto version.
 - Document self-reported preparation, learner-selected assistance and separate
   content rights; route settings are not mastery records or reusable OER bundles.
-- Retain the 0.0.2 runtime and experimental API. Example object revisions change
+- Retain the experimental API. Example object revisions change
   with their common authored content, so earlier example routes become stale.
 
 ## 0.0.2 — 12 October 2026

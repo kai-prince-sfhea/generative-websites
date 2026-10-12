@@ -1,6 +1,6 @@
 // Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
 import {validateCatalog, planRoute} from './route.js';
-import {createRouteRecord, parseRouteRecord, reorderRoute, MAX_ROUTE_RECORD_BYTES} from './session.js';
+import {createRouteRecord, parseRouteRecord, reorderRoute, adjacentMovePermissions, MAX_ROUTE_RECORD_BYTES} from './session.js';
 import {createVisibilityManager} from './navigation.js';
 
 const mounted = new WeakMap();
@@ -297,7 +297,7 @@ export function enhance(panel) {
     back.disabled = excursions.depth === 0;
     exportRoute.disabled = !route || excursions.depth > 0;
     importRoute.disabled = excursions.depth > 0;
-    for (const {id, bar} of [...returnBars].map(([id, value]) => ({id, ...value}))) bar.hidden = excursions.depth === 0 || id !== activeObject;
+    for (const [id, {bar}] of returnBars) bar.hidden = excursions.depth === 0 || id !== activeObject;
     for (const {link, moves} of routeLinks) {
       if (excursions.depth) link.setAttribute('aria-disabled', 'true');
       else link.removeAttribute('aria-disabled');
@@ -321,6 +321,9 @@ export function enhance(panel) {
     if (moveFocus) focusObject(activeObject);
   };
   const renderRoute = () => {
+    // Prepare fixed prerequisites once for the display. An actual move still
+    // calls reorderRoute and validates fresh author/route state before commit.
+    const permissions = route ? adjacentMovePermissions(catalog, route) : [];
     routeList.replaceChildren();
     routeLinks = [];
     if (route) for (const [index, step] of route.steps.entries()) {
@@ -334,13 +337,7 @@ export function enhance(panel) {
         move.setAttribute('aria-label', `Move ${objects.get(step.id).label} ${label}`);
         move.dataset.moveId = step.id;
         move.dataset.moveDelta = String(delta);
-        let allowed = false;
-        const target = index + delta;
-        if (target >= 0 && target < route.steps.length) {
-          const ids = route.steps.map(item => item.id);
-          [ids[index], ids[target]] = [ids[target], ids[index]];
-          try {reorderRoute(catalog, route, ids); allowed = true;} catch { /* Dependencies stay in order. */ }
-        }
+        const allowed = permissions[index][label];
         move.disabled = !allowed;
         move.title = allowed ? 'Keep the selected goal, concepts and prerequisite choices.' : 'This move would break prerequisite order or move the goal before its preparation.';
         moves.push({node: move, allowed});
