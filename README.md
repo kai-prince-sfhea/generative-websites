@@ -3,43 +3,61 @@
 Compose learning routes from explicitly reviewed Quarto content. This experimental
 **0.0.3 / GW-0** implementation keeps authored prose and mathematics in native fenced
 Divs, offers introductory/advanced views, and orders pedagogical prerequisites
-without a language model. This is experimental local source; it is not a supported
+without a language model. This is experimental source; it is not a supported
 release or a claim of educational benefit. The bounded GW-0 development milestone
 is separate from the wider research roadmap and your acceptance of the extension.
 It is intended for authors of teaching and research pages who want readers to
 choose reviewed explanations and explore preparation without losing their route.
 
-## Try the local example
+## Install from GitHub
 
 Requires Quarto 1.11.5 or newer. Initial verification uses **1.11.5 pre-release on
 Windows**; the minimum-version declaration does not verify other versions/platforms.
 No Node.js, model, SDK or project hooks are needed to use the extension.
 
-From this source folder:
+Copy [example.qmd](example.qmd) into a separate consumer folder, then run there:
 
 ```powershell
+quarto add kai-prince-sfhea/generative-websites --no-prompt
+quarto list extensions
 quarto render example.qmd
 quarto render example.qmd --to docx
 ```
 
-For a separate consumer folder beside `generative-websites`, install locally:
+The example activates the GitHub installation namespace:
+
+```yaml
+filters:
+  - kai-prince-sfhea/generative-websites
+```
+
+The default installation follows the experimental `main` branch; no supported
+tagged release is promised. Files below `_extensions` form the complete installed
+runtime. GitHub installation places them in
+`_extensions/kai-prince-sfhea/generative-websites`. It uses Quarto's
+[filter manifest and activation](https://quarto.org/docs/extensions/filters.html)
+and [HTML dependency API](https://quarto.org/docs/extensions/lua-api.html#dependencies).
+
+### Local source alternative
+
+For a consumer folder beside a checkout named `generative-websites`, install locally:
 
 ```powershell
 quarto add ../generative-websites --no-prompt
 quarto list extensions
 ```
 
-Copy `example.qmd` into the consumer and render it. Its activation is:
+Copy `example.qmd` into the consumer and change its filter selector to the local
+namespace before rendering:
 
 ```yaml
 filters:
   - generative-websites
 ```
 
-This is the verified **local** namespace. There is no public GitHub installation
-route yet. Files under `_extensions/generative-websites` form the complete installed
-runtime. It uses Quarto's [filter manifest and activation](https://quarto.org/docs/extensions/filters.html)
-and [HTML dependency API](https://quarto.org/docs/extensions/lua-api.html#dependencies).
+The same selector change is required to render the example directly from a
+source checkout. Local installation uses `_extensions/generative-websites`;
+the remaining consumer instructions use the GitHub namespace.
 
 ## Author learning objects
 
@@ -177,6 +195,9 @@ conversion. It is not automatically registered with Quarto or your editor.
 Runtime validation also checks total expression count/depth, byte limits, page
 binding and available reviewed content; passing the schema does not establish
 those checks or the correctness of authored prerequisites.
+In a GitHub consumer the schema is installed at
+`_extensions/kai-prince-sfhea/generative-websites/config-v1.schema.json`; the
+relative link above points to its location in this source repository.
 
 Readers choose a goal, mark starting knowledge, build a route, inspect each
 item's reason, move between steps and switch reviewed levels. Move earlier/later
@@ -229,15 +250,19 @@ generative-websites:
 ```
 
 Deactivation bypasses stale extension settings and preserves native content.
-For a local consumer:
+For a GitHub consumer:
 
 ```powershell
-quarto update ../generative-websites --no-prompt
-quarto remove generative-websites --no-prompt
+quarto update extension kai-prince-sfhea/generative-websites --no-prompt
+quarto remove kai-prince-sfhea/generative-websites --no-prompt
 ```
 
 After removal, remove the filter from your YAML before rendering. Your prose,
 links and fenced Divs remain native Quarto source. There are no caches to clear.
+For a local installation, use `quarto update extension ../generative-websites --no-prompt`
+and `quarto remove generative-websites --no-prompt`, then remove the local filter
+selector. Review the changelog and re-render after an update; a changed snapshot
+requires a newly built route rather than relabelling an old route file.
 
 ## Current boundaries and rights
 
@@ -307,7 +332,7 @@ keyboard/screen-reader acceptance and educational evaluation remain open.
 Developer tests, fixtures, benchmarks, plans and raw receipts are intentionally
 outside this lean source distribution and are not publicly available from this
 folder. This checkout alone cannot reproduce the full internal suite or its
-performance measurements. You can reproduce the local installation and supplied
+performance measurements. You can reproduce the documented installation and supplied
 `example.qmd` workflow using the distributed files and Quarto. External
 reproduction of the full suite requires a separately shared, versioned developer
 workspace and its recorded tools/evidence; no bundled test runner is advertised.

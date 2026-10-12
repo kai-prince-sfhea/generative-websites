@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased — public repository preparation
+## Experimental source publication — 13 October 2026
+
+- Publish the bounded 0.0.3 / GW-0 source with owner-qualified GitHub installation,
+  update/removal commands, the matching example selector and explicit local-source
+  alternatives. Runtime version and all installed bytes remain unchanged.
 
 - Clarify intended users, native metadata layering, reserved identifiers and the
   experimental migration policy without changing the 0.0.3 runtime.
@@ -9,7 +13,8 @@
 - Expand the material AI-assistance disclosure, synthetic-content review limits,
   tested scope, external full-suite availability and safe problem reporting.
 - Keep developer documentation, tests and generated evidence outside the source
-  package; repository creation and upload remain separate actions.
+  package. Source publication is separate from a supported release, deployment
+  and independent human acceptance.
 
 ## 0.0.3 — 12 October 2026
 

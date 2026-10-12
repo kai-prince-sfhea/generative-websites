@@ -2,7 +2,7 @@
 title: "A route to bijections"
 lang: en
 filters:
-  - generative-websites
+  - kai-prince-sfhea/generative-websites
 generative-websites:
   prerequisites:
     functions: sets
