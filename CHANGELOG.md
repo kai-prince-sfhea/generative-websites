@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.4 — diagnostic privacy follow-up — 14 October 2026
+
+- Locate invalid authoring by processing occurrence and documented field without
+  echoing authored option keys or object IDs in render errors. Report at most five
+  unbound prerequisite-owner occurrences plus a count, without their IDs.
+- Refuse unsupported catalogue/route-file fields without including their names in
+  browser validation messages. Unknown reader goal/known IDs and malformed
+  catalogue JSON do not appear in diagnostic messages. Reviewed content, route algorithms and version-1
+  snapshot/refusal rules are unchanged; no authoring or saved-route migration.
+- Use the published repository issue link and retain experimental/manual gates.
+
 ## Experimental source publication — 13 October 2026
 
 - Publish the bounded 0.0.3 / GW-0 source with owner-qualified GitHub installation,

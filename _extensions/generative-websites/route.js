@@ -18,7 +18,7 @@ function record(value, fields, path) {
     fail(path, "expected a plain object");
   }
   for (const key of Reflect.ownKeys(value)) {
-    if (typeof key !== "string" || !fields.includes(key)) fail(path, `unknown field ${String(key)}`);
+    if (typeof key !== "string" || !fields.includes(key)) fail(path, "unknown field; remove unsupported keys and use the documented field allowlist");
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor.enumerable || !Object.hasOwn(descriptor, "value")) fail(path, "expected JSON data fields");
   }
@@ -150,12 +150,12 @@ export function planRoute(catalog, options = {}) {
   const objects = new Map(catalog.objects.map((object) => [object.id, object]));
   const goalObject = objects.get(goal);
   const failure = (issues) => ({ ok: false, ...base, steps: [], issues });
-  if (!goalObject) return failure([issue("unavailable-goal", `The selected goal ${goal} is unavailable.`, goal)]);
+  if (!goalObject) return failure([issue("unavailable-goal", "The selected goal is unavailable; choose an object from this reviewed catalogue.", "options.goal")]);
 
   const knownIssues = [];
   for (const id of known) {
     const object = objects.get(id);
-    if (!object) knownIssues.push(issue("unavailable-known", `Known object ${id} is unavailable.`, id));
+    if (!object) knownIssues.push(issue("unavailable-known", "The selected known object is unavailable; choose an object from this reviewed catalogue.", "options.known"));
     else if (object.context !== goalObject.context) knownIssues.push(issue("incompatible-context", `Known object ${id} has a different declared context from ${goal}.`, id));
   }
   if (knownIssues.length) return failure(knownIssues);

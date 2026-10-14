@@ -1,7 +1,7 @@
 # Generative Websites
 
 Compose learning routes from explicitly reviewed Quarto content. This experimental
-**0.0.3 / GW-0** implementation keeps authored prose and mathematics in native fenced
+**0.0.4 / GW-0** implementation keeps authored prose and mathematics in native fenced
 Divs, offers introductory/advanced views, and orders pedagogical prerequisites
 without a language model. This is experimental source; it is not a supported
 release or a claim of educational benefit. The bounded GW-0 development milestone
@@ -185,7 +185,10 @@ Add one panel per page:
 The goal defaults to the first selected object; level defaults to introductory.
 Only `lang: en` is supported in GW-0. A page without the panel receives no
 extension browser assets. Unknown configuration keys and malformed annotations
-produce actionable render errors. Limits are 50 objects, 512 prerequisite
+produce actionable render errors without echoing supplied option keys or object
+IDs. Diagnostic occurrences are processing ordinals, not source line numbers.
+Unbound prerequisite warnings show at most five occurrences plus a total.
+Ordinary Quarto logs may still include author metadata and remain private. Limits are 50 objects, 512 prerequisite
 expression nodes, depth 16, and 20,000 object visits per route search.
 
 The installed [configuration reference schema](_extensions/generative-websites/config-v1.schema.json)
@@ -242,6 +245,8 @@ governed by its format options; an embedded extension entry alone does not prove
 that an entire website works offline. Preview or a web server is the usual way
 to view interactive output.
 
+Quarto `--quiet` can suppress diagnostic text while retaining a nonzero failure status. Re-run with `--log-level error` to see the extension's safe contract message; ordinary render logs remain author material.
+
 ## Disable, update or remove
 
 ```yaml
@@ -275,6 +280,8 @@ requires a newly built route rather than relabelling an old route file.
 | Unicode prose/labels; spaces and Latin-1 input filenames | ASCII object IDs are required. A CJK consumer-directory path hit an independently reproduced native filter-loader encoding failure on this host. |
 | Page memory plus explicit local route files | No persistent learner profile, account or automatic storage; route v0 exports from 0.0.1 are unsupported. |
 
+Version 0.0.4 changes validation diagnostics without changing authoring, route
+algorithms or version-1 route data; no migration is required from 0.0.3.
 The configuration and route-file APIs remain experimental. Version-1 restoration
 requires the exact snapshot; re-rendered changes may require a newly built route.
 This is intentional stale-content refusal, not a route migration service.
@@ -339,7 +346,7 @@ workspace and its recorded tools/evidence; no bundled test runner is advertised.
 
 ## Reporting problems
 
-Use the repository's issue tracker once it is available for reproducible,
+Use [GitHub Issues](https://github.com/kai-prince-sfhea/generative-websites/issues) for reproducible,
 non-sensitive bugs, preferably with a small synthetic example, Quarto/browser
 versions and expected/observed behaviour. Do not post credentials, confidential
 content, learner records or unmitigated vulnerability details in public issues.

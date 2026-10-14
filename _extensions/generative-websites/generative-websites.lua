@@ -62,7 +62,7 @@ local function config(meta)
     elseif key == 'prerequisites' then
       if not mapping(value) then fail('prerequisites must map object IDs to expressions') end
       result.prerequisites = value
-    else fail('unknown option ' .. tostring(key)) end
+    else fail('generative-websites has an unknown option; remove unsupported keys and use only enabled or prerequisites') end
   end
   return result
 end
@@ -151,7 +151,8 @@ local function process(doc)
   pandoc.Div(panels[1].content):walk({Div=function(child)
     if has(child,'learning-object') or has(child,'learning-view') then fail('route panels cannot contain learning objects or views') end
   end})
-  for _,el in ipairs(all_objects) do
+  for object_index,el in ipairs(all_objects) do
+    local location='learning object occurrence ' .. object_index
     pandoc.Div(el.content):walk({Div=function(child)
       if has(child,'learning-object') then fail('learning objects cannot be nested, including through wrappers or views') end
       if has(child,'generative-route') then fail('route panels cannot be nested inside learning objects') end
@@ -161,57 +162,63 @@ local function process(doc)
     if status == 'author-reviewed' then
       if #objects >= 50 then fail('at most 50 reviewed objects are supported per document') end
       local id=identifier(el.identifier,'learning object ID')
-      if anchors[id] ~= 1 then fail('duplicate native object anchor #' .. id) end
+      if anchors[id] ~= 1 then fail(location .. '.id is a duplicate native object anchor; assign a unique native ID') end
       -- Bind common assumptions/prose as well as the two view realisations.
       -- This runs after native visibility, before adding generated labels/IDs.
       source_digests[#source_digests+1]={id=id,digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(el.content),'json'))}
-      local concept=text(el.attributes['concept-id'],'concept-id for #' .. id,512)
+      local concept=text(el.attributes['concept-id'],location .. '.concept-id',512)
       local unsafe=false
       for _,cp in utf8.codes(concept) do if whitespace(cp) then unsafe=true end end
       if not concept:match('^[A-Za-z][A-Za-z0-9+%.%-]*:.+') or unsafe or concept:find('[<>"\']') then
         fail('concept-id must be a scoped URI without whitespace or unsafe delimiters')
       end
-      local item={id=id,conceptId=concept,revision=text(el.attributes.revision,'revision for #' .. id,128),
-        label=text(el.attributes.label,'label for #' .. id,256),context=text(el.attributes.context,'context for #' .. id,128),
-        reviewedBy=text(el.attributes['reviewed-by'],'reviewed-by for #' .. id,256),views=array(),prerequisite=NULL}
+      local item={id=id,conceptId=concept,revision=text(el.attributes.revision,location .. '.revision',128),
+        label=text(el.attributes.label,location .. '.label',256),context=text(el.attributes.context,location .. '.context',128),
+        reviewedBy=text(el.attributes['reviewed-by'],location .. '.reviewed-by',256),views=array(),prerequisite=NULL}
       local levels={}
       for _,child in ipairs(el.content) do
         if child.t == 'Div' and has(child,'learning-object') then fail('learning objects cannot be nested') end
         if child.t == 'Div' and has(child,'learning-view') then
           local level=child.attributes.level
           if level ~= 'introductory' and level ~= 'advanced' then fail('views require level="introductory" or level="advanced"') end
-          if levels[level] then fail('duplicate ' .. level .. ' view for #' .. id) end
+          if levels[level] then fail(location .. ' has a duplicate ' .. level .. ' view; keep one direct view of each supported level') end
           if child.attributes.review ~= 'author-reviewed' then fail('every selected view requires explicit review="author-reviewed"') end
           local anchor=id .. '--' .. level
           if child.identifier ~= '' then fail('view IDs are generated; remove the authored view ID') end
-          if anchors[anchor] then fail('generated view anchor #' .. anchor .. ' collides with native content') end
+          if anchors[anchor] then fail(location .. ' generated view anchor collides with native content; change the object ID or conflicting native ID') end
           anchors[anchor]=1
           child.identifier=anchor
           child.attributes['data-learning-level']=level
           child.attributes['data-learning-object']=id
-          local revision=text(child.attributes.revision,'view revision for #' .. id,128)
-          local reviewer=text(child.attributes['reviewed-by'],'view reviewed-by for #' .. id,256)
+          local revision=text(child.attributes.revision,location .. '.' .. level .. '.revision',128)
+          local reviewer=text(child.attributes['reviewed-by'],location .. '.' .. level .. '.reviewed-by',256)
           local digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(child.content),'json'))
           item.views[#item.views+1]={level=level,revision=revision,reviewedBy=reviewer,anchor=anchor,digest=digest}
           levels[level]=true
           child.content:insert(1,pandoc.Para({pandoc.Strong({pandoc.Str(level == 'introductory' and 'Introductory view' or 'Advanced view')})}))
         end
       end
-      if not levels.introductory or not levels.advanced then fail('#' .. id .. ' requires one direct introductory and one direct advanced view') end
+      if not levels.introductory or not levels.advanced then fail(location .. ' requires one direct introductory and one direct advanced view') end
       objects[#objects+1]=item
       selected[id]=item
       selected_originals[id]=el
     end
   end
   if #objects == 0 then fail('a route panel requires at least one explicitly reviewed learning object') end
+  local prerequisite_index, unbound_count = 0, 0
   for key,value in pairs(options.prerequisites) do
+    prerequisite_index=prerequisite_index+1
     local id=identifier(key,'prerequisite owner')
     local expression=prerequisite(value,1)
     if selected[id] then selected[id].prerequisite=expression
-    else quarto.log.warning('generative-websites: prerequisite owner #' .. id .. ' is absent or unreviewed on this page; its project entry is not bound here') end
+    else
+      unbound_count=unbound_count+1
+      if unbound_count<=5 then quarto.log.warning('generative-websites: prerequisite entry occurrence ' .. prerequisite_index .. ' has an absent or unreviewed owner on this page; check its owner against this page or remove the entry from its effective map') end
+    end
   end
+  if unbound_count>5 then quarto.log.warning('generative-websites: ' .. unbound_count .. ' prerequisite owners are absent or unreviewed on this page; only the first five processing occurrences are reported; review the effective prerequisites map') end
   local goal=panels[1].attributes.goal and identifier(panels[1].attributes.goal,'route goal') or objects[1].id
-  if not selected[goal] then fail('route goal #' .. goal .. ' is missing or unreviewed') end
+  if not selected[goal] then fail('route panel.goal is missing or unreviewed; select a reviewed object on this page') end
   local level=panels[1].attributes.level or 'introductory'
   if level ~= 'introductory' and level ~= 'advanced' then fail('route level must be introductory or advanced') end
   local language=doc.meta.lang and text(doc.meta.lang,'document lang',64) or 'en'
@@ -241,7 +248,7 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.3',
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.4',
     -- Original modules are preassembled at development time; no relative imports
     -- remain when Pandoc embeds the browser entry in a data URL.
     scripts={{path='generative-websites-browser.js',attribs={type='module'}}},

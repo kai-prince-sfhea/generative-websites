@@ -121,7 +121,10 @@ export function enhance(panel) {
   const previousHidden = slot.hidden;
   let catalog, native;
   try {
-    catalog = validateCatalog(JSON.parse(raw.textContent));
+    let parsed;
+    try { parsed = JSON.parse(raw.textContent); }
+    catch { throw new TypeError('Catalogue JSON is invalid; re-render the authored page with a compatible extension.'); }
+    catalog = validateCatalog(parsed);
     native = resolveNativeViews(catalog, panel.ownerDocument);
   } catch (error) {
     const message = element('p', `Interactive route unavailable: ${error.message} All authored content remains available.`, 'generative-websites-status');

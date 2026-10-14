@@ -13,7 +13,7 @@ function dataRecord(value, fields, path) {
   if (value === null || typeof value !== 'object' || Array.isArray(value) ||
       ![Object.prototype, null].includes(Object.getPrototypeOf(value))) fail(path, 'expected a plain JSON object');
   for (const key of Reflect.ownKeys(value)) {
-    if (typeof key !== 'string' || !fields.includes(key)) fail(path, `unknown field ${String(key)}`);
+    if (typeof key !== 'string' || !fields.includes(key)) fail(path, 'unknown field; remove unsupported keys and use the documented field allowlist');
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value')) fail(path, 'expected JSON data fields');
   }
