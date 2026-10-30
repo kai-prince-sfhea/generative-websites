@@ -882,8 +882,12 @@ function enhance(panel) {
   importRoute.accept = '.json,application/json';
   importLabel.append(importRoute);
   const actions = element('div', undefined, 'generative-websites-actions');
-  actions.append(build, reset, exportRoute);
-  controls.append(goal.label, expertise.label, knownField, actions, importLabel);
+  actions.append(build, reset);
+  const startingKnowledge=element('details',undefined,'generative-websites-advanced');
+  startingKnowledge.append(element('summary','Starting knowledge'),knownField);
+  const transfer=element('details',undefined,'generative-websites-advanced');
+  transfer.append(element('summary','Save or restore a route'),exportRoute,importLabel);
+  controls.append(goal.label, expertise.label, actions, startingKnowledge);
 
   const status = element('p', undefined, 'generative-websites-status');
   status.setAttribute('role', 'status');
@@ -911,7 +915,7 @@ function enhance(panel) {
   exploreActions.append(explore, back);
   exploration.append(exploreChoice.label, exploreActions, excursionStatus);
   const snapshot = element('p', `Reviewed content snapshot ${catalog.snapshot.slice(0, 12)}. Routes use the fixed revisions included on this page.`, 'generative-websites-snapshot');
-  slot.replaceChildren(controls, status, routeRegion, exploration, snapshot);
+  slot.replaceChildren(controls, status, routeRegion, exploration, transfer, snapshot);
   slot.hidden = false;
 
   let route = null;
@@ -990,6 +994,8 @@ function enhance(panel) {
     next.disabled = !route || excursions.depth > 0 || cursor >= count - 1 || count === 0;
     build.disabled = excursions.depth > 0;
     back.disabled = excursions.depth === 0;
+    explore.disabled = !route || excursions.depth >= MAX_EXCURSIONS;
+    exploreChoice.select.disabled = !route || excursions.depth >= MAX_EXCURSIONS;
     exportRoute.disabled = !route || excursions.depth > 0;
     importRoute.disabled = excursions.depth > 0;
     for (const [id, {bar}] of returnBars) bar.hidden = excursions.depth === 0 || id !== activeObject;

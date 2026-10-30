@@ -364,7 +364,7 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.12',
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.13',
     -- Original modules are preassembled at development time; no relative imports
     -- remain when Pandoc embeds the browser entry in a data URL.
     scripts={{path='generative-websites-browser.js',attribs={type='module'}}},

@@ -68,7 +68,7 @@ function M.process(doc,runtime,native_directory,project_root)
   local professional=doc.meta['interactive-cv']~=nil
   if not professional then doc:walk({Div=function(el)if has(el,'cv-index')then professional=true end end})end
   if professional and quarto.doc.is_format('html:js')then
-    quarto.doc.add_html_dependency({name='generative-websites-professional',version='0.0.12',scripts={{path='professional-browser.js',attribs={type='module'}}}})
+    quarto.doc.add_html_dependency({name='generative-websites-professional',version='0.0.13',scripts={{path='professional-browser.js',attribs={type='module'}}}})
   end
   local options=raw and plain(raw)or{}
   local translationAPI=dofile(pandoc.path.join({runtime,'translation-native.lua'}))
@@ -358,7 +358,7 @@ function M.process(doc,runtime,native_directory,project_root)
     local workers=nil
     if compiled.offline and compiled.offline.enabled then workers={{source='gw-offline-worker.js',destination=quarto.project.directory and'/gw-offline-worker.js'or'gw-offline-worker.js'}}end
     if head~=''then quarto.doc.include_text('in-header',head)end
-    quarto.doc.add_html_dependency({name='generative-websites-features',version='0.0.12',scripts={{path='features-browser.js',attribs={type='module'}}},stylesheets={'features.css'},serviceworkers=workers})
+    quarto.doc.add_html_dependency({name='generative-websites-features',version='0.0.13',scripts={{path='features-browser.js',attribs={type='module'}}},stylesheets={'features.css'},serviceworkers=workers})
   end
   return doc
 end

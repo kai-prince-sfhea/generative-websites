@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.0.13 — reader controls and bounded Numbas DOM relationships — local development
+
+- Put core preferences and route-building/navigation actions first. Keep other
+  preferences, starting knowledge and transfer/offline controls in native
+  disclosures; preserve protected content and source/review qualifications.
+- Disable route-dependent actions until usable, retain saved-return validation,
+  and wrap long download labels and native file controls at narrow widths.
+- Prepare separately inventoried external Numbas DOM/heading assets for exact
+  supported engine/template entries. Preserve vendor/template/question bytes,
+  native Knockout/listeners and marking; apply toggle ID references only after
+  loaded, keep native tab focus behavior, associate unlabelled answers with their
+  existing prompt, and provide contextual mobile heading/region navigation.
+- Record unknown entry profiles as not applied while retaining ordinary use.
+  Reserve the owned namespace, check installed-asset freshness and bind all new
+  assets/direct entries to the existing source/review/publication inventory.
+- Keep historical BUILD/0.0.12 compatibility receipts immutable. Pure protocol,
+  native/browser, scoring and human accessibility checks remain separate gates.
+- Follow-up: use non-landmark contextual grouping around the native main and
+  retain real content below an open mobile menu through a scoped external shadow
+  stylesheet. A failed alternate-entry rewrite reports not applied. Later native
+  labels supersede owned prompt links, and all wrapper ARIA/editing mutations
+  recheck presentation-role eligibility. Prior failed observations remain intact.
+- Further review: let the real main grow within the open-menu scroll container,
+  retain the native skip anchor in a bounded navigation wrapper with explicit
+  target focus, and reference the existing ordinary rendered prompt child for
+  scanner compatibility. R2 Chromium already computed the prompt name correctly;
+  no invented aria-label, button-label, seed or marking change is made.
+- Preserve native feedback disclosures and their polite live announcements while
+  removing the unsupported `log` role from the retained `details` element. Native
+  summary, open/close binding, feedback content and scoring remain unchanged.
+- Give only admitted prepared Numbas documents a viewport-height root through
+  an owned marker and the external stylesheet, correcting zero-height root
+  geometry without changing native answer names or shadow-content layout.
+- Underline native Numbas copyright-footer links within the owned shadow layout
+  so attribution links remain distinguishable without relying on colour alone.
+  Retain native text, destinations, colours, listeners and marking.
+- Retain focus on temporarily busy finite-check and journey buttons with explicit
+  repeat guards. Preserve genuine unavailable states; hand off only current
+  owned focus before disabling/removing its control or route output. Reader-moved
+  focus and cancelled/stale response ownership remain intact.
+- Pair the owned activity completion choices and optional Show/Reset symbol
+  buttons with the current document theme, with scoped focus and forced-colour
+  styles. Keep the responsive proxy heading in its own named section, hidden
+  with the heading whenever a native H1 is visible; never wrap the native main.
+  Initial-state and post-interaction checks remain separately scoped evidence.
+- Retain Show symbols and Numbas Load focus while their resources are pending,
+  guard repeat activation and hand off only still-owned focus before a genuine
+  unavailable transition or frame removal. Preserve direct Load replacement
+  semantics and reader-moved focus on programmatic Unload.
+- In a marked owned activity iframe only, guard the admitted engine instance's
+  native `force_focus` helper against taking focus from its parent. Delegate the
+  original helper inside the frame; retain standalone/unknown/security fallback,
+  native scrolling, this/argument/return/error behavior and vendor bytes. Bind the
+  changed external adapter through a fresh preparation identity and review.
+
 ## 0.0.12 — bounded translation context and distributor font notices — 28 October 2026
 
 - Include selected-packet paragraph/list context and immutable math/code/citation/locked-wording landmarks in explicit local translation requests. Output remains known editable segments only; every candidate still requires accountable language review.

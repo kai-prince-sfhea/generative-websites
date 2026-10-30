@@ -126,10 +126,17 @@ export function mountWaiSymbolControls(input,settings={}){
  const unique=anchor=>{const matches=[...doc.querySelectorAll('[id]')].filter(el=>el.id===anchor);if(matches.length!==1)fail('wai-symbol-ui-anchor');return matches[0];};
  const cleanup=()=>{for(const row of owned.splice(0))row.image.remove();for(const url of blobURLs.splice(0))try{urlAPI.revokeObjectURL(url);}catch{}shown=false;};
  function current(){try{const now=new URL(win.location.href);now.hash='';return ready&&alive&&!disposed&&!invalidated&&root.ownerDocument===doc&&root.isConnected===true&&(!win.document||win.document===doc)&&(!doc.defaultView||doc.defaultView===win)&&win.closed!==true&&now.href===expectedURL&&identity===canonical(controlledData(input))&&(!settings.isCurrent||settings.isCurrent()===true)&&(!settings.readData||settings.readData()===settings.initialDataText)&&originals.every(row=>unique(row.record.id)===row.el&&eligible(row.el,doc)&&row.el.parentNode===row.parent&&row.el.innerHTML===row.html&&attributes(row.el)===row.attributes&&row.el.textContent===row.record.text)&&owned.every(row=>row.image.ownerDocument===doc&&row.image.isConnected===true&&row.image.parentNode===row.parent&&row.image.src===row.src&&attributes(row.image)===row.attributes);}catch{return false;}}
- function reset(message='Local symbols are off. Authored text is retained.'){epoch++;abort?.abort();abort=null;loading=false;cleanup();showButton.disabled=!current();if(!disposed)status.textContent=message;}
+ function refreshShowControl(){
+  const unavailable=!current(),owns=alive&&!disposed&&root.ownerDocument===doc&&root.isConnected===true&&doc.activeElement===showButton;
+  if(unavailable&&owns&&resetButton.isConnected&&!resetButton.disabled)resetButton.focus();
+  showButton.disabled=unavailable;
+  if(loading&&!unavailable){showButton.setAttribute('aria-disabled','true');showButton.setAttribute('aria-busy','true');}
+  else{showButton.removeAttribute('aria-disabled');showButton.removeAttribute('aria-busy');}
+ }
+ function reset(message='Local symbols are off. Authored text is retained.'){epoch++;abort?.abort();abort=null;loading=false;cleanup();refreshShowControl();if(!disposed)status.textContent=message;}
  async function show(){
   if(shown){if(current())return true;reset('Optional local symbols are unavailable or stale. Authored text is retained.');return false;}if(loading)return false;const token=++epoch;if(!current()||typeof fetchImpl!=='function'||typeof urlAPI?.createObjectURL!=='function'||typeof BlobClass!=='function'){reset('Optional local symbols are unavailable or stale. Authored text is retained.');return false;}
-  abort?.abort();abort=new AbortController();const controller=abort,signal=controller.signal,timer=setTimeout(()=>controller.abort(),15000);loading=true;showButton.disabled=true;status.textContent='Checking the selected local symbol images. Reset remains available.';
+  abort?.abort();abort=new AbortController();const controller=abort,signal=controller.signal,timer=setTimeout(()=>controller.abort(),15000);loading=true;refreshShowControl();status.textContent='Checking the selected local symbol images. Reset remains available.';
   try{
    const images=new Map();for(const asset of packet.binding.assets){const bytes=await readImage(asset,{href:win.location.href,fetchImpl,signal,cryptoObject});if(token!==epoch||signal.aborted||!current())fail('wai-symbol-ui-stale');const url=urlAPI.createObjectURL(new BlobClass([bytes],{type:'image/png'}));if(typeof url!=='string'||!url.startsWith('blob:')){try{urlAPI.revokeObjectURL(url);}catch{}fail('wai-symbol-url');}blobURLs.push(url);images.set(asset.concept,url);}
    if(token!==epoch||signal.aborted||!current())fail('wai-symbol-ui-stale');
@@ -137,7 +144,7 @@ export function mountWaiSymbolControls(input,settings={}){
    if(token!==epoch||signal.aborted||!current())fail('wai-symbol-ui-stale');for(const row of pendingImages){owned.push(row);row.parent.insertBefore(row.image,row.source.nextSibling);}
    shown=true;status.textContent='Local project symbols are shown beside retained text. This does not establish AAC familiarity or external-helper support.';return true;
   }catch{if(token===epoch){abort?.abort();cleanup();status.textContent='Optional local symbols are unavailable, cancelled or stale. Authored text is retained.';}return false;}
-  finally{clearTimeout(timer);if(token===epoch){loading=false;showButton.disabled=!current();}}
+  finally{clearTimeout(timer);if(token===epoch){loading=false;refreshShowControl();}}
  }
  on(showButton,'click',()=>{void show();});on(resetButton,'click',()=>reset());on(win,'pagehide',()=>{alive=false;reset('Local symbols are off after leaving the page. Authored text is retained.');});on(win,'pageshow',()=>{alive=true;reset('Local symbols are off. Use Show symbols again when wanted.');});
  const readyPromise=(async()=>{

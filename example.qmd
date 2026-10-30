@@ -45,12 +45,15 @@ quarto preview example.qmd
 
 You should see the **Choose reviewed alternatives** controls and the **Sets**
 task below. With JavaScript unavailable, the labelled authored alternatives
-remain readable. Nothing is downloaded from an AI provider.
+remain readable. Core preferences appear first; open **More reviewed preferences**
+for other available axes. Source/review declarations remain separately inspectable.
+Nothing is downloaded from an AI provider.
 
 ## 2. Choose one option at a time
 
 Change **Exposition** to **advanced**. Then change **Terminology** to
-**technical**, and **Scaffolding** to **expanded**. Each control selects existing
+**technical**, then open **More reviewed preferences** and change **Scaffolding**
+to **expanded**. Each control selects existing
 reviewed text; changing one does not infer your knowledge or alter another axis.
 The common task stays fixed. **Restore author defaults** resets the choices.
 

@@ -1,16 +1,21 @@
 /* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
-.generative-feature-controls { display:flex; flex-wrap:wrap; align-items:end; gap:.75rem; padding:1rem; margin-block:1rem; border:1px solid currentColor; border-radius:.4rem; min-width:0; }
+.generative-feature-controls { display:flex; flex-wrap:wrap; align-items:end; gap:.75rem; padding:1rem; margin-block:1rem; border:1px solid currentColor; border-radius:.4rem; min-width:0; max-inline-size:100%; box-sizing:border-box; overflow-wrap:anywhere; color:var(--bs-body-color,CanvasText); background:var(--bs-body-bg,Canvas); }
 .generative-feature-controls label { display:flex; flex-direction:column; gap:.3rem; min-width:0; flex:1 1 12rem; }
-.generative-feature-controls button,.generative-feature-controls input,.generative-feature-controls select { min-height:44px; min-width:44px; max-width:100%; font:inherit; color:inherit; background:inherit; padding:.45rem; border:1px solid currentColor; border-radius:.2rem; }
+.generative-feature-controls button,.generative-feature-controls input,.generative-feature-controls select { box-sizing:border-box; min-height:44px; min-width:0; max-width:100%; font:inherit; color:var(--bs-body-color,CanvasText); background:var(--bs-body-bg,Canvas); padding:.45rem; border:1px solid currentColor; border-radius:.2rem; }
+.generative-feature-controls button { min-inline-size:44px; white-space:normal; overflow-wrap:anywhere; }
+.generative-feature-controls input[type=file]::file-selector-button { min-block-size:44px; font:inherit; padding:.4rem .65rem; color:var(--bs-body-color,CanvasText); background:var(--bs-body-bg,Canvas); border:1px solid currentColor; border-radius:.2rem; }
+.generative-feature-controls summary { min-block-size:44px; padding-block:.5rem; cursor:pointer; }
+.generative-feature-advanced > :is(button,label) { margin-block:.4rem; margin-inline-end:.5rem; }
 .generative-feature-controls input[type=checkbox] { inline-size:1.5rem; block-size:1.5rem; min-inline-size:1.5rem; min-block-size:1.5rem; }
 .generative-feature-controls p,.generative-feature-controls details,.generative-feature-controls>div { flex:1 1 100%; min-width:0; overflow-wrap:anywhere; }
 .generative-feature-controls :focus-visible { outline:3px solid currentColor; outline-offset:3px; }
 .generative-feature-controls button:disabled { opacity:.65; }
+.generative-feature-controls button[aria-disabled="true"] { cursor:default; border-style:dashed; }
 .generative-feature-controls pre { white-space:pre-wrap; overflow-wrap:anywhere; max-block-size:22rem; overflow:auto; }
 .learning-variant[hidden] { display:none!important; }
 .generative-period-report,.generative-exercise { margin-block:1.5rem; padding-inline-start:1rem; border-inline-start:.25rem solid currentColor; overflow-wrap:anywhere; }
 @media print { .generative-feature-controls { display:none!important; } }
-@media (forced-colors:active) { .generative-feature-controls,.generative-feature-controls button { border-color:CanvasText; } }
+@media (forced-colors:active) { .generative-feature-controls { color:CanvasText; background:Canvas; border-color:CanvasText; } .generative-feature-controls button,.generative-feature-controls input[type=file]::file-selector-button { color:ButtonText; background:ButtonFace; border-color:ButtonText; } }
 
 /* Private R5 progressive controls; authored parts stay visible without JS. */
 .generative-activity-controls,.generative-activity-progress{margin-block:1rem;padding:1rem;border:1px solid currentColor;border-radius:.4rem;overflow-wrap:anywhere}
@@ -19,6 +24,14 @@
 .generative-activity-controls button.btn,.generative-activity-progress button.btn{color:var(--bs-body-color,CanvasText);background-color:var(--bs-body-bg,Canvas);border:1px solid currentColor}
 .generative-activity-controls button:focus-visible,.generative-activity-progress button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
 .generative-activity-controls textarea,.generative-activity-controls select{display:block;max-width:100%;width:100%;min-height:44px}
+/* The owned completion select must pair its native surface and text in both themes. */
+.generative-activity-controls select{box-sizing:border-box;min-width:0;font:inherit;padding:.45rem;border:1px solid currentColor;border-radius:.2rem;color:var(--bs-body-color,CanvasText);background:var(--bs-body-bg,Canvas)}
+.generative-activity-controls select option{color:var(--bs-body-color,CanvasText);background:var(--bs-body-bg,Canvas)}
+.generative-activity-controls select:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+/* Original optional local-symbol controls share the current document theme. */
+.generative-wai-symbol-controls button{box-sizing:border-box;min-block-size:44px;min-inline-size:44px;max-inline-size:100%;margin:.25rem;padding:.45rem;font:inherit;white-space:normal;overflow-wrap:anywhere;border:1px solid currentColor;border-radius:.2rem;color:var(--bs-body-color,CanvasText);background:var(--bs-body-bg,Canvas)}
+.generative-wai-symbol-controls button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+@media(forced-colors:active){.generative-activity-controls select,.generative-activity-controls select option{color:FieldText;background:Field;border-color:FieldText}.generative-wai-symbol-controls button{color:ButtonText;background:ButtonFace;border-color:ButtonText}}
 @media print{.generative-activity-controls,.generative-activity-progress{display:none!important}.learning-activity [hidden]{display:block!important}}
 
 /* Original optional Numbas controls; authored prompt remains visible. */

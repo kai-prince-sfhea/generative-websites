@@ -1,7 +1,7 @@
 # Generative Websites
 
 Compose learning routes from explicitly reviewed Quarto content. This experimental
-**0.0.12** implementation keeps authored prose and mathematics in native fenced
+**0.0.13** implementation keeps authored prose and mathematics in native fenced
 Divs, adds independent reviewed exposition/wording/scaffolding choices, finite
 practice, explicit cross-page routes and public publication tools without a
 language model. The earlier two-view/page-local route remains supported.
@@ -11,12 +11,17 @@ is separate from the wider research roadmap and your acceptance of the extension
 It is intended for authors of teaching and research pages who want readers to
 choose reviewed explanations and explore preparation without losing their route.
 
-Version 0.0.12 is development source distributed from the experimental `main`
+Version 0.0.13 is development source distributed from the experimental `main`
 branch. The GitHub and local-source instructions below provide alternative
 installation routes. Use matching companion versions and retain the documented
 verification limits; source publication does not establish a supported release.
 
-Current 0.0.12 adds bounded native structure and protected landmarks to explicit local translation requests, and a separate font-notice supplement for an exact supported local Numbas font selection. Source/candidate review remains explicit. Current native and bounded model checks are recorded below with their meaning, human-review and rights qualifications; older verification sections retain their original scopes.
+Current 0.0.13 improves reader controls and adds a narrowly supported external
+Numbas DOM adapter during local preparation. Native templates, engine code,
+stylesheets, question text, keyboard listeners and marking remain unchanged.
+The earlier 0.0.12 translation and font-notice changes remain. Source/candidate
+review is still explicit; earlier verification sections retain their original
+versions, meaning, human-review and rights qualifications.
 
 ## Start with one learning object
 
@@ -25,6 +30,66 @@ alternatives, change one YAML default and render again with native Preview.
 No model, prerequisite catalogue or author-written JavaScript is needed. This
 README provides the advanced configuration and integration reference; the
 separate [advanced.qmd](advanced.qmd) demonstrates a multi-object activity.
+
+The main reviewed preferences appear first; **More reviewed preferences** keeps
+additional axes available. Page-local routes put goal, level and Build first,
+with **Starting knowledge** and **Save or restore a route** as native disclosures.
+Cross-page routes keep navigation beside the route and group transfer/offline
+actions under **Save, restore and offline options**. Unavailable actions are
+disabled until their required route/request state exists. Protected assertions,
+review qualifications and unavailable-source warnings remain visible.
+
+The built-in finite practice checker and main cross-page journey buttons retain
+focus while temporarily busy and ignore repeat activation. Cancel remains
+available during a request. When a control genuinely becomes unavailable or its
+route output is replaced, focus moves only if it still belongs to that control
+or content; moving elsewhere while waiting keeps the reader's chosen focus.
+Stale results cannot release a newer check or replace a cancelled route.
+
+The optional **Show symbols** and **Load activity** actions also retain their
+current control focus while checking resources and ignore repeat activation.
+Unavailable transitions hand off only focus still owned by the affected control
+or removed frame. Programmatic activity unload preserves a reader's focus
+elsewhere, and a direct activity `load()` call still replaces an earlier load.
+
+Private activity completion choices and the optional **Show symbols** / **Reset
+symbols** buttons use paired document-theme colours, visible keyboard focus and
+bounded control sizing. Their reporting, review and explicit symbol-loading
+behaviour is unchanged.
+
+For the optional Numbas activity, local preparation adds separately inventoried
+`GW-NUMBAS-ACCESSIBILITY/adapter.js` and `.css` only to entry documents matching
+the reviewed engine and native templates. It repairs DOM relationships after
+Numbas initializes; it does not rewrite vendor code, replace global focus APIs
+or move the connected exam. In a marked activity iframe, it wraps only the
+admitted engine instance's `display_util.force_focus` helper: automatic focus is
+skipped while the parent owns focus elsewhere. Once the reader enters the frame,
+the original helper receives its original context and arguments. Standalone,
+unknown and inaccessible-parent cases keep native behavior, as do native
+scrolling, marking and keyboard actions. The owned light-DOM heading follows actual native heading visibility. Its
+own named section contains only that heading and hides when a visible native
+heading supplies the page context; it does not wrap the exam or native main.
+Contextual grouping preserves the native main landmark. An external owned shadow
+stylesheet keeps the real main content readable below an open narrow-screen
+navigation menu in a scrollable view; native styles remain otherwise intact.
+The native skip link retains its current destination and bypasses navigation by
+focusing the real question or information content. Only that link gets a named
+navigation wrapper. Answer references use the existing rendered prompt child;
+prompt/mathematics nodes and native input titles remain unchanged.
+Feedback keeps its native disclosure, summary and open/close behavior, with
+explicit polite announcements. The adapter removes only the unsupported `log`
+role from that native `details` element; it does not replace feedback or marking.
+Only admitted prepared documents receive the owned root marker used to keep
+the document root at least as tall as its viewport; answer names and native
+shadow-content styles are unchanged by that rule.
+Native copyright-footer links are underlined within the owned shadow layout,
+providing a persistent cue while preserving their text, colours and destinations.
+Unknown engines/templates remain
+usable without this adapter, with an explicit per-entry not-applied preparation
+record. Mixed packages identify which entries qualify. Creating or changing these
+prepared bytes changes the source digest and requires a fresh author review;
+an earlier package review must not be copied to the new generation. No upstream,
+human-accessibility or scoring acceptance is inferred from these changes.
 
 ## Install from GitHub
 

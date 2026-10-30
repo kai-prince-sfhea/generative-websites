@@ -1,5 +1,9 @@
 /* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
 .generative-websites-enhancement {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
   border: 1px solid currentColor;
   border-radius: .25rem;
   margin-block: 1rem;
@@ -59,6 +63,11 @@
 }
 .generative-websites-enhancement button,
 .generative-websites-return button {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  min-inline-size: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
   background: var(--bs-body-bg, Canvas);
   border: 1px solid currentColor;
   border-radius: .2rem;
@@ -105,9 +114,15 @@
   gap: .5rem;
 }
 .generative-websites-import input {
+  box-sizing: border-box;
+  min-inline-size: 0;
   max-width: 100%;
   min-height: 2.75rem;
 }
+.generative-websites-import input::file-selector-button { min-block-size:44px; font:inherit; padding:.4rem .65rem; color:inherit; background:var(--bs-body-bg,Canvas); border:1px solid currentColor; border-radius:.2rem; }
+.generative-websites-advanced { margin-block:1rem; min-inline-size:0; }
+.generative-websites-enhancement summary { min-block-size:44px; padding-block:.5rem; cursor:pointer; }
+@media (forced-colors:active) { .generative-websites-enhancement button,.generative-websites-import input::file-selector-button { color:ButtonText; background:ButtonFace; border-color:ButtonText; } }
 .generative-websites-return {
   margin-block: .75rem;
 }

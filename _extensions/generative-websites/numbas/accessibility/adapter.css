@@ -1,0 +1,43 @@
+/* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
+/* This external sheet is linked in the document and supported open shadow root.
+   Native selectors/rules remain unchanged; the owned attribute limits overrides. */
+/* Absolute native content otherwise leaves the document root with a zero-height
+   box. Only an admitted prepared document receives this marker after loading. */
+html[data-gw-numbas-layout-root="supported-template"] { min-height: 100vh; }
+.gw-numbas-a11y-context { position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gw-numbas-a11y-context[hidden],.gw-numbas-a11y-heading[hidden] { display: none !important; }
+.gw-numbas-skip-navigation { position: absolute; inset-block-start: 0; inset-inline-start: 0; inline-size: 100%; block-size: 0; overflow: visible; z-index: 2000; }
+/* Preserve native link colours and give both native attribution footers a
+   persistent cue independent of colour, including hover/focus states. */
+exam-container[data-gw-numbas-layout="retained-content"] .copyright-footer a { text-decoration: underline; text-underline-offset: .15em; }
+@media print { .gw-numbas-a11y-context { display: none !important; } }
+/* Native mobile menu mode hid all current content. Keep the real main content
+   readable below the open navigation in one scrollable view, rather than adding
+   a main role to a wrapper or exposing hidden content only to assistive tech. */
+@media screen {
+ @container (max-width: 992px) {
+  exam-container[data-gw-numbas-layout="retained-content"].show-nav.show-sidebar #everything {
+   grid-template: "navMenu" max-content "main" max-content / minmax(0,1fr);
+   overflow-y: auto;
+   align-content: start;
+  }
+  exam-container[data-gw-numbas-layout="retained-content"].show-nav.show-sidebar #sideNav {
+   height: auto;
+   max-height: none;
+   overflow-y: visible;
+  }
+  exam-container[data-gw-numbas-layout="retained-content"].show-nav.show-sidebar #everything > main {
+   display: block;
+   min-width: 0;
+   height: auto;
+   max-height: none;
+   overflow: visible;
+   align-self: start;
+  }
+  exam-container[data-gw-numbas-layout="retained-content"].show-nav.show-sidebar #everything > main :is(#questionContainer,#infoDisplay,.contentArea,#questionDisplay,.question-wrapper,.question) {
+   height: auto;
+   max-height: none;
+   overflow: visible;
+  }
+ }
+}
