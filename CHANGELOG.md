@@ -1,5 +1,134 @@
 # Changelog
 
+## 0.0.12 — bounded translation context and distributor font notices — 28 October 2026
+
+- Include selected-packet paragraph/list context and immutable math/code/citation/locked-wording landmarks in explicit local translation requests. Output remains known editable segments only; every candidate still requires accountable language review.
+- Add a byte-pinned, separately labelled distributor notice supplement automatically for the exact unchanged supported 188-file NewCM 4.1.3 selection. Preserve missing-upstream-notice and custom-selection status, every font byte, original package metadata and complete LPPL Work/source-provenance qualifications.
+- Include the five finite notice files with separate attribution in editable OER reconstructions; resource inventory and review pins are generated automatically.
+- Correct exact owned preparer cleanup receipt ordering after a refused staged preparation. Historical failed checks remain preserved in local developer evidence.
+- Current-byte pure, native, model and competent bilingual acceptance are separate checks. This local integration candidate has not been published.
+
+## 0.0.11 — source-bound ordinary-prose translation candidates — 28 October 2026
+
+- Add native QMD source/candidate comparison, exact AST/protected-object/number invariants, source-bound JSON import and inspect/copy-review YAML pins. Original wording remains readable; stale reviews refuse.
+- Add an explicit installed local-generation command using an optional compatible KG loopback transport. Render/Preview never runs inference or acquires a model. Candidates retain model/request/response/transport identities and require accountable language review; no semantic-fidelity proof is claimed.
+- Extend the closed metadata reference and editable OER helper closure; native, actual-model and human acceptance remain separately recorded.
+
+## 0.0.10 - optional local Numbas 11 activity - 28 October 2026
+
+- Add original opt-in local number-entry admission, installed local-resource
+  preparation, native inspect/copy-review authoring and explicit lazy Load/Unload.
+  Exact source/resource/seed/rights pins refuse stale review and unsupported
+  dynamic expressions. No engine bulk, scoring IPC or host permission is added.
+- Prepare byte-owned packages during native compilation before CSP/KG audits;
+  journal exact shared ownership and retirement, then separately verify actual
+  HTML. Failed renders may retain owned assets; Word does not retire HTML.
+- Preserve unresolved upstream font notice/source provenance explicitly.
+  Native/wrapped-engine acceptance remains a separate current-byte check.
+
+## 0.0.9 — reviewed scenario and project symbol pilots — 28 October 2026
+
+- Add optional native whole-Claim role annotations that reuse the controlled IR
+  to inspect and review ground positive-Horn problem exports. Source/role/IR/
+  compiler/profile pins bind the entire problem; assumptions stay antecedents,
+  goals stay separate, unsupported or stale inputs withhold export. Existing
+  manual Sandbox problems/session controls remain available; no Sandbox code,
+  proof result or ordinary-language inference is added.
+- Add optional reviewed `adapt-symbol` annotations for three published AAC
+  registry concepts and the original explicit Show/Reset project symbol helper.
+  Native source/asset inspection supplies copyable pins; no author-computed image
+  hash or automatic symbol/model download is required. Readable text remains the
+  accessible name. This partial pilot makes no general AAC/WAI conformance claim.
+- Extend the reference schema, native transport, original browser bundle and
+  editable-runtime inventory. Native/browser/composed acceptance of this new
+  candidate is pending; retained older evidence has its original source scope.
+
+## 0.0.8 — authored activities and finite controlled review — 26 October 2026
+
+- Add five independent authored axes for prerequisite familiarity, reading
+  complexity, context/interest, representation and challenge, preserving existing
+  exposition, terminology, scaffolding and legacy route behavior.
+- Add native QMD activity roles, existing finite-checker/problem associations and
+  explicit private progress/reflections. Memory-first reports, optional device
+  consent and source-bound import/export do not establish mastery or proof.
+- Add opt-in controlled English statements through the existing typed IR, native
+  copyable YAML review pins, and finite reviewed English/French realisations.
+  Unsupported prose/grammar remains authored fallback in inspect mode; required
+  stale review refuses. This is not general NLP or automatic translation.
+- Preserve native Word/print content, original separate companions, source rights
+  and material AI-assistance disclosures. Local automated checks and author review
+  declarations do not constitute language, learner, accessibility or release approval.
+- Use page text/background colours for new activity buttons after an actual
+  Litera contrast failure. Fresh native and browser checks cover the corrected
+  CSS, including enabled normal/hover/focus states and real back navigation;
+  the broader unchanged compiler regression keeps its separately recorded scope.
+
+
+## 0.0.7 — source-bound reasoning interchange — 26 October 2026
+
+- Add explicit in-browser Thread session inspection, exact original-byte/SHA256
+  downloads and source-bound session capsules without automatic uploads,
+  inference, checker calls, route changes or file persistence.
+- Bound the supported envelope to three stages, 128 confirmed claims per stage
+  and 32 distinct earlier dependencies. Keep pending membership separate and
+  label every imported proof/completion status as reported and unverified.
+- Associate capsules and optional argument views with the actual current native
+  problem export, source/page/project revisions and matching positive
+  Boolean/Horn declarations. Refuse unrelated or changed source; preserve earlier
+  stage bytes without claiming those stages originate in the current page.
+- Add explicit `sandbox-session-mappings` for authored claim/evidence/objection
+  roles and targets. Preserve original/generated atom IDs and native context as
+  namespaced metadata; pedagogical objections do not become logical conflicts.
+- Provide finite AIF/xAIF projections with portable per-feature losses. Keep
+  exact Thread JSON/capsules as the separate full archive; no imported status
+  gains proof authority from a projection, hash or declared role.
+- Attach/restore a reading journey only through explicit reader actions and
+  fresh producer/prerequisite validation, retaining nested return/focus bounds.
+  Actual reasoning restoration and fresh formal checks remain the separately
+  installed Sandbox device page's responsibility.
+
+## 0.0.6 — reviewed native adaptation and public learning tools — 25 October 2026
+
+- Add `.adaptive-object`, reviewed `.learning-variant` Div/Span groups and
+  `.learning-preferences` for independent exposition, terminology and scaffolding.
+  Select existing native content with honest author-default fallback; preserve
+  protected math/citation/quotation/code contexts and unchanged legacy routes.
+- Add confined explicit YAML catalogues and a strict finite typed-assertion IR.
+  Bind native source/object revisions, domain, context, assumptions, status,
+  modality and ordered roles; structural agreement is not proof or prose fidelity.
+- Add selected public cross-page catalogues, prerequisite journeys, portable
+  source-bound bookmarks and bounded detour return. Tab route position does not
+  establish knowledge, completion or mastery.
+- Add finite seeded rational/set practice, public daily/weekly reports with
+  hash-bound declared review, and manual problem-only Sandbox `.thy` export.
+  Keep private/candidate report records out of the public projection and retain
+  evidence/context/contrary qualifications without causal or proof inference.
+- Add reviewed authored language-page mappings with native links, reciprocal/self
+  alternates and own canonicals when a site URL is declared. Matching identities
+  do not verify free prose translations or establish crawler acceptance.
+- Add explicit selected-route offline storage and bounded editable-source ZIP
+  export, separate from models/preferences and route JSON. Retain observed-byte,
+  expiry/withdrawal, component-rights and independent-reconstruction limitations.
+- Add an original data-only professional-selection provider for the published CV
+  interface, preserving records/evidence/qualifications; consumer CV controls
+  remain a separate integration stage.
+- Add explicit `published-cv-record` source-hash qualification for the CV's
+  optional installed-provider report bridge. Existing default report bytes and
+  review digests remain unchanged; no CV code or catalogue is embedded here.
+- Make `example.qmd` a progressive QMD/YAML adaptation tutorial; retain the
+  existing two-view four-object activity in `advanced.qmd`. Expand the installed
+  structural schema and README advanced/cross-extension reference. New native,
+  browser, human and deployment checks apply to their exact final source bytes.
+
+## 0.0.5 — cross-extension authoring — 23 October 2026
+
+- Make `example.qmd` the one-object, two-view tutorial and preserve the previous multi-object activity as `advanced.qmd`. Keep advanced settings in README, including stable IDs, review/revision edits and optional theme styling without author-written JavaScript.
+- Reuse public `requires` edges and explicit alternative groups from Knowledge Graph Extraction's current prepared render; retain per-object YAML overrides, compatible contexts and refusal for unavailable reviewed concepts.
+- Resolve shared catalogue namespace prefixes before matching graph identities, preserve authored IDs and refuse unknown or ambiguous aliases instead of silently losing prerequisites.
+- Accept Maths Knowledge Graph's canonical `semantic-id` as a learning object's shared concept identity; reject conflicting explicit identities.
+- Expose reviewed learning objects as Local AI Websites sources when a panel is present, avoiding duplicated prose. Document required filter order and the `local-ai-sources: false` opt-out.
+- Keep independent QMD authoring, native fallbacks and exact saved-route snapshot refusal. Automatic replacement/translation, cross-page learning rendering and Sandbox interchange remain deferred.
+
 ## 0.0.4 — diagnostic privacy follow-up — 14 October 2026
 
 - Locate invalid authoring by processing occurrence and documented field without

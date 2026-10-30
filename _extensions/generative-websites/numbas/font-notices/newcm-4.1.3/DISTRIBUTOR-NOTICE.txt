@@ -1,0 +1,45 @@
+DISTRIBUTOR-SUPPLIED TECHNICAL NOTICE
+
+This supplement was not present in the upstream npm archive. It is supplied by
+the distributor to retain observed copyright notices, verbatim licence texts,
+exact retrieval information and a selection/relocation log. It is not an
+upstream grant, approval, licence replacement or legal-clearance statement.
+
+Package: @mathjax/mathjax-newcm-font 4.1.3
+The upstream package.json declares Apache-2.0. That metadata is unchanged.
+The complete npm archive contains no LICENSE, LICENCE or NOTICE file. Its exact
+URL and integrity are supplied in UPSTREAM-RETRIEVAL.json. The same complete
+npm archive contains 1,124 files; 188 were selected for the prepared activity.
+
+The 105 selected WOFF2 files retain their original bytes and embedded nameID0
+records. The two exact non-blank copyright-text groups are:
+
+84 files:
+(C) 2019-2021 Antonis Tsolomitis. 
+This work is released under the GUST Font License -- see http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt for details.
+
+21 files:
+Copyright (c) 2024 MathJax, Inc. (www.mathjax.org)
+Original copyright:
+(C) 2019-2021 Antonis Tsolomitis. 
+This work is released under the GUST Font License -- see http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt for details.
+
+Each group also has an embedded literal single-space copyright record.
+SELECTION-RELOCATION.json maps every selected file and its exact copyright
+group without changing the font names or rewriting the embedded records.
+Embedded nameID13 and nameID14 values are single spaces in these files.
+
+GUST-FONT-LICENSE-1.0.txt and LPPL-1.3c.txt are verbatim official texts retained
+as separate files. Their presence does not change package.json, resolve the
+upstream missing notice, establish all contributors' authority, or establish
+that this distribution includes the complete LPPL Work or its source history.
+
+Our processing selects and relocates unchanged upstream bytes. It adds only
+this separately labelled supplement; no font glyph, font file, original package
+metadata or existing runtime file was edited. Upstream modification/subsetting
+and the identity of the complete LPPL Work require their own provenance.
+The npm definition references source OTF and ../subsets inputs and external
+@mathjax/font-tools modules which are not all supplied in this npm archive.
+No claim is made that a current CTAN release is the exact source of these files.
+
+No support or endorsement by the original authors or MathJax is implied.

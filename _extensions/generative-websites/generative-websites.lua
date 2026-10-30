@@ -2,6 +2,16 @@
 -- GW-0: explicit page-local reviewed objects; native content remains authoritative.
 -- Quarto's enhanced Lua error() logs and may continue; assert is a hard failure.
 local function fail(message) assert(false, 'generative-websites: ' .. message) end
+local native_directory=pandoc.system.get_working_directory()
+local function native_root()
+  if type(native_directory)~='string' or utf8.len(native_directory)==nil or native_directory:find(utf8.char(0xfffd),1,true) then fail('native input directory is unavailable') end
+  local root=native_directory
+  for part in (quarto.project.offset or '.'):gsub('\\','/'):gmatch('[^/]+') do
+    if part=='..' then root=pandoc.path.directory(root)
+    elseif part~='.' then fail('unsupported native project offset') end
+  end
+  return root
+end
 local function has(el, name) return el.classes and el.classes:includes(name) end
 -- Match JavaScript trim/whitespace by code point, not Windows locale byte classes.
 local function whitespace(cp)
@@ -52,21 +62,112 @@ local function mapping(value)
 end
 local function config(meta)
   local input = meta['generative-websites']
-  if input == nil then return {enabled=true, prerequisites={}} end
+  if input == nil then return {enabled=true, prerequisites={}, graph_prerequisites='website', local_ai_sources=true} end
   if not mapping(input) then fail('options must be a mapping') end
   if input.enabled == false then return {enabled=false} end
-  local result = {enabled=true, prerequisites={}}
+  local result = {enabled=true, prerequisites={}, graph_prerequisites='website', local_ai_sources=true}
   for key,value in pairs(input) do
     if key == 'enabled' then
       if type(value) ~= 'boolean' then fail('enabled must be a boolean') end
     elseif key == 'prerequisites' then
       if not mapping(value) then fail('prerequisites must map object IDs to expressions') end
       result.prerequisites = value
-    else fail('generative-websites has an unknown option; remove unsupported keys and use only enabled or prerequisites') end
+    elseif key == 'local-ai-sources' then
+      if type(value)~='boolean' then fail('local-ai-sources must be boolean') end
+      result.local_ai_sources=value
+    elseif key == 'graph-prerequisites' then
+      if value==false then result.graph_prerequisites=false
+      elseif value==true then result.graph_prerequisites='website'
+      else local kind=pandoc.utils.type(value);if kind~='string' and kind~='Inlines' and kind~='MetaString' and kind~='MetaInlines' then fail('graph-prerequisites must be true, false or a graph ID') end;local id=pandoc.utils.stringify(value);if #id>64 or not id:match('^[a-z][a-z0-9%-]*$') then fail('graph-prerequisites must be true, false or a graph ID') end;result.graph_prerequisites=id end
+    elseif key=='translations' or key=='numbas' or key=='activities' or key=='controlled-authoring' or key=='scenario-candidates' or key=='wai-adapt' or key=='project' or key=='defaults' or key=='assertions' or key=='exercises' or key=='records' or key=='reports' or key=='sandbox' or key=='sandbox-session-mappings' or key=='publication' or key=='offline' or key=='oer' or key=='catalogue' then
+      -- The additive native compiler validates these closed, versioned records.
+    else fail('generative-websites has an unknown option; use the installed configuration reference') end
   end
   return result
 end
 local expression_count = 0
+local function graph_prerequisites(options,objects,source_digests)
+  if options.graph_prerequisites==false or not quarto.project.directory then return end
+  local root=native_root()
+  local path=pandoc.path.join({root,'.quarto','knowledge-graph','run.json'})
+  local file=io.open(path,'rb');if not file then return end
+  local bytes=file:read(8388609);file:close()
+  if not bytes or #bytes>8388608 then fail('current knowledge graph preparation exceeds its size budget') end
+  local ok,run=pcall(quarto.json.decode,bytes)
+  if not ok or type(run)~='table' then fail('current knowledge graph preparation is invalid; run a normal project render') end
+  if run.compositionVersion~=1 or run.active~=true then return end
+  if type(run.runId)~='string' or #run.runId>100 or not run.runId:match('^[A-Za-z0-9_-]+$') then fail('current knowledge graph render identity is invalid') end
+  -- A completed run pointer is history, even though active describes the
+  -- configured feature. Never reuse its declarations as a new render's input.
+  local finalized_path=pandoc.path.join({root,'.quarto','knowledge-graph','runs',run.runId,'finalized.json'})
+  local finalized=io.open(finalized_path,'rb')
+  if finalized then
+    local marker=finalized:read(262145);finalized:close()
+    if not marker or #marker>262144 then fail('knowledge graph completion marker exceeds its size budget') end
+    local valid,completed=pcall(quarto.json.decode,marker)
+    if not valid or type(completed)~='table' or completed.runId~=run.runId then fail('knowledge graph completion marker is incompatible') end
+    return
+  end
+  local prepared=run.publicPrerequisites
+  if prepared==nil then return end
+  if type(prepared)~='table' or prepared.version~=1 or type(prepared.objects)~='table' or type(prepared.relations)~='table' or prepared.dependencyDigest~=run.dependencyDigest then fail('current public prerequisite preparation is incompatible') end
+  -- Consumers need not be declared graph sources. Quarto's current whole render
+  -- inventory admits this page; renderedSources contains only extraction inputs.
+  local input=pandoc.path.make_relative(quarto.doc.input_file,root,true):gsub('\\','/')
+  local selected=false;for _,source in ipairs(run.allRenderedSources or {}) do if source==input then selected=true end end
+  if not selected then return end
+  local namespaces=prepared.namespaces or {}
+  if type(namespaces)~='table' then fail('current graph namespaces are incompatible') end
+  local function canonical_concept(value)
+    local prefix,suffix=value:match('^([^:]+):(.+)$')
+    if not prefix then fail('graph-linked concept identities require a canonical URI or a declared namespace') end
+    local base=namespaces[prefix]
+    if base~=nil then
+      if type(base)~='string' or #base>2048 then fail('current graph namespace mapping is invalid') end
+      return base..suffix
+    end
+    if prefix=='http' or prefix=='https' or prefix=='urn' then return value end
+    fail('a graph-linked learning concept uses an undeclared namespace; use its full HTTP(S)/URN identity, declare the prefix in the shared catalogue, or disable graph-prerequisites')
+  end
+  local by_concept,public={},{ }
+  for _,object in ipairs(objects) do
+    local canonical=canonical_concept(object.conceptId)
+    if by_concept[canonical] then fail('graph prerequisites require a unique canonical concept identity for each reviewed learning object on the page; aliases cannot identify two different learning objects') end
+    by_concept[canonical]=object
+  end
+  for _,object in ipairs(prepared.objects) do if object.graphId==options.graph_prerequisites then public[object.id]=true end end
+  local dependencies={}
+  for _,relation in ipairs(prepared.relations) do
+    if relation.graphId==options.graph_prerequisites and public[relation.from] and public[relation.to] then
+      local owner=by_concept[relation.from]
+      if owner and options.prerequisites[owner.id]==nil then
+        local bucket=dependencies[owner.id] or {};dependencies[owner.id]=bucket
+        local group=relation.group or ''
+        bucket[group]=bucket[group] or {};bucket[group][relation.to]=true
+      end
+    end
+  end
+  for id,bucket in pairs(dependencies) do
+    local expressions=array();local groups={};for group,_ in pairs(bucket) do groups[#groups+1]=group end;table.sort(groups)
+    for _,group in ipairs(groups) do
+      local targets={};for target,_ in pairs(bucket[group]) do targets[#targets+1]=target end;table.sort(targets)
+      if #targets>50 then fail('a graph prerequisite group exceeds 50 concepts') end
+      local alternatives=array()
+      for _,target in ipairs(targets) do
+        expression_count=expression_count+1;if expression_count>512 then fail('combined prerequisites exceed 512 expression nodes') end
+        local native=by_concept[target]
+        local reference={ref=native and native.id or ('gw-external-'..pandoc.utils.sha1(target))}
+        if group=='' then expressions[#expressions+1]=reference else alternatives[#alternatives+1]=reference end
+      end
+      if group~='' then if #alternatives>1 then expression_count=expression_count+1 end;expressions[#expressions+1]=#alternatives==1 and alternatives[1] or {any=alternatives} end
+    end
+    if #expressions>50 then fail('a graph prerequisite owner exceeds 50 groups') end
+    if #expressions>1 then expression_count=expression_count+1 end
+    if expression_count>512 then fail('combined prerequisites exceed 512 expression nodes') end
+    if #expressions>0 then for _,object in ipairs(objects) do if object.id==id then object.prerequisite=#expressions==1 and expressions[1] or {all=expressions} end end end
+  end
+  source_digests[#source_digests+1]={id='public-graph-prerequisites',digest=pandoc.utils.sha1(encode(prepared)..options.graph_prerequisites)}
+end
 local function prerequisite(value, depth)
   expression_count = expression_count + 1
   if depth > 16 or expression_count > 512 then fail('prerequisites exceed depth 16 or 512 expression nodes') end
@@ -137,10 +238,12 @@ local function process(doc)
   local options=config(doc.meta)
   if not options.enabled then return doc end
   local anchors, objects, panels, selected, all_objects, source_digests = {}, array(), {}, {}, {}, array()
+  local local_ai_panel=false
   local selected_originals = {}
   local function record(el)
     if el.identifier and el.identifier ~= '' then anchors[el.identifier]=(anchors[el.identifier] or 0)+1 end
     if el.t ~= 'Div' then return end
+    if has(el,'local-ai') then local_ai_panel=true end
     if has(el,'generative-route') then panels[#panels+1]=el end
     if has(el,'learning-object') then all_objects[#all_objects+1]=el end
   end
@@ -166,7 +269,8 @@ local function process(doc)
       -- Bind common assumptions/prose as well as the two view realisations.
       -- This runs after native visibility, before adding generated labels/IDs.
       source_digests[#source_digests+1]={id=id,digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(el.content),'json'))}
-      local concept=text(el.attributes['concept-id'],location .. '.concept-id',512)
+      local concept=text(el.attributes['concept-id'] or el.attributes['semantic-id'],location .. '.concept-id (or shared semantic-id)',512)
+      if el.attributes['concept-id'] and el.attributes['semantic-id'] and el.attributes['concept-id']~=el.attributes['semantic-id'] then fail(location .. ' concept-id conflicts with its shared semantic-id') end
       local unsafe=false
       for _,cp in utf8.codes(concept) do if whitespace(cp) then unsafe=true end end
       if not concept:match('^[A-Za-z][A-Za-z0-9+%.%-]*:.+') or unsafe or concept:find('[<>"\']') then
@@ -202,6 +306,17 @@ local function process(doc)
       objects[#objects+1]=item
       selected[id]=item
       selected_originals[id]=el
+      if local_ai_panel and options.local_ai_sources then
+        local protected=false
+        pandoc.Div(el.content):walk({Div=function(child)
+          local role=child.attributes['data-learning-role'] or child.attributes['learning-role']
+          if role=='hint' or role=='solution' or role=='answer' or role=='feedback' or has(child,'generative-solution') or has(child,'generative-answer') then protected=true end
+        end})
+        if not protected then
+          if not has(el,'local-ai-source') then el.classes:insert('local-ai-source') end
+          if not el.attributes['data-source-label'] then el.attributes['data-source-label']=item.label end
+        end
+      end
     end
   end
   if #objects == 0 then fail('a route panel requires at least one explicitly reviewed learning object') end
@@ -217,6 +332,7 @@ local function process(doc)
     end
   end
   if unbound_count>5 then quarto.log.warning('generative-websites: ' .. unbound_count .. ' prerequisite owners are absent or unreviewed on this page; only the first five processing occurrences are reported; review the effective prerequisites map') end
+  graph_prerequisites(options,objects,source_digests)
   local goal=panels[1].attributes.goal and identifier(panels[1].attributes.goal,'route goal') or objects[1].id
   if not selected[goal] then fail('route panel.goal is missing or unreviewed; select a reviewed object on this page') end
   local level=panels[1].attributes.level or 'introductory'
@@ -248,11 +364,18 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.4',
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.12',
     -- Original modules are preassembled at development time; no relative imports
     -- remain when Pandoc embeds the browser entry in a data URL.
     scripts={{path='generative-websites-browser.js',attribs={type='module'}}},
     stylesheets={'generative-websites.css'}}) end
   return doc
 end
-return {Pandoc=process}
+-- PANDOC_SCRIPT_FILE is the native UTF-8 path. On the tested Windows host,
+-- debug source names/relative require search paths use the system encoding.
+-- Load the installed sibling by its exact native path, without recoding names.
+if type(PANDOC_SCRIPT_FILE)~='string' or utf8.len(PANDOC_SCRIPT_FILE)==nil or PANDOC_SCRIPT_FILE:find(utf8.char(0xfffd),1,true) then fail('native extension path is unavailable') end
+local runtime_directory=pandoc.path.directory(PANDOC_SCRIPT_FILE)
+if not pandoc.path.is_absolute(runtime_directory) then runtime_directory=pandoc.path.normalize(pandoc.path.join({native_directory,runtime_directory})) end
+local features=dofile(pandoc.path.join({runtime_directory,'features.lua'}))
+return {Pandoc=function(doc)return features.process(process(doc),runtime_directory,native_directory,native_root)end}

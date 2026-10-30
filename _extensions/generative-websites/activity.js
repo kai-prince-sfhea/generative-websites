@@ -1,0 +1,39 @@
+// Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
+// R5 DEVELOPER DRAFT: compiled current native-part references, not QMD parsing.
+import {createExercise} from './exercises.js';
+import {verifyProblemExport} from './sandbox-export.js';
+import {LIMITS,fields,array,text,id,hash,freeze,canonical,copy,digest,current,options,baseURL,pageURL,fail} from './activity-data.js';
+const activities=new WeakMap(),catalogues=new WeakMap();
+const source=value=>{fields(value,['project','page','object']);fields(value.project,['id','revision']);fields(value.page,['id','url','revision','sourceDigest']);fields(value.object,['id','revision','sha256']);id(value.project.id);text(value.project.revision,128);id(value.page.id);text(value.page.revision,128);if(!/^sha(?:1:[a-f0-9]{40}|256:[a-f0-9]{64})$/u.test(value.page.sourceDigest))fail();id(value.object.id);text(value.object.revision,128);hash(value.object.sha256);return value;};
+const nativePart=value=>{fields(value,['id','sha256']);return{id:id(value.id),sha256:hash(value.sha256)};};
+const sameSource=(observed,expected,root)=>pageURL(new URL(observed.path,root).href,root)===expected.page.url&&observed.anchor===expected.object.id&&observed.sha256===expected.object.sha256;
+export const ACTIVITY_QUALIFICATION='Native-part and practice hashes bind the supplied current public projection, not original QMD spans or authenticated review. Help, visiting, self-completion and finite checker outcomes do not establish mastery or mathematical proof.';
+/** Caller admission must first establish actual visible unique native anchors,
+ * explicit public/review policy and one shared problem across alternate views. */
+export async function createActivity(input,rawOptions={}){
+ const settings=options(rawOptions,['baseURL','exercises','sandboxExports']);current(settings);const value=copy(input),root=baseURL(settings.baseURL);fields(value,['version','id','revision','label','public','review','source','objectives','task'],['hints','solution','debrief','feedback','reflectionPrompts','practice','disclosure']);if(value.version!==1||value.public!==true||value.review!=='author-reviewed')fail();id(value.id);text(value.revision,128);text(value.label,160);source(value.source);pageURL(value.source.page.url,root);
+ const suppliedDisclosure=value.disclosure??{};fields(suppliedDisclosure,[],['hints','solution','feedback']);const disclosure={hints:suppliedDisclosure.hints??'staged',solution:suppliedDisclosure.solution??'reader-choice',feedback:suppliedDisclosure.feedback??'after-check'};if(!['staged','open'].includes(disclosure.hints)||!['reader-choice','open'].includes(disclosure.solution)||!['after-check','open'].includes(disclosure.feedback))fail('activity-disclosure-unsupported');
+ const normalizeParts=(items,max,min=0)=>array(items,max,min).map(nativePart);
+ const declaration={version:1,id:value.id,revision:value.revision,label:value.label,public:true,review:'author-reviewed',source:value.source,objectives:normalizeParts(value.objectives,LIMITS.objectives,1),task:nativePart(value.task),hints:normalizeParts(value.hints??[],LIMITS.hints),solution:value.solution===undefined||value.solution===null?null:nativePart(value.solution),debrief:value.debrief===undefined||value.debrief===null?null:nativePart(value.debrief),feedback:array(value.feedback??[],4).map(item=>{fields(item,['when','part']);if(!['correct','incorrect','invalid','unavailable'].includes(item.when))fail();return{when:item.when,part:nativePart(item.part)};}),reflectionPrompts:normalizeParts(value.reflectionPrompts??[],LIMITS.reflectionPrompts),practice:value.practice??null,disclosure};
+ if(new Set(declaration.feedback.map(item=>item.when)).size!==declaration.feedback.length)fail();
+ const parts=[...declaration.objectives,declaration.task,...declaration.hints,...(declaration.solution?[declaration.solution]:[]),...(declaration.debrief?[declaration.debrief]:[]),...declaration.feedback.map(item=>item.part),...declaration.reflectionPrompts];if(new Set(parts.map(part=>part.id)).size!==parts.length||parts.some(part=>part.id===value.id))fail();
+ let practice=null,binding=null;
+ if(declaration.practice!==null){fields(declaration.practice,['kind','id']);id(declaration.practice.id);
+  if(declaration.practice.kind==='exercise'){
+   const instances=array(settings.exercises??[],32).map(copy),matches=instances.filter(instance=>instance.spec?.id===declaration.practice.id);if(matches.length!==1)fail('activity-practice-unavailable');const supplied=matches[0];practice=await createExercise(supplied.spec,{seed:supplied.seed,context:supplied.context});current(settings);if(canonical(practice)!==canonical(supplied)||!sameSource(practice.context.source,value.source,root))fail('activity-practice-source');binding={kind:'exercise',id:practice.spec.id,generatorVersion:practice.generatorVersion,instanceSha256:practice.hashes.instanceSha256,specSha256:practice.hashes.specSha256,contextSha256:practice.hashes.contextSha256};
+  }else if(declaration.practice.kind==='sandbox'){
+   const candidates=array(settings.sandboxExports??[],16).map(copy),matches=candidates.filter(item=>item.spec?.id===declaration.practice.id);if(matches.length!==1)fail('activity-practice-unavailable');practice=await verifyProblemExport(matches[0]);current(settings);if(!sameSource(practice.context.source,value.source,root))fail('activity-practice-source');binding={kind:'sandbox',id:practice.spec.id,problemSha256:practice.receipt.problemSha256,contextSha256:practice.receipt.contextSha256,exportSha256:practice.receipt.exportSha256};
+  }else fail('activity-practice-unsupported');
+ }
+ const core={version:1,kind:'gw-authored-activity',baseURL:root,key:value.source.page.id+'#'+value.id,declaration,practiceBinding:binding,qualification:ACTIVITY_QUALIFICATION},sha256=await digest(core,settings.cryptoObject);current(settings);const result=freeze({...core,sha256});activities.set(result,{practice});return result;
+}
+export async function verifyActivityPacket(value,settings={}){fields(value,['version','kind','baseURL','key','declaration','practiceBinding','qualification','sha256']);if(value.baseURL!==baseURL(settings.baseURL))fail('activity-packet-scope');const rebuilt=await createActivity(value.declaration,settings);if(canonical(value)!==canonical(rebuilt))fail('activity-packet-changed');return rebuilt;}
+export function assertActivity(value){if(!activities.has(value))fail('activity-not-current');return value;}
+export function activityPractice(value){assertActivity(value);return activities.get(value).practice;}
+export async function createActivityCatalogue(values,rawOptions={}){
+ const settings=options(rawOptions);current(settings);array(values,LIMITS.activities,1);values.forEach(assertActivity);const first=values[0],project=first.declaration.source.project;
+ if(new Set(values.map(value=>value.key)).size!==values.length||values.some(value=>value.baseURL!==first.baseURL||canonical(value.declaration.source.project)!==canonical(project)))fail('activity-catalogue-scope');
+ const core={version:1,kind:'gw-current-activity-catalogue',baseURL:first.baseURL,project:copy(project),records:values.map(value=>({key:value.key,sha256:value.sha256})),scope:'explicitly-selected-current-public-activities'},sha256=await digest(core,settings.cryptoObject),storageScopeSha256=await digest({version:1,baseURL:first.baseURL,projectId:project.id,keys:core.records.map(record=>record.key)},settings.cryptoObject);current(settings);const result=freeze({...core,sha256,storageScopeSha256});catalogues.set(result,new Map(values.map(value=>[value.key,value])));return result;
+}
+export function assertActivityCatalogue(value){if(!catalogues.has(value))fail('activity-catalogue-not-current');return value;}
+export function catalogueActivity(catalogue,key){assertActivityCatalogue(catalogue);return catalogues.get(catalogue).get(key)??null;}

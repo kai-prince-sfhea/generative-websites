@@ -1,0 +1,1463 @@
+{
+  "version": 1,
+  "origin": "distributor-supplied-supplement-not-in-upstream-archive",
+  "package": {
+    "name": "@mathjax/mathjax-newcm-font",
+    "version": "4.1.3",
+    "declaredLicenseUnchanged": "Apache-2.0",
+    "gitHead": "b3b77f655ed2d9009078301626e27b56dcfa90d9",
+    "packageJsonSha256": "b6fd3b04fb134b062950f1af6eb9f0fffc08e48c044f109f25775afa8ffc87ed"
+  },
+  "changes": [
+    "Selected only existing chtml/, svg/, chtml.js, svg.js and package.json from the exact npm archive.",
+    "Relocated each selected file under vendor/mathjax-newcm-font/ without changing its bytes, filenames, font glyphs or embedded name records.",
+    "Added these separately identified distributor notice/licence/provenance files; none is claimed to have shipped in the npm archive."
+  ],
+  "selectedFileCount": 188,
+  "woff2FileCount": 105,
+  "files": [
+    {
+      "archivePath": "package/chtml.js",
+      "packagePath": "chtml.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml.js",
+      "bytes": 110114,
+      "sha256": "8c8af66b784c3c1c406a3339aa38e13ebc9ae6aab5dc6b235651fcac5af513a1"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/PUA.js",
+      "packagePath": "chtml/dynamic/PUA.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/PUA.js",
+      "bytes": 21136,
+      "sha256": "c7d94d0b5eab7f79db19fbf92277454c7e1b0abbdcebde853c2c997ad71bc775"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/accents-b-i.js",
+      "packagePath": "chtml/dynamic/accents-b-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/accents-b-i.js",
+      "bytes": 13491,
+      "sha256": "cda272c18d7806464c9a508c10d869960fab3b132d1221d00b74c7433c5fae2d"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/accents.js",
+      "packagePath": "chtml/dynamic/accents.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/accents.js",
+      "bytes": 7489,
+      "sha256": "9131bba1629aac079fd6d1a8d70ea3a2b571cd6071aa1d0a847fe088989d2601"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/arabic.js",
+      "packagePath": "chtml/dynamic/arabic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/arabic.js",
+      "bytes": 4325,
+      "sha256": "e10243625580cdd03fb90c34c57bb7bd4378fe18ab1ea203dbb6d008167d9b57"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/arrows.js",
+      "packagePath": "chtml/dynamic/arrows.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/arrows.js",
+      "bytes": 13332,
+      "sha256": "bbff073fd064cc44fa904842bf36fe43d838a3a93e94494c1e8c3bddf3b7e0b2"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/braille-d.js",
+      "packagePath": "chtml/dynamic/braille-d.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/braille-d.js",
+      "bytes": 6081,
+      "sha256": "b949c5bf5404204d64469e89e8d29b430acc053c8ec5ce78a6f91b0fef1c5ee1"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/braille.js",
+      "packagePath": "chtml/dynamic/braille.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/braille.js",
+      "bytes": 6084,
+      "sha256": "9c05fb6cd274a1af8a804dd7816e19d73baebb904629b0106e8c00f0c54bf5d8"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/calligraphic.js",
+      "packagePath": "chtml/dynamic/calligraphic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/calligraphic.js",
+      "bytes": 1903,
+      "sha256": "045e1edbc327c5414e2f63f69bd3de5cce7a1ddeb380fde9dcbedc10db7cb52a"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/cherokee.js",
+      "packagePath": "chtml/dynamic/cherokee.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/cherokee.js",
+      "bytes": 9878,
+      "sha256": "7d6ff5468b183f2a02bc08e12a30febaee3a41145365db7585f2ce052cf8735c"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/cyrillic-ss.js",
+      "packagePath": "chtml/dynamic/cyrillic-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/cyrillic-ss.js",
+      "bytes": 25968,
+      "sha256": "3c51c50c5028cc39c5f3e031c3e54307cd35dc321853c2710ae6cf7eaf2bd25b"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/cyrillic.js",
+      "packagePath": "chtml/dynamic/cyrillic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/cyrillic.js",
+      "bytes": 26519,
+      "sha256": "bb470dbf945e9d6357e635b3c58b7474da58b8355ddedc86e3d198103df291ce"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/devanagari.js",
+      "packagePath": "chtml/dynamic/devanagari.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/devanagari.js",
+      "bytes": 3487,
+      "sha256": "50db62e3e6232bd5e16b6412f171b114a7ec1107564dc084437d02e4237e93b2"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/double-struck.js",
+      "packagePath": "chtml/dynamic/double-struck.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/double-struck.js",
+      "bytes": 2448,
+      "sha256": "0d9c13974f646edcd4c2c75e64b55320278e546808c884d63a51e26a532da4ca"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/fraktur.js",
+      "packagePath": "chtml/dynamic/fraktur.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/fraktur.js",
+      "bytes": 3932,
+      "sha256": "8f732681502b2d6f07bb8b122b89b17ce34ca16f287c6ac4da2f07c4655698b2"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/greek-ss.js",
+      "packagePath": "chtml/dynamic/greek-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/greek-ss.js",
+      "bytes": 31582,
+      "sha256": "d4255226e3a6a3a4eb9871962382558e7530436f84ea6c240445642d7694a688"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/greek.js",
+      "packagePath": "chtml/dynamic/greek.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/greek.js",
+      "bytes": 43018,
+      "sha256": "dd734f7eee924710279fbc80cfbbea7c483bd00190de565ba73c31629fe3a500"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/hebrew.js",
+      "packagePath": "chtml/dynamic/hebrew.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/hebrew.js",
+      "bytes": 15999,
+      "sha256": "1e69d9b70369bda9eb6827035a74a861a0be2295fa79346f841f536a7ad3783e"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/latin-b.js",
+      "packagePath": "chtml/dynamic/latin-b.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/latin-b.js",
+      "bytes": 13059,
+      "sha256": "bf0a3a7640d0c191c90294d37ccc379e9fd102ae1b154d43be07e692fad04d63"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/latin-bi.js",
+      "packagePath": "chtml/dynamic/latin-bi.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/latin-bi.js",
+      "bytes": 18357,
+      "sha256": "df6e07cde04945ebf89104057a82f45f7624a5c5106561c1523d42a3a9655197"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/latin-i.js",
+      "packagePath": "chtml/dynamic/latin-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/latin-i.js",
+      "bytes": 18390,
+      "sha256": "f0733361757d55a07606978dc6d251784f21f5915bc827cc192ed3aa87c198c1"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/latin.js",
+      "packagePath": "chtml/dynamic/latin.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/latin.js",
+      "bytes": 13614,
+      "sha256": "bf9e6e4fd7488f9257178c32094a8b2006bb6ee88d13445b84ebd71576f0d276"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/marrows.js",
+      "packagePath": "chtml/dynamic/marrows.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/marrows.js",
+      "bytes": 3803,
+      "sha256": "0aa42334fc95d4eac98e0ef2c9278ff7463bf43e381b7f8359008d940c7c7da2"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/math.js",
+      "packagePath": "chtml/dynamic/math.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/math.js",
+      "bytes": 9487,
+      "sha256": "23ceb5473e37c45f982e445769c8ea66d5f4e04a5bb73afb2e848191af97ec4c"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/monospace-ex.js",
+      "packagePath": "chtml/dynamic/monospace-ex.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/monospace-ex.js",
+      "bytes": 26417,
+      "sha256": "fcb206ad0f707d4eb11d2b692bdc88e48c9b969b0ec51aa74afdb9f49aeea30b"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/monospace-l.js",
+      "packagePath": "chtml/dynamic/monospace-l.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/monospace-l.js",
+      "bytes": 13021,
+      "sha256": "2cea9eac28e774280a7cac170416f71644523e7cd8768553f50137615faa9878"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/monospace.js",
+      "packagePath": "chtml/dynamic/monospace.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/monospace.js",
+      "bytes": 5187,
+      "sha256": "ec8aaa83ab072db9a743376d23c1a81503e24bbe0703efdef7d6758f3508dcf3"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/mshapes.js",
+      "packagePath": "chtml/dynamic/mshapes.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/mshapes.js",
+      "bytes": 2832,
+      "sha256": "ecaff621f1026d4146bf4e6e2faddf6ae15534a9f8a1addda46cf7f5a2acffec"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/phonetics-ss.js",
+      "packagePath": "chtml/dynamic/phonetics-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/phonetics-ss.js",
+      "bytes": 14216,
+      "sha256": "1f829c5900097f8ac5b98d92d525a979a8ee2b1d91e9a14ee537d07b813e5af2"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/phonetics.js",
+      "packagePath": "chtml/dynamic/phonetics.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/phonetics.js",
+      "bytes": 11523,
+      "sha256": "f6d93f881c5210c643b2b7c12fae833ce7e8d8ec872d54e48c287a0c378bdf4f"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif-b.js",
+      "packagePath": "chtml/dynamic/sans-serif-b.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif-b.js",
+      "bytes": 13508,
+      "sha256": "b1cd67b18a82e99befc53f49d5068afeed51d202cd812247e1b5a9fd26c14d0a"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif-bi.js",
+      "packagePath": "chtml/dynamic/sans-serif-bi.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif-bi.js",
+      "bytes": 18577,
+      "sha256": "576d11df93c96fd523cabdea169135fc75d54eb959e9201089c2f16e0b9b0dba"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif-ex.js",
+      "packagePath": "chtml/dynamic/sans-serif-ex.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif-ex.js",
+      "bytes": 48127,
+      "sha256": "cacdc06e2d5bb5606f21a883787fc98a82693beec8353275396d5b16888bf492"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif-i.js",
+      "packagePath": "chtml/dynamic/sans-serif-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif-i.js",
+      "bytes": 18010,
+      "sha256": "f2e58fe81d461bb130b801e76b33cf553c3693cdfc8dec3d99eaadbaac321ded"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif-r.js",
+      "packagePath": "chtml/dynamic/sans-serif-r.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif-r.js",
+      "bytes": 13288,
+      "sha256": "b358edcc980f7e7f82e17af92b8ecfa8fa28e5b34b9e5511435bc7339c7b3600"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/sans-serif.js",
+      "packagePath": "chtml/dynamic/sans-serif.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/sans-serif.js",
+      "bytes": 24123,
+      "sha256": "da80cc921fec1a99a83ac8564bedb96060120576111a64e156fd2dff7c924234"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/script.js",
+      "packagePath": "chtml/dynamic/script.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/script.js",
+      "bytes": 3890,
+      "sha256": "af9efad5224711768329a2942c1896a165b671a67a9dd287df4816a59264b37c"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/shapes.js",
+      "packagePath": "chtml/dynamic/shapes.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/shapes.js",
+      "bytes": 9273,
+      "sha256": "289163865dce57b0044d0e4783020782d21eabc1dfa5ac96d6aada78f2c471ca"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/symbols-b-i.js",
+      "packagePath": "chtml/dynamic/symbols-b-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/symbols-b-i.js",
+      "bytes": 5737,
+      "sha256": "30f0873ceb7ad70e90f23bd29d216cafa15bd2bdaa2ced2697897949d3a047a3"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/symbols.js",
+      "packagePath": "chtml/dynamic/symbols.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/symbols.js",
+      "bytes": 8244,
+      "sha256": "a34a8771d0fdd52e0cb4c9e90c752d51b7afd3a735b8b43276d6a59ce61c1949"
+    },
+    {
+      "archivePath": "package/chtml/dynamic/variants.js",
+      "packagePath": "chtml/dynamic/variants.js",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/dynamic/variants.js",
+      "bytes": 1322,
+      "sha256": "5780fd7b3d7752e0f51438a0856d26de7abdaf5446ca83f80a50e9d08471e7af"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ab.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ab.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ab.woff2",
+      "bytes": 9600,
+      "sha256": "9813052b6bca662c7d7242e35e6b754de3edb6c469dc4c3af747a6b1d7de9962"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-abi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-abi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-abi.woff2",
+      "bytes": 10688,
+      "sha256": "544e713025065edf43e9b34b671bc47203d0879c73cccbaa000093ff07ae09da"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ai.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ai.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ai.woff2",
+      "bytes": 11580,
+      "sha256": "ba7e5230b13bc7744e8b51f3cff12d43c4590b18122b4acd6b9bd03b9588d9b0"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ar.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ar.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ar.woff2",
+      "bytes": 25492,
+      "sha256": "9e942b15ecbf57c84324aa27fdfbea5679de4bee0e1a578eb209153c60d8ad79"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-arl.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-arl.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-arl.woff2",
+      "bytes": 7160,
+      "sha256": "ac5a25c0ab7082074f811aecf807cb16dc087879e3d58b5e2893eae0d6f1c449"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-b-a.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-b-a.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-b-a.woff2",
+      "bytes": 9480,
+      "sha256": "036467b277fb41f43d7a37b1190bb8c9069ff9896ffad8a3ea373fc3d4dba88a"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-b.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-b.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-b.woff2",
+      "bytes": 8636,
+      "sha256": "ea04057759e00963656c9cb63070acdfa20a6ebf441b63a004032fba63c01aef"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-bi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-bi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-bi.woff2",
+      "bytes": 9504,
+      "sha256": "925f5064cbe2c9236c59821cb3ec9a411ee46ec32eaaee0fc1c5fd855fe9d098"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-br.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-br.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-br.woff2",
+      "bytes": 3292,
+      "sha256": "5276058e417131564b8e122e79564a5357bcfbe52ec99f381323f510bdab3e6c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-brd.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-brd.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-brd.woff2",
+      "bytes": 3640,
+      "sha256": "dd74ff0393fc3662d30626a464c2a49e244b8c4407304fa048be097525882bfa"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-brk.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-brk.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-brk.woff2",
+      "bytes": 864,
+      "sha256": "4ba8ef6cf75997b0f62b21fac1633612469d6864026dc431a2f98565f4f86666"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-c.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-c.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-c.woff2",
+      "bytes": 5948,
+      "sha256": "bfe4cd45950bd79704ad58fa97edb3d716c7d14a8a493e41ae3f537c43ada90d"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cb.woff2",
+      "bytes": 6216,
+      "sha256": "68ebec1310a6cbb92b4a968ea63e89353b06e3d06423e6073fd7e7aa0d528605"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ch.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ch.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ch.woff2",
+      "bytes": 10096,
+      "sha256": "22cf130d6ce128ec6b97e66c256b36a29e1732c85fa8c972e6b9829b88e881f1"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-chb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-chb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-chb.woff2",
+      "bytes": 10216,
+      "sha256": "5cf157d3e5ac9147a5a965d8faa6b887e11a1e9cc6138b850b722a18cb4d90e5"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-chbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-chbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-chbi.woff2",
+      "bytes": 11472,
+      "sha256": "f8495cf659299b1d7478b0b23f6e28b829ea6e690e2b511e2f83b7fbcb316cb7"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-chi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-chi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-chi.woff2",
+      "bytes": 14132,
+      "sha256": "e10555212099fcfa9185103b7ac220e772ed6648ec1bb0cd22b5f2c40f8278aa"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cy.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cy.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cy.woff2",
+      "bytes": 21724,
+      "sha256": "de6ce6188dfd327a493068d627914e3b32ddcec311e70b34f50b010da9980b14"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyb.woff2",
+      "bytes": 21212,
+      "sha256": "eea8c28d0f92014ee12419acaaf419b054eaedbf487b42aa95433c06c2fd2670"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cybi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cybi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cybi.woff2",
+      "bytes": 28984,
+      "sha256": "d2c8c1b3858fcd6987615b7fc49a2e17c999d7b91467ec9399d6cf83370282cf"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyi.woff2",
+      "bytes": 37528,
+      "sha256": "3eccf65ab880d43cceb8c2c877d2606d8a60ca2164c7459246a4f4c7677db2cc"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyss.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyss.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyss.woff2",
+      "bytes": 16864,
+      "sha256": "deafc77bf727a846a89923c3353378a66d8e2b331a0943f9e5da8d175976e2ad"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyssb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyssb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssb.woff2",
+      "bytes": 14720,
+      "sha256": "5cfeaebdbf462af0cf7e468140148c8f3665d8f1e88ca7496a6a4ce776a095b1"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyssbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyssbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssbi.woff2",
+      "bytes": 15352,
+      "sha256": "75ff63948be2b93f01f9ce92b7c01ceab3b165a98ec130b6f68e21e2a4a4243f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-cyssi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-cyssi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-cyssi.woff2",
+      "bytes": 17836,
+      "sha256": "630b634836e36fbad04d9589eba321a686a5bc7a8552d031dfa51fa36f7e5aac"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ds.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ds.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ds.woff2",
+      "bytes": 9900,
+      "sha256": "55fa7c9ee61db7ea6d5cd498016ac5c559bf4c48c8ade952c46196ba82384064"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-dv.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-dv.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-dv.woff2",
+      "bytes": 10280,
+      "sha256": "7a4b89bd20aa94003f6a88fcac7b37823503c894337dc3767e8602b934385c0f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-em.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-em.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-em.woff2",
+      "bytes": 2176,
+      "sha256": "e438743a1e217e6dd12adc0e3dd7ad99f06b6bd61836561aa07de48cc960dfcb"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-f.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-f.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-f.woff2",
+      "bytes": 9920,
+      "sha256": "807ba2d061385e9429ffdc99436374dd30bb818b7fb2a93e37a73f0cc6cfc46c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-fb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-fb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-fb.woff2",
+      "bytes": 10344,
+      "sha256": "9e27ed005c6303eecaae27e775b11b8eac3d2c85be5b62653ae1f93df124fc51"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gk.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gk.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gk.woff2",
+      "bytes": 25136,
+      "sha256": "5086fdd28a4ae938452a4b177736d040f5b4495f1907da4dd9a5cb24cf0cdba4"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkb.woff2",
+      "bytes": 23016,
+      "sha256": "6174a6b8ace7fbbedd4e4517689d9ef7acc6e260328791f906aa8a8f57ddd378"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkbi.woff2",
+      "bytes": 25944,
+      "sha256": "81463eeb14b85e7a63979c773050fda8d59a6c36dd9a682f38635b8cce85260f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gki.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gki.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gki.woff2",
+      "bytes": 35948,
+      "sha256": "0185126699ae80e0c27dbdfa136d4aeb66cf7b1640b8b7965ea74e7987c2c29a"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkss.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkss.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkss.woff2",
+      "bytes": 13704,
+      "sha256": "eb9a2b7cbde5ace2303b6e5cc1938c22fcc4941ce4203ae338f04e5cd84fbbd3"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkssb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkssb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssb.woff2",
+      "bytes": 10652,
+      "sha256": "60c43c0b2ac2f7dae55875707a989c353aeba12ab1865f753f23ed165d132c72"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkssbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkssbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssbi.woff2",
+      "bytes": 11292,
+      "sha256": "d2f5f0fa60dd3ceed92b6e58d04114001b965ef5668b1a307036cd8e07f30fdc"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-gkssi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-gkssi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-gkssi.woff2",
+      "bytes": 14288,
+      "sha256": "aaa7ddddaecf4f318edb90602f0281d35b8c9f8cd055d037bf3171be3f0c2966"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-he.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-he.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-he.woff2",
+      "bytes": 6576,
+      "sha256": "6a735a8f6216f182a0cb1e2b0878f2ce4b24ec30e633fc21322ce22fa8607696"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-heb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-heb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-heb.woff2",
+      "bytes": 7720,
+      "sha256": "935d2cc9e8ec70822d0b45eff866645f2fa9399bc0a8ddc5b14802c1c21dcd19"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-hebi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-hebi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-hebi.woff2",
+      "bytes": 7904,
+      "sha256": "1a801f9c0de1b2ccf5221492c5a0d4c39c5d9233330bc458e9126034df18f3c3"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-hei.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-hei.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-hei.woff2",
+      "bytes": 8940,
+      "sha256": "0c94513a5b8724e94ab07839334ca325e1093c62ac7b4141294fdc6efbb892ae"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-i.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-i.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-i.woff2",
+      "bytes": 10116,
+      "sha256": "ff33843d3b60c451b8fb4680e8a5d086cb16c3a1e86c7f16d71b25262f826d68"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-lb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-lb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-lb.woff2",
+      "bytes": 25224,
+      "sha256": "0e6f9f50a9013c6ce6a8b9ee138be2b6414f16cc1349281ccfa590389ab7a88f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-li.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-li.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-li.woff2",
+      "bytes": 36500,
+      "sha256": "8e613a25ee3a5dda011fb268d5e744a073f454ce0e8cfbe8f0d5735a8c9a2efe"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-lib.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-lib.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-lib.woff2",
+      "bytes": 34112,
+      "sha256": "83b129be6b3d81c9a7087aabdfcfa4324793fc1d6634a1f96420db8377cef9bf"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-lo.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-lo.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-lo.woff2",
+      "bytes": 10124,
+      "sha256": "648bf3b073453537e31856d160ddd02198da3469843f4110a97ed50ace3e48cd"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-lr.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-lr.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-lr.woff2",
+      "bytes": 35936,
+      "sha256": "e8e1f9f71f4ea8daf6655c131ec273d86bf79d951abe1c09ea43b6ec53b4e522"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-lt.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-lt.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-lt.woff2",
+      "bytes": 4208,
+      "sha256": "ff9f74c262c17bd28903104f77f5d6fd666fd6a8a83af2d208eb465c8da8e553"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-m.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-m.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-m.woff2",
+      "bytes": 17608,
+      "sha256": "e75f56e5a38356f27803f37a902e2a0ab6bfa35bbbd05eed57cf843a910eae75"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-mar.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-mar.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-mar.woff2",
+      "bytes": 8000,
+      "sha256": "7400843ff7a58f742971eda9c74aaf272d2808ec4192981806593598fe415907"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-mi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-mi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-mi.woff2",
+      "bytes": 7556,
+      "sha256": "a033afc1ea52f834cb8077c200893a6f88681b81c88f34a03e03fb2492412429"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ml.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ml.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ml.woff2",
+      "bytes": 36064,
+      "sha256": "93a1d4a6312141f24fabfa0386f5f59ea0ed16c96732f91ab3d633cfedce4957"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-mm.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-mm.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-mm.woff2",
+      "bytes": 27484,
+      "sha256": "9090ab9f0d7c5b0ab458df758158710f0e5038cbe318bc3e8d5a42a1419411d1"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-msh.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-msh.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-msh.woff2",
+      "bytes": 9020,
+      "sha256": "c65b2db9fcb2b1d63739a3a735227bb022f6386f93e732e81c81ab4e80f95e57"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-mx.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-mx.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-mx.woff2",
+      "bytes": 78760,
+      "sha256": "0d8c5969f55c143b226282e54033f9f32b330a5abb626e73d9eef6da4ab13cde"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-n.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-n.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-n.woff2",
+      "bytes": 93764,
+      "sha256": "6dcaf2ebcd1d1490fb6e85c3647ae0ed0d0a47ac43efe136c5328519f1da117b"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ob.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ob.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ob.woff2",
+      "bytes": 2124,
+      "sha256": "26dd14f86b65322d3fcf7b9a39f6cb04919dc85ec3ccea133dd10ea53cd2eceb"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-os.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-os.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-os.woff2",
+      "bytes": 2172,
+      "sha256": "d1d2a5396eafcd455f298e87eae9a4f2d7c7a7030d6c58fce16442ced46de4d7"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ph.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ph.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ph.woff2",
+      "bytes": 14640,
+      "sha256": "201c3759edf766eba7a3553e9fe8168fb61090d472cda6d26ae8bf79ebdd42ba"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phb.woff2",
+      "bytes": 14388,
+      "sha256": "a486b7c8495328fd659badb068d9801c39ffa946c3d8fe1287d14fa8409f3dca"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phbi.woff2",
+      "bytes": 11628,
+      "sha256": "f00610244688789ce72faedfeff6895c8e3d348352fd0792845e2caa152dc375"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phi.woff2",
+      "bytes": 14924,
+      "sha256": "7ec5eca55aefa6f9522db9a7eb0ba4b62ecca3aea4d4d9e957b0f951ad953b40"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phss.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phss.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phss.woff2",
+      "bytes": 12024,
+      "sha256": "fa635aa8f3e4f105e44b5435812fda4293796d0cbaa7b2cd98a7d0b7914a62d2"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phssb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phssb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssb.woff2",
+      "bytes": 9776,
+      "sha256": "6feaef68a860c32379bcddbc5c6fc46a53e25942e9c8a52b0db1c262dca5db86"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phssbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phssbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssbi.woff2",
+      "bytes": 10488,
+      "sha256": "3f449b868e8832fe82a1981ef3b0a334c889a42809ad1678f567210d188775d0"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-phssi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-phssi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-phssi.woff2",
+      "bytes": 13368,
+      "sha256": "bf8909c78f81450aeb4c0aaaa6556fc269c8ff873718834bc594d57a8cfc88d9"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-pu.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-pu.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-pu.woff2",
+      "bytes": 27524,
+      "sha256": "495d1c4a40b57e0cfbaa7ad1b3281eff8dbd3562959dbde1fad58198739d4bd5"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-pub.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-pub.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-pub.woff2",
+      "bytes": 17468,
+      "sha256": "746416d14d183491ee99b897a4fe38849420585fefc22c3de34b28a25d0a137c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-pubi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-pubi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-pubi.woff2",
+      "bytes": 15668,
+      "sha256": "6a143f2d149c4f996a83949566f7403392505cefa4e3585e194be368b28c746f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-pui.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-pui.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-pui.woff2",
+      "bytes": 18328,
+      "sha256": "98356729e9585e164b3cf488225fcfc62e74f2fea327522e864bbb53c05a0a99"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-rb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-rb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-rb.woff2",
+      "bytes": 4232,
+      "sha256": "5c8c39f391adc2cef60afc74c4463e79541272e6c188f7efd336846a974e7cf7"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s.woff2",
+      "bytes": 10068,
+      "sha256": "d35959160704891ed2e2bbe40e8bf35cfbbfa06ba3edfce35ffc957604eea628"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s3.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s3.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s3.woff2",
+      "bytes": 4488,
+      "sha256": "e2e89eedebb6fcbdcdbd004a50851c295a26bb8247ea96827e88898b3262e825"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s4.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s4.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s4.woff2",
+      "bytes": 4548,
+      "sha256": "8358f1daeccf586e443217fc8235b17e6e84d75c63c5c3b4896b70500943de23"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s5.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s5.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s5.woff2",
+      "bytes": 4500,
+      "sha256": "4c1abef2f5676a4578d24eaefb4f07335fe9cf1b682d0a604391058eaf69d275"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s6.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s6.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s6.woff2",
+      "bytes": 4488,
+      "sha256": "3c6b241ce6cd8624cf7d52fa643482139d6836394909cfcb9d288dafa6cb001c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-s7.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-s7.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-s7.woff2",
+      "bytes": 4512,
+      "sha256": "30b429054c4daf2ff2679d1c644bc91ff093f9925c93c25bccfe4b1ef9d81f0f"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sb.woff2",
+      "bytes": 8288,
+      "sha256": "49368a11a3abdb38d61e5eb23263bc2cca85473d6bd59ee4d9790ca1d981a6bb"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sh.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sh.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sh.woff2",
+      "bytes": 15964,
+      "sha256": "3481446acd6b8387ed1d0b91af9873200d1f378aaf931c1e4f728d13babb336b"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-shb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-shb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-shb.woff2",
+      "bytes": 2072,
+      "sha256": "2d3821e87f3123e98a83d65f73076c26eef6dc84c90049ed958101142680cd0c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-shbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-shbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-shbi.woff2",
+      "bytes": 1804,
+      "sha256": "30b30e946801450e0ba23ef4d476a48dd571bc6613badf9108703650bd0a5511"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-shi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-shi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-shi.woff2",
+      "bytes": 1900,
+      "sha256": "14567da5867f27f942eebb08008c158eb6e39bf171a723e8464de7882a79e275"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-so.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-so.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-so.woff2",
+      "bytes": 5184,
+      "sha256": "6e63343722538572b8fbf86dfac75aa90d94180236ccb756101904887ff2fe3e"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ss.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ss.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ss.woff2",
+      "bytes": 15560,
+      "sha256": "d0374dd78c46443eb5d24cb7b9bfb70223dad02f402c7e067328db0f0fa4c874"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssb.woff2",
+      "bytes": 13620,
+      "sha256": "858e5774c936065a4b40e670004028b54c56fe91ff57771879fee7ace28e285d"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssbi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssbi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbi.woff2",
+      "bytes": 14920,
+      "sha256": "799257bff4a868754ebbd80a25e3fcb15bded66005b0b90c358797ec9535fdde"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssbix.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssbix.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbix.woff2",
+      "bytes": 29944,
+      "sha256": "dd390467fef0337857f471a4eaefe9271f2c4fd9c3234e685427c8db9d911e87"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssbx.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssbx.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssbx.woff2",
+      "bytes": 28404,
+      "sha256": "5ca3f6d99f2f1d3d7e7f32cb20b637c5c2a1a9ff8349ed45c72afc5ab71829d7"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssi.woff2",
+      "bytes": 16640,
+      "sha256": "a8f84256a414918cd01fc594c4dd8cb29d7c908e3536200e50357725de8f9883"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssix.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssix.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssix.woff2",
+      "bytes": 30100,
+      "sha256": "827a7494e70293b96e6b95fddc3a01f329661d9d85e944af9b7a4be6cdb1ffd0"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sslb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sslb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslb.woff2",
+      "bytes": 21132,
+      "sha256": "e4b3ee31bc2630ecb97de5de0551b154655a9c8c3218227bfbb524f6e65ab21b"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssli.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssli.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssli.woff2",
+      "bytes": 33432,
+      "sha256": "8dacfee89ded1e1185edef2bda318c9cb9f3df55a880e36c8759edddbe4d0e50"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sslib.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sslib.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslib.woff2",
+      "bytes": 21884,
+      "sha256": "e5add180f95f2d8894abe251aa544ca569611f0e23eac01f184e810d98595b20"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sslr.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sslr.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sslr.woff2",
+      "bytes": 29760,
+      "sha256": "e62aecfb96f85cae8d8128b63c9fb50dc313a2d928d4108d521915a59ac4eae8"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-ssx.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-ssx.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-ssx.woff2",
+      "bytes": 27400,
+      "sha256": "e9d6cef669ccc864f193c1ff7e778fa2897cdf9d82e3198004ca65a613e7df81"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sy.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sy.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sy.woff2",
+      "bytes": 34180,
+      "sha256": "eba20ca513d5e11ac19282f6b51d59b162cee0d8fcae4ef1078fe39ebba41af6"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-syb.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-syb.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-syb.woff2",
+      "bytes": 7912,
+      "sha256": "b0cc12efaa291e46bb5e381f684bca9d08cc5eb67746154b353889a0c7b667dc"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-sybi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-sybi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-sybi.woff2",
+      "bytes": 11416,
+      "sha256": "411b7361ee0dcf4f9c4be8a20244149692f1a56d80795f25cc98f998a2d9f967"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-syi.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-syi.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-syi.woff2",
+      "bytes": 12032,
+      "sha256": "1d2e4e8030c2add700e641d6401d2b9d5374e228507acef16abefb7b8bb90652"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-u-a.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-u-a.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-u-a.woff2",
+      "bytes": 4464,
+      "sha256": "0a90315e8de88d568186257c9424bd4afc29b213104c8f9eb8ea67f2ffb774d9"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-u.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-u.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-u.woff2",
+      "bytes": 4108,
+      "sha256": "a2ee7f53173e685c3e04490f9a1531169ba0e669b8e3a5bfd07717b43326f02c"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-v.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-v.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-v.woff2",
+      "bytes": 4528,
+      "sha256": "5d8a55d28ac23f71a6966ca1ae7d7b34f534f23f59806f8abae8ac1b6853b565"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-vx.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-vx.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-vx.woff2",
+      "bytes": 3744,
+      "sha256": "8da9e1d5139531597fc248dbbb0bd28250a26fdd017dbef1cd6847525e933d6d"
+    },
+    {
+      "archivePath": "package/chtml/woff2/mjx-ncm-zero.woff2",
+      "packagePath": "chtml/woff2/mjx-ncm-zero.woff2",
+      "preparedPath": "vendor/mathjax-newcm-font/chtml/woff2/mjx-ncm-zero.woff2",
+      "bytes": 840,
+      "sha256": "5871b40a61aec9c13826851150208b19e06a15419bebac653e638437daafbcfc"
+    },
+    {
+      "archivePath": "package/package.json",
+      "packagePath": "package.json",
+      "preparedPath": "vendor/mathjax-newcm-font/package.json",
+      "bytes": 5005,
+      "sha256": "b6fd3b04fb134b062950f1af6eb9f0fffc08e48c044f109f25775afa8ffc87ed"
+    },
+    {
+      "archivePath": "package/svg.js",
+      "packagePath": "svg.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg.js",
+      "bytes": 976702,
+      "sha256": "74bd530bfc8944f8acecc14519e4623127b0014060a8544f075f3be31bfc6b0d"
+    },
+    {
+      "archivePath": "package/svg/dynamic/PUA.js",
+      "packagePath": "svg/dynamic/PUA.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/PUA.js",
+      "bytes": 358853,
+      "sha256": "3a068af32503b9f9e0338a011cef129d581d8f6d6546ed46e91dd3f01a579875"
+    },
+    {
+      "archivePath": "package/svg/dynamic/accents-b-i.js",
+      "packagePath": "svg/dynamic/accents-b-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/accents-b-i.js",
+      "bytes": 148254,
+      "sha256": "edcf0435504f4facfd7d195538dbe5e018b0758d96ba97f05c830b2d24eaabdf"
+    },
+    {
+      "archivePath": "package/svg/dynamic/accents.js",
+      "packagePath": "svg/dynamic/accents.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/accents.js",
+      "bytes": 68650,
+      "sha256": "bdc6e60916bdcd396fb99410f3f594d069bd85d19c1a6d9cbb27d898851e1c32"
+    },
+    {
+      "archivePath": "package/svg/dynamic/arabic.js",
+      "packagePath": "svg/dynamic/arabic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/arabic.js",
+      "bytes": 88760,
+      "sha256": "18d6da0cbf09e113cc584362eeeb4bf7dd9394d41fed775281e173a180ccb6e6"
+    },
+    {
+      "archivePath": "package/svg/dynamic/arrows.js",
+      "packagePath": "svg/dynamic/arrows.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/arrows.js",
+      "bytes": 224166,
+      "sha256": "fc9b7ab69c0eefafc4cff2a3a1607e512f0387d6b4edeb8b94fdb463286f9415"
+    },
+    {
+      "archivePath": "package/svg/dynamic/braille-d.js",
+      "packagePath": "svg/dynamic/braille-d.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/braille-d.js",
+      "bytes": 251204,
+      "sha256": "df2019018cb7c60973a513beeb5c122e50125bfa73a9607baf36a453414eb6d2"
+    },
+    {
+      "archivePath": "package/svg/dynamic/braille.js",
+      "packagePath": "svg/dynamic/braille.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/braille.js",
+      "bytes": 110311,
+      "sha256": "5b921f5a247101cdfa6138edcbc360ba32695300fe28fa9a2a66bbf07638344b"
+    },
+    {
+      "archivePath": "package/svg/dynamic/calligraphic.js",
+      "packagePath": "svg/dynamic/calligraphic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/calligraphic.js",
+      "bytes": 39877,
+      "sha256": "dda4bbba7fb159e31cef5a819e9a96d839ab0fc3bc358d303fbd7897e4a96497"
+    },
+    {
+      "archivePath": "package/svg/dynamic/cherokee.js",
+      "packagePath": "svg/dynamic/cherokee.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/cherokee.js",
+      "bytes": 196349,
+      "sha256": "b23972979159d90934484870116ee91c0890a2dfcefe16e3cb394c4aa3813373"
+    },
+    {
+      "archivePath": "package/svg/dynamic/cyrillic-ss.js",
+      "packagePath": "svg/dynamic/cyrillic-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/cyrillic-ss.js",
+      "bytes": 291883,
+      "sha256": "c7ba0a9b414f759a05216ea7e237c9011cb6f25290abfe05fcbc594309ad047e"
+    },
+    {
+      "archivePath": "package/svg/dynamic/cyrillic.js",
+      "packagePath": "svg/dynamic/cyrillic.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/cyrillic.js",
+      "bytes": 697152,
+      "sha256": "64d94eb15c4cb90986839d401ea00ba41d126710d7c72d81f5f3107ec3b3c946"
+    },
+    {
+      "archivePath": "package/svg/dynamic/devanagari.js",
+      "packagePath": "svg/dynamic/devanagari.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/devanagari.js",
+      "bytes": 85049,
+      "sha256": "e41eb2e15b7303f6e1837a24e3bf9dacf63de3c71a7c7f9e75d94ab37023811d"
+    },
+    {
+      "archivePath": "package/svg/dynamic/double-struck.js",
+      "packagePath": "svg/dynamic/double-struck.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/double-struck.js",
+      "bytes": 41826,
+      "sha256": "f102fa970da97f3cfa5adb8cd38ec6db24e3fe8571877bb1a89f512c1a3d788b"
+    },
+    {
+      "archivePath": "package/svg/dynamic/fraktur.js",
+      "packagePath": "svg/dynamic/fraktur.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/fraktur.js",
+      "bytes": 76776,
+      "sha256": "76e39aa8ca3f362c400c4fea40ed417660043dd0b83b72c7d802450058a759d0"
+    },
+    {
+      "archivePath": "package/svg/dynamic/greek-ss.js",
+      "packagePath": "svg/dynamic/greek-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/greek-ss.js",
+      "bytes": 540878,
+      "sha256": "9b034754209b87d077591d65b4855573dc098046c34514ea7e7c478133b1a7f4"
+    },
+    {
+      "archivePath": "package/svg/dynamic/greek.js",
+      "packagePath": "svg/dynamic/greek.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/greek.js",
+      "bytes": 1065590,
+      "sha256": "9b5ebeb1e8f5aa25f296d39b012a3f4922f465d446756dee9a516637a42c04a1"
+    },
+    {
+      "archivePath": "package/svg/dynamic/hebrew.js",
+      "packagePath": "svg/dynamic/hebrew.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/hebrew.js",
+      "bytes": 244894,
+      "sha256": "52f0df947909f8caabd1e4b1b72cdd9f3e37de27360b10ae4d98884e7cf1c80d"
+    },
+    {
+      "archivePath": "package/svg/dynamic/latin-b.js",
+      "packagePath": "svg/dynamic/latin-b.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/latin-b.js",
+      "bytes": 299225,
+      "sha256": "22c9de18c2fee74ac6ff0adbad0ecf7c780822dcd2603c6bb218bd5f486e32b9"
+    },
+    {
+      "archivePath": "package/svg/dynamic/latin-bi.js",
+      "packagePath": "svg/dynamic/latin-bi.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/latin-bi.js",
+      "bytes": 454548,
+      "sha256": "4399c3dd787317a667d61fa4c40fe0ee1f702209e4e45ac864c74bbf1d34357b"
+    },
+    {
+      "archivePath": "package/svg/dynamic/latin-i.js",
+      "packagePath": "svg/dynamic/latin-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/latin-i.js",
+      "bytes": 489725,
+      "sha256": "0dcc81b3e1cd9548ae8bb028d5ba8073eb980b5d8681712c8812a060d5cc17c2"
+    },
+    {
+      "archivePath": "package/svg/dynamic/latin.js",
+      "packagePath": "svg/dynamic/latin.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/latin.js",
+      "bytes": 358681,
+      "sha256": "3fe0a23251c9ca0ad0d49e1de473bca3219d34d6a74e1af99f8dde33ce542d2f"
+    },
+    {
+      "archivePath": "package/svg/dynamic/marrows.js",
+      "packagePath": "svg/dynamic/marrows.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/marrows.js",
+      "bytes": 41393,
+      "sha256": "e92a11db595202c2bce8f1cd5efc300a5de94c79bf9f7b4e496be9328c686b1b"
+    },
+    {
+      "archivePath": "package/svg/dynamic/math.js",
+      "packagePath": "svg/dynamic/math.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/math.js",
+      "bytes": 197074,
+      "sha256": "1168f21b95848ea80db254eb32fbc63481c351f9df238915643506d80a6dd8d9"
+    },
+    {
+      "archivePath": "package/svg/dynamic/monospace-ex.js",
+      "packagePath": "svg/dynamic/monospace-ex.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/monospace-ex.js",
+      "bytes": 624523,
+      "sha256": "92ec26c77be08704c465a957217687ff2736cf4d8d18a58b2bd010ce649333b7"
+    },
+    {
+      "archivePath": "package/svg/dynamic/monospace-l.js",
+      "packagePath": "svg/dynamic/monospace-l.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/monospace-l.js",
+      "bytes": 388303,
+      "sha256": "3aad85193119ba4d71da7c95df66554e45ead174ed7b25a4b523a854d6359067"
+    },
+    {
+      "archivePath": "package/svg/dynamic/monospace.js",
+      "packagePath": "svg/dynamic/monospace.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/monospace.js",
+      "bytes": 84041,
+      "sha256": "fc22ed39fafbd7d30f8d3e8b7d350ddeb06434c4db1cb29f0bbe50c46fa9dfa4"
+    },
+    {
+      "archivePath": "package/svg/dynamic/mshapes.js",
+      "packagePath": "svg/dynamic/mshapes.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/mshapes.js",
+      "bytes": 44017,
+      "sha256": "f8a11c192f301fbecf92d0c5e3b080ef8cb50b15b15cda2d6eeac96f6a4a69b0"
+    },
+    {
+      "archivePath": "package/svg/dynamic/phonetics-ss.js",
+      "packagePath": "svg/dynamic/phonetics-ss.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/phonetics-ss.js",
+      "bytes": 174026,
+      "sha256": "85b1b5288b673d699d07f2e9f846eaa2301fb276523c4ed0aae02b4a32a23872"
+    },
+    {
+      "archivePath": "package/svg/dynamic/phonetics.js",
+      "packagePath": "svg/dynamic/phonetics.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/phonetics.js",
+      "bytes": 247975,
+      "sha256": "e7dd538320c346b5d552a8a5a68d5ffc623c0c29114776ef785d4eca9ecca8e4"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif-b.js",
+      "packagePath": "svg/dynamic/sans-serif-b.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif-b.js",
+      "bytes": 195224,
+      "sha256": "1bce54cbabef44ca6b1e1bc1dabd11f621fe425a0d975867fd8bf00bd10ba21f"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif-bi.js",
+      "packagePath": "svg/dynamic/sans-serif-bi.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif-bi.js",
+      "bytes": 196878,
+      "sha256": "d6ac40a6caf7f61592d0a45ff03eb375de30062e2b70f95db598185769030ae4"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif-ex.js",
+      "packagePath": "svg/dynamic/sans-serif-ex.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif-ex.js",
+      "bytes": 495167,
+      "sha256": "852ba996c20a36b984018b5641ed5c5895112b77aaa7e0173bb06362077b628f"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif-i.js",
+      "packagePath": "svg/dynamic/sans-serif-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif-i.js",
+      "bytes": 225083,
+      "sha256": "77c481750a0b273d641f7a642c3d89c74a5b625f0aec36584eddf19cb75f6bf8"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif-r.js",
+      "packagePath": "svg/dynamic/sans-serif-r.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif-r.js",
+      "bytes": 204240,
+      "sha256": "fb99cd06b5990b883036e3203f39723c2e50da9762dd4f801169df97d76672e8"
+    },
+    {
+      "archivePath": "package/svg/dynamic/sans-serif.js",
+      "packagePath": "svg/dynamic/sans-serif.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/sans-serif.js",
+      "bytes": 213273,
+      "sha256": "4c325362331ce14feff7332631a2db37df8dd545e7eb62ef337e3a4be691d5be"
+    },
+    {
+      "archivePath": "package/svg/dynamic/script.js",
+      "packagePath": "svg/dynamic/script.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/script.js",
+      "bytes": 70613,
+      "sha256": "02c2e421a5309b5200c968d56e8a22053f57a660c0879b54de466ab99316e061"
+    },
+    {
+      "archivePath": "package/svg/dynamic/shapes.js",
+      "packagePath": "svg/dynamic/shapes.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/shapes.js",
+      "bytes": 106873,
+      "sha256": "be4a606ac2b8321a87411d6c88e78ac2c46cbe06b42a68cc1d43c2d977e0e493"
+    },
+    {
+      "archivePath": "package/svg/dynamic/symbols-b-i.js",
+      "packagePath": "svg/dynamic/symbols-b-i.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/symbols-b-i.js",
+      "bytes": 134477,
+      "sha256": "2656e50ad4b2094edce8f1364b75c7a0b7f8c50e49f354ba5f5e04b3769c62c9"
+    },
+    {
+      "archivePath": "package/svg/dynamic/symbols.js",
+      "packagePath": "svg/dynamic/symbols.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/symbols.js",
+      "bytes": 175877,
+      "sha256": "5021d75911173a5bf60b5709598ab89206baca5e1e7d608b7f5325070dfefc1e"
+    },
+    {
+      "archivePath": "package/svg/dynamic/variants.js",
+      "packagePath": "svg/dynamic/variants.js",
+      "preparedPath": "vendor/mathjax-newcm-font/svg/dynamic/variants.js",
+      "bytes": 16610,
+      "sha256": "6947cf8203f41afea9bf9ceff25189dd0575b34c94110636763570842a713a9c"
+    }
+  ],
+  "embeddedCopyrightGroups": [
+    {
+      "id": "copyright-001",
+      "copyrightTexts": [
+        " ",
+        "(C) 2019-2021 Antonis Tsolomitis. \nThis work is released under the GUST Font License -- see http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt for details."
+      ],
+      "files": [
+        "chtml/woff2/mjx-ncm-ab.woff2",
+        "chtml/woff2/mjx-ncm-abi.woff2",
+        "chtml/woff2/mjx-ncm-ai.woff2",
+        "chtml/woff2/mjx-ncm-ar.woff2",
+        "chtml/woff2/mjx-ncm-arl.woff2",
+        "chtml/woff2/mjx-ncm-br.woff2",
+        "chtml/woff2/mjx-ncm-brd.woff2",
+        "chtml/woff2/mjx-ncm-brk.woff2",
+        "chtml/woff2/mjx-ncm-c.woff2",
+        "chtml/woff2/mjx-ncm-cb.woff2",
+        "chtml/woff2/mjx-ncm-ch.woff2",
+        "chtml/woff2/mjx-ncm-chb.woff2",
+        "chtml/woff2/mjx-ncm-chbi.woff2",
+        "chtml/woff2/mjx-ncm-chi.woff2",
+        "chtml/woff2/mjx-ncm-cy.woff2",
+        "chtml/woff2/mjx-ncm-cyb.woff2",
+        "chtml/woff2/mjx-ncm-cybi.woff2",
+        "chtml/woff2/mjx-ncm-cyi.woff2",
+        "chtml/woff2/mjx-ncm-cyss.woff2",
+        "chtml/woff2/mjx-ncm-cyssb.woff2",
+        "chtml/woff2/mjx-ncm-cyssbi.woff2",
+        "chtml/woff2/mjx-ncm-cyssi.woff2",
+        "chtml/woff2/mjx-ncm-ds.woff2",
+        "chtml/woff2/mjx-ncm-dv.woff2",
+        "chtml/woff2/mjx-ncm-f.woff2",
+        "chtml/woff2/mjx-ncm-fb.woff2",
+        "chtml/woff2/mjx-ncm-gk.woff2",
+        "chtml/woff2/mjx-ncm-gkb.woff2",
+        "chtml/woff2/mjx-ncm-gkbi.woff2",
+        "chtml/woff2/mjx-ncm-gki.woff2",
+        "chtml/woff2/mjx-ncm-gkss.woff2",
+        "chtml/woff2/mjx-ncm-gkssb.woff2",
+        "chtml/woff2/mjx-ncm-gkssbi.woff2",
+        "chtml/woff2/mjx-ncm-gkssi.woff2",
+        "chtml/woff2/mjx-ncm-he.woff2",
+        "chtml/woff2/mjx-ncm-heb.woff2",
+        "chtml/woff2/mjx-ncm-hebi.woff2",
+        "chtml/woff2/mjx-ncm-hei.woff2",
+        "chtml/woff2/mjx-ncm-lb.woff2",
+        "chtml/woff2/mjx-ncm-li.woff2",
+        "chtml/woff2/mjx-ncm-lib.woff2",
+        "chtml/woff2/mjx-ncm-lr.woff2",
+        "chtml/woff2/mjx-ncm-m.woff2",
+        "chtml/woff2/mjx-ncm-mar.woff2",
+        "chtml/woff2/mjx-ncm-ml.woff2",
+        "chtml/woff2/mjx-ncm-mm.woff2",
+        "chtml/woff2/mjx-ncm-msh.woff2",
+        "chtml/woff2/mjx-ncm-mx.woff2",
+        "chtml/woff2/mjx-ncm-ph.woff2",
+        "chtml/woff2/mjx-ncm-phb.woff2",
+        "chtml/woff2/mjx-ncm-phbi.woff2",
+        "chtml/woff2/mjx-ncm-phi.woff2",
+        "chtml/woff2/mjx-ncm-phss.woff2",
+        "chtml/woff2/mjx-ncm-phssb.woff2",
+        "chtml/woff2/mjx-ncm-phssbi.woff2",
+        "chtml/woff2/mjx-ncm-phssi.woff2",
+        "chtml/woff2/mjx-ncm-pu.woff2",
+        "chtml/woff2/mjx-ncm-pub.woff2",
+        "chtml/woff2/mjx-ncm-pubi.woff2",
+        "chtml/woff2/mjx-ncm-pui.woff2",
+        "chtml/woff2/mjx-ncm-s.woff2",
+        "chtml/woff2/mjx-ncm-sb.woff2",
+        "chtml/woff2/mjx-ncm-sh.woff2",
+        "chtml/woff2/mjx-ncm-shb.woff2",
+        "chtml/woff2/mjx-ncm-shbi.woff2",
+        "chtml/woff2/mjx-ncm-shi.woff2",
+        "chtml/woff2/mjx-ncm-ss.woff2",
+        "chtml/woff2/mjx-ncm-ssb.woff2",
+        "chtml/woff2/mjx-ncm-ssbi.woff2",
+        "chtml/woff2/mjx-ncm-ssbix.woff2",
+        "chtml/woff2/mjx-ncm-ssbx.woff2",
+        "chtml/woff2/mjx-ncm-ssi.woff2",
+        "chtml/woff2/mjx-ncm-ssix.woff2",
+        "chtml/woff2/mjx-ncm-sslb.woff2",
+        "chtml/woff2/mjx-ncm-ssli.woff2",
+        "chtml/woff2/mjx-ncm-sslib.woff2",
+        "chtml/woff2/mjx-ncm-sslr.woff2",
+        "chtml/woff2/mjx-ncm-ssx.woff2",
+        "chtml/woff2/mjx-ncm-sy.woff2",
+        "chtml/woff2/mjx-ncm-syb.woff2",
+        "chtml/woff2/mjx-ncm-sybi.woff2",
+        "chtml/woff2/mjx-ncm-syi.woff2",
+        "chtml/woff2/mjx-ncm-vx.woff2",
+        "chtml/woff2/mjx-ncm-zero.woff2"
+      ]
+    },
+    {
+      "id": "copyright-002",
+      "copyrightTexts": [
+        " ",
+        "Copyright (c) 2024 MathJax, Inc. (www.mathjax.org)\nOriginal copyright:\n(C) 2019-2021 Antonis Tsolomitis. \nThis work is released under the GUST Font License -- see http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt for details."
+      ],
+      "files": [
+        "chtml/woff2/mjx-ncm-b-a.woff2",
+        "chtml/woff2/mjx-ncm-b.woff2",
+        "chtml/woff2/mjx-ncm-bi.woff2",
+        "chtml/woff2/mjx-ncm-em.woff2",
+        "chtml/woff2/mjx-ncm-i.woff2",
+        "chtml/woff2/mjx-ncm-lo.woff2",
+        "chtml/woff2/mjx-ncm-lt.woff2",
+        "chtml/woff2/mjx-ncm-mi.woff2",
+        "chtml/woff2/mjx-ncm-n.woff2",
+        "chtml/woff2/mjx-ncm-ob.woff2",
+        "chtml/woff2/mjx-ncm-os.woff2",
+        "chtml/woff2/mjx-ncm-rb.woff2",
+        "chtml/woff2/mjx-ncm-s3.woff2",
+        "chtml/woff2/mjx-ncm-s4.woff2",
+        "chtml/woff2/mjx-ncm-s5.woff2",
+        "chtml/woff2/mjx-ncm-s6.woff2",
+        "chtml/woff2/mjx-ncm-s7.woff2",
+        "chtml/woff2/mjx-ncm-so.woff2",
+        "chtml/woff2/mjx-ncm-u-a.woff2",
+        "chtml/woff2/mjx-ncm-u.woff2",
+        "chtml/woff2/mjx-ncm-v.woff2"
+      ]
+    }
+  ],
+  "upstreamNoticeStatus": "upstream-package-notice-missing",
+  "qualification": "The complete npm package is retained/retrievable; its completeness is not a determination of the complete LPPL Work or source/build history of the fonts."
+}

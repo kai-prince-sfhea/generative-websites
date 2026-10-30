@@ -1,0 +1,28 @@
+/* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
+.generative-feature-controls { display:flex; flex-wrap:wrap; align-items:end; gap:.75rem; padding:1rem; margin-block:1rem; border:1px solid currentColor; border-radius:.4rem; min-width:0; }
+.generative-feature-controls label { display:flex; flex-direction:column; gap:.3rem; min-width:0; flex:1 1 12rem; }
+.generative-feature-controls button,.generative-feature-controls input,.generative-feature-controls select { min-height:44px; min-width:44px; max-width:100%; font:inherit; color:inherit; background:inherit; padding:.45rem; border:1px solid currentColor; border-radius:.2rem; }
+.generative-feature-controls input[type=checkbox] { inline-size:1.5rem; block-size:1.5rem; min-inline-size:1.5rem; min-block-size:1.5rem; }
+.generative-feature-controls p,.generative-feature-controls details,.generative-feature-controls>div { flex:1 1 100%; min-width:0; overflow-wrap:anywhere; }
+.generative-feature-controls :focus-visible { outline:3px solid currentColor; outline-offset:3px; }
+.generative-feature-controls button:disabled { opacity:.65; }
+.generative-feature-controls pre { white-space:pre-wrap; overflow-wrap:anywhere; max-block-size:22rem; overflow:auto; }
+.learning-variant[hidden] { display:none!important; }
+.generative-period-report,.generative-exercise { margin-block:1.5rem; padding-inline-start:1rem; border-inline-start:.25rem solid currentColor; overflow-wrap:anywhere; }
+@media print { .generative-feature-controls { display:none!important; } }
+@media (forced-colors:active) { .generative-feature-controls,.generative-feature-controls button { border-color:CanvasText; } }
+
+/* Private R5 progressive controls; authored parts stay visible without JS. */
+.generative-activity-controls,.generative-activity-progress{margin-block:1rem;padding:1rem;border:1px solid currentColor;border-radius:.4rem;overflow-wrap:anywhere}
+.generative-activity-controls label,.generative-activity-progress label{display:block;margin-block:.65rem}
+.generative-activity-controls button,.generative-activity-progress button{min-height:44px;margin:.25rem;white-space:normal}
+.generative-activity-controls button.btn,.generative-activity-progress button.btn{color:var(--bs-body-color,CanvasText);background-color:var(--bs-body-bg,Canvas);border:1px solid currentColor}
+.generative-activity-controls button:focus-visible,.generative-activity-progress button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.generative-activity-controls textarea,.generative-activity-controls select{display:block;max-width:100%;width:100%;min-height:44px}
+@media print{.generative-activity-controls,.generative-activity-progress{display:none!important}.learning-activity [hidden]{display:block!important}}
+
+/* Original optional Numbas controls; authored prompt remains visible. */
+.gw-numbas-controls button{min-height:44px;margin:.25rem;border:1px solid currentColor;background:var(--bs-body-bg,Canvas);color:var(--bs-body-color,CanvasText)}
+.gw-numbas-controls button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.learning-numbas iframe{display:block;inline-size:100%;min-block-size:44rem;border:1px solid currentColor}
+@media print{.gw-numbas-controls,.learning-numbas iframe{display:none!important}}

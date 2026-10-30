@@ -1,172 +1,242 @@
 ---
-title: "A route to bijections"
+title: "Generative Websites: your first reviewed alternatives"
 lang: en
+format: html
 filters:
   - kai-prince-sfhea/generative-websites
 generative-websites:
-  prerequisites:
-    functions: sets
-    bijections:
-      all:
-        - functions
-        - any:
-            - unavailable-logic-course
-            - proofs
+  project:
+    id: first-learning-page
+    revision: v1
+    page-id: first-page
+    page-revision: v1
+    page-url: example.html
+  defaults:
+    exposition: introductory
+    terminology: plain
+    scaffolding: standard
+  activities:
+    - id: membership-activity
+      revision: v1
+      label: Explain membership
+      public: true
+      review: author-reviewed
+      source: sets
+      disclosure: {hints: staged, solution: reader-choice, feedback: after-check}
 ---
 
-This synthetic authoring example demonstrates the controls. Its review declarations
-illustrate the contract; they do not record independent mathematical or learner review.
-The first alternative for proof preparation is deliberately unavailable, so the
-route uses the authored proof-pattern object.
+This tutorial uses ordinary QMD and YAML to offer authored explanations,
+wording and support. First render it, then change one default and render again.
+No model, catalogue, learner account or author-written JavaScript is needed.
 
-**Source and reuse:** This original synthetic example was prepared for the
-Generative Websites project (project owner: Kai Prince) with material assistance
-from OpenAI Codex. No external
-educational prose or media is reproduced. Its editable source is supplied under
-the [Apache 2.0 licence](https://www.apache.org/licenses/LICENSE-2.0). When adapting it, retain applicable
-notices, identify your changes and review the mathematics and learning tasks.
-These declarations do not establish independent review or an evaluated OER release.
+## 1. Render and preview
 
-::: {.generative-route goal="bijections" level="introductory"}
-## Choose a learning route
+Install the extension using its
+[README](https://github.com/kai-prince-sfhea/generative-websites#install-from-github),
+then copy this `example.qmd` into your consumer folder. For a local installation,
+change the filter selector to `generative-websites` as the README explains.
 
-Select a goal and knowledge you already have. Explore an unfamiliar concept and
-return to your original route.
+Use your editor's Render/Preview controls, or:
+
+```sh
+quarto render example.qmd
+quarto preview example.qmd
+```
+
+You should see the **Choose reviewed alternatives** controls and the **Sets**
+task below. With JavaScript unavailable, the labelled authored alternatives
+remain readable. Nothing is downloaded from an AI provider.
+
+## 2. Choose one option at a time
+
+Change **Exposition** to **advanced**. Then change **Terminology** to
+**technical**, and **Scaffolding** to **expanded**. Each control selects existing
+reviewed text; changing one does not infer your knowledge or alter another axis.
+The common task stays fixed. **Restore author defaults** resets the choices.
+
+::: {.learning-preferences}
+### Choose reviewed alternatives
+
+Try the three independent choices. Source/review inspection shows which authored
+versions were supplied; it does not establish independent review.
 :::
 
-:::: {#sets .learning-object concept-id="urn:example:concept:sets" revision="sets-2" label="Sets" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
-## Sets {#sets-title}
+The review fields in this original synthetic tutorial demonstrate syntax.
+Replace the reviewer and revisions after checking your own content. Use
+`review="candidate"` on an object still being drafted.
 
-**Objective:** Read a membership statement for a specified finite set.
+:::: {#sets .adaptive-object concept-id="urn:example:concept:sets" revision="sets-v1" label="Sets" context="urn:example:context:sets" review="author-reviewed" reviewed-by="Example fixture declaration"}
+### Sets {#sets-title}
 
-**Quick check:** If $A=\{1,2\}$, which of $1\in A$ and $3\in A$ holds?
-Explain your choice before consulting an explanation.
+**Common task:** For $A=\{1,2\}$, decide whether $1\in A$ and $3\in A$.
+Explain your choices. Every alternative uses this same set and question.
 
-::: {.learning-view level="introductory" revision="sets-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-A set is a collection of objects. We write $x \in A$ when $x$ belongs to $A$.
-For example, $A=\{1,2\}$ contains two elements.
+::: {.learning-variant group="explanation" axis="exposition" value="introductory" default="true" revision="intro-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+#### Introductory explanation
+
+A set is described by its listed members. This set contains one and two.
+Check each proposed member against that list before explaining your choice.
 :::
 
-::: {.learning-view level="advanced" revision="sets-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-Here sets are used in ordinary elementary mathematics. Membership is denoted
-by $\in$, and $A\subseteq B$ means every element of $A$ is an element of $B$.
-No foundational axiom system is supplied by this example.
-:::
-::::
+::: {.learning-variant group="explanation" axis="exposition" value="advanced" revision="advanced-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+#### Advanced explanation
 
-:::: {#functions .learning-object concept-id="urn:example:concept:functions" revision="functions-2" label="Functions" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
-## Functions {#functions-title}
-
-**Objective:** Identify the domain, codomain and output of a specified function.
-
-**Quick check:** For $f:\{1,2\}\to\{2,4\}$ with $f(x)=2x$, state the
-domain, codomain and value of $f(2)$.
-
-::: {.learning-view level="introductory" revision="functions-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-A function $f:A\to B$ assigns exactly one element of $B$ to each element of $A$.
-For example, $f:\{1,2\}\to\{2,4\}$ with $f(x)=2x$ is a function.
-Review [sets](#sets) if the domain and codomain are unfamiliar.
+Membership in this finite set is decided by checking the displayed elements.
+One is listed and three is absent; these observations apply to the stated set.
 :::
 
-::: {.learning-view level="advanced" revision="functions-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-A function $f:A\to B$ is a total, single-valued relation from $A$ to $B$:
-for every $a\in A$ there exists exactly one $b\in B$ with $(a,b)\in f$.
-Its domain and codomain are part of the specified function.
-:::
-::::
+**Available wording:** [Plain wording: a collection.]{.learning-variant group="wording" axis="terminology" value="plain" default="true" revision="plain-v1" review="author-reviewed" reviewed-by="Example fixture declaration"} [Technical wording: a set.]{.learning-variant group="wording" axis="terminology" value="technical" revision="technical-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
 
-:::: {#proofs .learning-object concept-id="urn:example:concept:proof-patterns" revision="proofs-2" label="Proof patterns" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
-## Proof patterns {#proofs-title}
+::: {.learning-variant group="support" axis="scaffolding" value="standard" default="true" revision="support-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+#### Standard starting prompt
 
-**Objective:** Distinguish a universal justification from a few supporting examples.
-
-**Quick check:** Why would checking two integers usually be insufficient to prove
-a statement about every integer? What could a single counterexample establish?
-
-::: {.learning-view level="introductory" revision="proofs-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-To prove a statement holds for every element, start with an arbitrary element
-and justify the required conclusion. A worked example alone does not prove
-a statement about every element.
+Check each proposed member and state your reason.
 :::
 
-::: {.learning-view level="advanced" revision="proofs-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-For universal introduction, choose an arbitrary element satisfying the stated
-domain assumptions and derive the predicate without additional restrictions
-on that element. This is pedagogical preparation, not a formal proof checker.
+::: {.learning-variant group="support" axis="scaffolding" value="expanded" revision="expanded-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+#### Additional scaffold
+
+Read the listed elements aloud or write them on separate lines. Compare the
+first proposed member with the list, then repeat for the second. Keep the given
+set unchanged.
 :::
 ::::
 
-:::: {#bijections .learning-object concept-id="urn:example:concept:bijections" revision="bijections-2" label="Bijections" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
-## Bijections {#bijections-title}
+## 3. Change the author default
 
-::: {#bijections-task}
-**Objective:** Determine whether a specified function is bijective by checking
-injectivity and surjectivity against its stated domain and codomain.
+At the top of this QMD, change only:
 
-**Shared task and assumptions:** Work with the finite sets $A=\{1,2\}$ and
-$B=\{2,4\}$ and the function $f:A\to B$ defined by $f(x)=2x$.
-Justify whether $f$ is injective and whether it is surjective. Try to give your
-own reasons before reading a hint or the solution. Both explanation levels below
-support this same task; switching levels does not change these assumptions.
+```yaml
+defaults:
+  exposition: advanced
+  terminology: plain
+  scaffolding: standard
+```
 
-**Transfer question:** Now define $g:A\to C$ by $g(x)=2x$, where
-$C=\{2,4,6\}$. The domain and rule are retained, but the codomain has changed.
-Which properties does $g$ have? Explain why a claim about $f$ cannot simply be
-transferred to $g$ without checking the specified codomain.
+Keep those lines inside the existing `generative-websites` mapping with its
+current indentation. Render again and refresh Preview. **Exposition** should
+start at **advanced** while wording and scaffolding keep their own defaults.
+You have changed a starting preference, not the shared task or its review.
+
+Next, edit a variant's prose. Review the revised passage and common assumptions,
+then update that variant's `revision` and the object's `revision`. Keep stable
+IDs while changing visible labels. Copy a group to add your own approved choices.
+
+## 4. Keep a native document
+
+```sh
+quarto render example.qmd --to docx
+```
+
+The Word document uses the declared axis defaults and the same common task,
+without browser controls. `page-url: example.html` records the corresponding
+HTML destination; update it if you rename the QMD/output. Neither output infers
+mastery or turns a declared review into a proof.
+
+## 5. Try a small activity
+
+The YAML at the top names this activity and its existing `sets` source. Its
+parts below are ordinary QMD. In Preview, choose **Record a visit**, reveal the
+hint, then save a private reflection. This task has no automatic checker: any
+completion is explicitly your own report. Nothing is stored on the device until
+you choose the separate Remember action, and no model is needed.
+
+:::: {.learning-activity #membership-activity}
+::: {#membership-objective learning-role="objective"}
+Explain one membership decision for the common set.
 :::
 
-::: {.learning-view level="introductory" revision="bijections-intro-2" review="author-reviewed" reviewed-by="Example fixture declaration"}
-A bijection $f:A\to B$ pairs the elements of $A$ and $B$ one to one:
-different inputs have different outputs, and every element of $B$ is reached.
+::: {#membership-task learning-role="task"}
+For $A=\{1,2\}$, explain whether $3$ belongs to $A$.
 :::
 
-::: {.learning-view level="advanced" revision="bijections-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
-A bijection $f:A\to B$ is injective and surjective:
-$f(a)=f(a')\Rightarrow a=a'$ for $a,a'\in A$, and
-$\forall b\in B\,\exists a\in A\;(f(a)=b)$.
-The domain and codomain, including the quantifiers above, remain fixed across views.
+::: {#membership-hint learning-role="hint"}
+Compare $3$ with each listed element.
 :::
 
-::: {#bijections-hint-1 .callout-tip}
-## Hint 1: Check the two conditions separately
-
-Injectivity asks whether different inputs can produce the same output.
-Surjectivity asks whether every element of the specified codomain is produced.
-List the outputs, then compare them with the codomain in each question.
+::: {#membership-solution learning-role="solution"}
+$3$ is not a listed member of $A$.
 :::
 
-::: {#bijections-hint-2 .callout-tip}
-## Hint 2: Look for an unreached element
-
-Both rules produce $2$ from input $1$ and $4$ from input $2$.
-For the transfer question, is every element of $C$ in that list? Can an input
-outside the specified domain be used to satisfy the condition?
-:::
-
-::: {#bijections-solution .callout-note}
-## Explained solution and misconception check
-
-The function $f$ is injective: for $a,a'\in A$, the equality $f(a)=f(a')$
-gives $2a=2a'$, hence $a=a'$. It is also surjective onto $B$: the element
-$2$ has preimage $1$, and the element $4$ has preimage $2$. Thus $f$ is bijective.
-
-The same injectivity argument applies to $g$. However, $g$ is not surjective
-onto $C$, because $6\in C$ has no preimage in $A=\{1,2\}$. Choosing $3$
-would not help: $3\notin A$. Therefore $g$ is injective but not bijective.
-
-A common mistaken claim is that the formula $2x$ alone determines whether a
-function is bijective. This pair is a counterexample: the specified domain and
-codomain matter. Describing $g$ as “surjective onto its image” uses the image
-$\{2,4\}$ in place of $C$ and does not establish surjectivity onto its stated
-codomain.
-
-Compare these reasons with your original response. Reading this solution,
-visiting a route step or selecting an expertise level does not record mastery
-or mark an answer correct.
+::: {#membership-reflection learning-role="reflection-prompt"}
+Which comparison helped you explain your decision?
 :::
 ::::
 
-Hints and solutions are optional reading aids, shown openly for keyboard and
-no-JavaScript access. They are not protected assessment answers.
-They are delivered with the page and may be exposed in search, source, print,
-Word and ePub outputs. No response is collected or graded by this example.
+Change only the hint's wording, update the activity revision after review, then
+render again. The public task stays readable in Word and without JavaScript.
+A saved old report can become incompatible when the delivered parts change; its
+checks and reflections are private reports, not proof or demonstrated learning.
+
+## 6. Inspect an optional reasoning or symbol candidate
+
+The README now gives an ordinary QMD/YAML recipe for a complete controlled
+`Claim:` paragraph marked as a scenario given, rule or goal. Start in inspect
+mode, render, check the exact source/role mapping and copy its current review
+YAML before a problem download becomes available. Goals and answers never become
+givens; the Sandbox still owns actual checking. This tutorial does not enable
+that additional feature or require a second copy of its logical statements.
+
+Its WAI-Adapt recipe similarly starts with an existing readable label such as
+“Help”. Annotation-only mode needs no image; the optional original local helper
+uses your rights-declared PNG only after native inspection, review and an explicit
+Show symbols action. You do not calculate the image hash. Reset symbols restores
+the ordinary text presentation. This partial project symbol-set pilot is not a
+claim of familiar AAC vocabulary or universal helper support.
+
+## Next steps
+
+The [README's advanced reference](https://github.com/kai-prince-sfhea/generative-websites#reviewed-adaptation-and-publication)
+covers all eight independent axes, structured activities/private progress,
+controlled statement review, explicit cross-page journeys, finite practice, typed assertions, authored
+language pages, daily/weekly reports, selected offline reading and editable-source
+exports. Optional transfers/storage have their own boundaries.
+
+For a later reasoning exercise, that reference also explains ordinary YAML
+`sandbox` problems and `.learning-sandbox` panels. Readers can inspect an
+explicitly selected Thread JSON file, keep its exact bytes, or attach a checked
+reading route to a source-bound capsule. Imported proof and completion labels
+remain reported and unverified; this tutorial does not require a Sandbox,
+reasoning file, model or additional setup.
+
+The separate repository source `advanced.qmd` demonstrates the retained two-view
+route interface with four objects, alternative preparation, hints and an
+explained solution. Copy and render it separately when useful; rendering this
+tutorial does not automatically create that guide page.
+
+This synthetic example was developed with material OpenAI Codex assistance under
+Kai Prince's direction. Its source is supplied under
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). Review markers do not
+establish independent mathematical, learner or accessibility acceptance.
+
+## Optional standalone number-entry software
+
+The README's **Optional local Numbas 11 activity** section explains how to
+prepare a separately obtained standalone folder with the installed command,
+inspect and copy its review map, and expose explicit Load/Unload controls.
+This tutorial bundles no Numbas software or question collection and does not
+load an activity when rendered. Keep a readable native prompt, review the
+question/software notices and host CSP, and use normal Render Project.
+
+
+## Try an ordinary-prose translation comparison
+
+The paired public fictional paragraphs below illustrate paragraph context, a
+referent, negation, and unchanged code/math. This example is not a competent
+bilingual certification. Use only author-selected public text here; private
+data belongs outside repository and QMD files. Keep the original beside a candidate while reviewing meaning. Render this page
+again and inspect the comparison and YAML pins below. Nothing here invokes AI
+or grants translation approval. The README explains optional JSON import,
+explicit local candidate generation and reviewed static language pages.
+
+::: {#translation-original .translation-source public="true" revision="v1" lang="en" semantic-id="urn:example:box-contents"}
+The fictional box named `Mira` contains $2$ blue tokens.
+
+It does not contain a red token.
+:::
+
+::: {#translation-french .translation-candidate public="true" source="translation-original" revision="v1" lang="fr" semantic-id="urn:example:box-contents"}
+La boîte fictive nommée `Mira` contient $2$ jetons bleus.
+
+Elle ne contient pas de jeton rouge.
+:::

@@ -1,1 +1,3 @@
 * text=auto eol=lf
+# Preserve the exact upstream licence bytes verified by the asset preparer.
+/_extensions/generative-websites/numbas/font-notices/newcm-4.1.3/GUST-FONT-LICENSE-1.0.txt -text

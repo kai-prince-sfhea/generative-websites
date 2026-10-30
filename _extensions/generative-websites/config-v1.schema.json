@@ -1,58 +1,2616 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:quarto:generative-websites:config:v1",
-  "title": "Generative Websites authoring configuration v1",
-  "description": "Structural reference schema for the value of generative-websites metadata, not an entire Quarto document or the catalog/route-file formats.",
-  "$comment": "Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0. This schema adds no automatic Quarto editor integration. Validate JSON-compatible metadata values; Quarto's MetaMap/MetaList conversion and effective metadata layering are separate. Runtime additionally enforces at most 512 prerequisite expression nodes across the page configuration and depth 16, UTF-8 byte/text rules, page binding, reviewed-object availability, compatible contexts and route limits. Reference-schema validation does not establish those checks or pedagogical correctness.",
+  "title": "Generative Websites metadata reference v1",
+  "description": "Structural reference for the value of generative-websites, including additive0.0.12 features. Not the public page/route/learning catalogue or reader session capsule format.",
+  "$comment": "Copyright2026 Kai Prince; SPDX-License-Identifier: Apache-2.0. Generated from sibling developer tests/build-config-schema.mjs. No automatic editor registration. Runtime additionally checks effective metadata, UTF8 budgets, real output/source bindings, canonical language/IR equality, graph scope, rights and current native anchors. Schema validation is not proof, translation fidelity, accessibility or legal permission. Explicit enabled:false bypasses stale options.",
   "type": "object",
   "if": {
-    "required": ["enabled"],
-    "properties": {"enabled": {"const": false}}
+    "required": [
+      "enabled"
+    ],
+    "properties": {
+      "enabled": {
+        "const": false
+      }
+    }
   },
-  "then": {
-    "$comment": "Explicit enabled: false bypasses all other stale options, including malformed prerequisites and unknown keys, exactly as the runtime's deactivation path does."
-  },
+  "then": {},
   "else": {
     "properties": {
-      "enabled": {"type": "boolean", "default": true},
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      },
+      "local-ai-sources": {
+        "type": "boolean",
+        "default": true,
+        "description": "Legacy safe whole-object excerpts or explicit public role blocks in additive objects; run before Local AI."
+      },
+      "graph-prerequisites": {
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,63}(?![\\s\\S])"
+          }
+        ],
+        "default": true,
+        "description": "Current-render graph adapter for the legacy page-local route; additive project journeys use explicit page#object prerequisites."
+      },
       "prerequisites": {
         "type": "object",
-        "default": {},
-        "propertyNames": {"$ref": "#/$defs/identifier"},
-        "additionalProperties": {"$ref": "#/$defs/expression"}
+        "propertyNames": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "catalogue": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048,
+        "description": "Explicit version1 YAML catalogue, resolved beside the current QMD and confined to the project."
+      },
+      "project": {
+        "$ref": "#/$defs/project"
+      },
+      "defaults": {
+        "$ref": "#/$defs/defaults"
+      },
+      "assertions": {
+        "$ref": "#/$defs/assertions"
+      },
+      "exercises": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/exercise"
+        },
+        "maxItems": 32
+      },
+      "records": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/record"
+        },
+        "maxItems": 512
+      },
+      "reports": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/report"
+        },
+        "maxItems": 24
+      },
+      "sandbox": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/sandbox"
+        },
+        "maxItems": 16
+      },
+      "sandbox-session-mappings": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/sessionMapping"
+        },
+        "maxItems": 16
+      },
+      "publication": {
+        "$ref": "#/$defs/publication"
+      },
+      "offline": {
+        "$ref": "#/$defs/offline"
+      },
+      "oer": {
+        "$ref": "#/$defs/oer"
+      },
+      "controlled-authoring": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "enum": [
+              "inspect",
+              "reviewed"
+            ],
+            "default": "inspect"
+          },
+          "language": {
+            "const": "en",
+            "default": "en"
+          },
+          "aliases": {
+            "type": "object",
+            "properties": {
+              "sorts": {
+                "type": "array",
+                "maxItems": 128,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "constants": {
+                "type": "array",
+                "maxItems": 128,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "functions": {
+                "type": "array",
+                "maxItems": 128,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "predicates": {
+                "type": "array",
+                "maxItems": 128,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "reviews": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "properties": {
+                "objectId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "objectRevision": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "assertionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "assertionRevision": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "sourceDigest": {
+                  "type": "string",
+                  "pattern": "^sha(?:1:[a-f0-9]{40}|256:[a-f0-9]{64})$"
+                },
+                "sourceSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "irSha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "review": {
+                  "const": "author-reviewed"
+                },
+                "reviewedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              },
+              "required": [
+                "objectId",
+                "objectRevision",
+                "assertionId",
+                "assertionRevision",
+                "sourceDigest",
+                "sourceSha256",
+                "irSha256",
+                "review",
+                "reviewedBy"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "lexicons": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "required": [
+                "version",
+                "id",
+                "revision",
+                "language",
+                "review",
+                "reviewedBy",
+                "sorts",
+                "constants",
+                "functions",
+                "predicates"
+              ],
+              "properties": {
+                "version": {
+                  "const": 1
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "revision": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "language": {
+                  "enum": [
+                    "en",
+                    "fr"
+                  ]
+                },
+                "review": {
+                  "const": "author-reviewed"
+                },
+                "reviewedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "sorts": {
+                  "type": "array",
+                  "maxItems": 64,
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "singular": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "article": {
+                            "enum": [
+                              "a",
+                              "an"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "singular",
+                          "article"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "singular": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          "gender": {
+                            "enum": [
+                              "masculine",
+                              "feminine"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "singular",
+                          "gender"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "constants": {
+                  "type": "array",
+                  "maxItems": 128,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "label"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "functions": {
+                  "type": "array",
+                  "maxItems": 128,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "template": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "template"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "predicates": {
+                  "type": "array",
+                  "maxItems": 128,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "template": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "template"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "realisations": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "binding": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "const": 1
+                    },
+                    "assertionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "assertionRevision": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "irSha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "sourceDigest": {
+                      "type": "string",
+                      "pattern": "^sha(?:1:[a-f0-9]{40}|256:[a-f0-9]{64})$"
+                    },
+                    "lexiconId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "lexiconRevision": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "lexiconSha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "review": {
+                      "const": "author-reviewed"
+                    },
+                    "reviewedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "required": [
+                    "version",
+                    "assertionId",
+                    "assertionRevision",
+                    "irSha256",
+                    "sourceDigest",
+                    "lexiconId",
+                    "lexiconRevision",
+                    "lexiconSha256",
+                    "review",
+                    "reviewedBy"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "binding"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Explicit finite controlled English grammar and source-bound reviewed en/fr realisations; inspect produces copyable current YAML. No ordinary prose translation or proof."
+      },
+      "activities": {
+        "type": "array",
+        "maxItems": 32,
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "revision",
+            "label",
+            "public",
+            "review",
+            "source"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$",
+              "maxLength": 128
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "public": {
+              "const": true
+            },
+            "review": {
+              "const": "author-reviewed"
+            },
+            "source": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$",
+              "maxLength": 128
+            },
+            "exercise": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$",
+              "maxLength": 128
+            },
+            "sandbox": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$",
+              "maxLength": 128
+            },
+            "disclosure": {
+              "type": "object",
+              "properties": {
+                "hints": {
+                  "enum": [
+                    "staged",
+                    "open"
+                  ]
+                },
+                "solution": {
+                  "enum": [
+                    "reader-choice",
+                    "open"
+                  ]
+                },
+                "feedback": {
+                  "enum": [
+                    "after-check",
+                    "open"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "allOf": [
+            {
+              "not": {
+                "required": [
+                  "exercise",
+                  "sandbox"
+                ]
+              }
+            }
+          ],
+          "additionalProperties": false
+        },
+        "description": "Explicit current native activity parts, optional existing finite exercise or Sandbox problem. Private progress is memory-first and is not a mastery assessment."
+      },
+      "scenario-candidates": {
+        "oneOf": [
+          {
+            "const": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "inspect",
+                  "reviewed"
+                ]
+              },
+              "scenarios": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/identifier"
+                    },
+                    "revision": {
+                      "$ref": "#/$defs/revision"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1800
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "label",
+                    "description"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16
+              },
+              "reviews": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "const": 1
+                    },
+                    "scenarioId": {
+                      "$ref": "#/$defs/identifier"
+                    },
+                    "scenarioRevision": {
+                      "$ref": "#/$defs/revision"
+                    },
+                    "snapshotSha256": {
+                      "$ref": "#/$defs/hash"
+                    },
+                    "review": {
+                      "const": "author-reviewed"
+                    },
+                    "reviewedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  },
+                  "required": [
+                    "version",
+                    "scenarioId",
+                    "scenarioRevision",
+                    "snapshotSha256",
+                    "review",
+                    "reviewedBy"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 16
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "wai-adapt": {
+        "oneOf": [
+          {
+            "const": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "inspect",
+                  "reviewed"
+                ]
+              },
+              "helper": {
+                "enum": [
+                  false,
+                  "gw-local-symbols-v1"
+                ]
+              },
+              "symbols": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "concept": {
+                      "enum": [
+                        "14704",
+                        "14705",
+                        "14885"
+                      ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    },
+                    "licence": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    },
+                    "attribution": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    }
+                  },
+                  "required": [
+                    "concept",
+                    "path",
+                    "licence",
+                    "attribution"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 32
+              },
+              "reviews": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/identifier"
+                    },
+                    "revision": {
+                      "$ref": "#/$defs/revision"
+                    },
+                    "snapshotSha256": {
+                      "$ref": "#/$defs/hash"
+                    },
+                    "review": {
+                      "const": "author-reviewed"
+                    },
+                    "reviewedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "revision",
+                    "snapshotSha256",
+                    "review",
+                    "reviewedBy"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 32
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "numbas": {
+        "oneOf": [
+          {
+            "const": false
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "path",
+                "version",
+                "seed",
+                "question-rights"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "version": {
+                  "const": "11.0"
+                },
+                "seed": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+                },
+                "question-rights": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "licence",
+                    "attribution"
+                  ],
+                  "properties": {
+                    "licence": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "attribution": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    }
+                  }
+                },
+                "review": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "reviewer",
+                    "date",
+                    "sourceDigest"
+                  ],
+                  "properties": {
+                    "reviewer": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "date": {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d\\d-\\d\\d$"
+                    },
+                    "sourceDigest": {
+                      "type": "string",
+                      "pattern": "^sha256:[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "translations": {
+        "oneOf": [
+          {
+            "const": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "inspect",
+                  "reviewed"
+                ]
+              },
+              "imports": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "maxItems": 16
+              },
+              "reviews": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/identifier"
+                    },
+                    "candidateSha256": {
+                      "$ref": "#/$defs/hash"
+                    },
+                    "snapshotSha256": {
+                      "$ref": "#/$defs/hash"
+                    },
+                    "review": {
+                      "const": "author-reviewed"
+                    },
+                    "reviewedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "reviewedOn": {
+                      "$ref": "#/$defs/date"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "candidateSha256",
+                    "snapshotSha256",
+                    "review",
+                    "reviewedBy",
+                    "reviewedOn"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 32
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        ]
       }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "anyOf": [
+            {
+              "required": [
+                "translations"
+              ]
+            },
+            {
+              "required": [
+                "controlled-authoring"
+              ]
+            },
+            {
+              "required": [
+                "scenario-candidates"
+              ]
+            },
+            {
+              "required": [
+                "wai-adapt"
+              ]
+            },
+            {
+              "required": [
+                "activities"
+              ]
+            },
+            {
+              "required": [
+                "catalogue"
+              ]
+            },
+            {
+              "required": [
+                "project"
+              ]
+            },
+            {
+              "required": [
+                "defaults"
+              ]
+            },
+            {
+              "required": [
+                "assertions"
+              ]
+            },
+            {
+              "required": [
+                "exercises"
+              ]
+            },
+            {
+              "required": [
+                "records"
+              ]
+            },
+            {
+              "required": [
+                "reports"
+              ]
+            },
+            {
+              "required": [
+                "sandbox"
+              ]
+            },
+            {
+              "required": [
+                "sandbox-session-mappings"
+              ]
+            },
+            {
+              "required": [
+                "publication"
+              ]
+            },
+            {
+              "required": [
+                "offline"
+              ]
+            },
+            {
+              "required": [
+                "oer"
+              ]
+            }
+          ]
+        },
+        "then": {
+          "properties": {
+            "prerequisites": {
+              "additionalProperties": {
+                "$ref": "#/$defs/projectExpression"
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "prerequisites": {
+              "additionalProperties": {
+                "$ref": "#/$defs/expression"
+              }
+            }
+          }
+        }
+      }
+    ]
   },
   "$defs": {
     "identifier": {
       "type": "string",
-      "description": "Native object/reference ID: ASCII letter first, at most 128 ASCII characters; constructor and prototype are reserved.",
+      "description": "Native ID: ASCII letter first, at most128 characters; constructor/prototype reserved.",
       "pattern": "^[A-Za-z][A-Za-z0-9._:-]{0,127}(?![\\s\\S])",
-      "not": {"enum": ["constructor", "prototype"]}
+      "not": {
+        "enum": [
+          "constructor",
+          "prototype"
+        ]
+      }
+    },
+    "scoped": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^\\S+(?![\\s\\S])"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "BCP47 language; actual canonical validity is checked by runtime."
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^(?:sha1:[a-f0-9]{40}|sha256:[a-f0-9]{64})(?![\\s\\S])"
+    },
+    "irDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}(?![\\s\\S])"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\\s\\S])"
+    },
+    "htmlPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "^[^\\s?#%:]+\\.html(?![\\s\\S])",
+      "description": "Actual project-root-relative HTML output; runtime additionally confines path/origin."
     },
     "expression": {
       "oneOf": [
-        {"$ref": "#/$defs/identifier"},
+        {
+          "$ref": "#/$defs/identifier"
+        },
         {
           "type": "object",
-          "required": ["all"],
-          "properties": {"all": {"$ref": "#/$defs/group"}},
+          "properties": {
+            "all": {
+              "$ref": "#/$defs/group"
+            }
+          },
+          "required": [
+            "all"
+          ],
           "additionalProperties": false
         },
         {
           "type": "object",
-          "required": ["any"],
-          "properties": {"any": {"$ref": "#/$defs/group"}},
+          "properties": {
+            "any": {
+              "$ref": "#/$defs/group"
+            }
+          },
+          "required": [
+            "any"
+          ],
           "additionalProperties": false
         }
       ]
     },
     "group": {
       "type": "array",
-      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/expression"
+      },
       "maxItems": 50,
-      "items": {"$ref": "#/$defs/expression"}
+      "minItems": 1
+    },
+    "projectExpression": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 257,
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]*(?:#[A-Za-z][A-Za-z0-9._:-]*)?(?![\\s\\S])"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/projectExpression"
+          },
+          "maxItems": 50
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 257
+            }
+          },
+          "required": [
+            "ref"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/projectExpression"
+              },
+              "maxItems": 50,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/projectExpression"
+              },
+              "maxItems": 50,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "page-id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "page-revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "page-url": {
+          "$ref": "#/$defs/htmlPath"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "exposition": {
+          "$ref": "#/$defs/choice"
+        },
+        "terminology": {
+          "$ref": "#/$defs/choice"
+        },
+        "scaffolding": {
+          "$ref": "#/$defs/choice"
+        },
+        "prerequisite-knowledge": {
+          "$ref": "#/$defs/choice"
+        },
+        "reading-complexity": {
+          "$ref": "#/$defs/choice"
+        },
+        "context-interest": {
+          "$ref": "#/$defs/choice"
+        },
+        "representation": {
+          "$ref": "#/$defs/choice"
+        },
+        "challenge": {
+          "$ref": "#/$defs/choice"
+        },
+        "level": {
+          "$ref": "#/$defs/choice"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "choice": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}(?![\\s\\S])"
+    },
+    "term": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "var": {
+              "$ref": "#/$defs/scoped"
+            }
+          },
+          "required": [
+            "var"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "constant": {
+              "$ref": "#/$defs/scoped"
+            }
+          },
+          "required": [
+            "constant"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "apply": {
+              "$ref": "#/$defs/scoped"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/term"
+              },
+              "maxItems": 16
+            }
+          },
+          "required": [
+            "apply",
+            "args"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "formula": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "predicate"
+            },
+            "id": {
+              "$ref": "#/$defs/scoped"
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/term"
+              },
+              "maxItems": 16
+            }
+          },
+          "required": [
+            "op",
+            "id",
+            "args"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "eq"
+            },
+            "left": {
+              "$ref": "#/$defs/term"
+            },
+            "right": {
+              "$ref": "#/$defs/term"
+            }
+          },
+          "required": [
+            "op",
+            "left",
+            "right"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "enum": [
+                "and",
+                "or"
+              ]
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/formula"
+              },
+              "maxItems": 32,
+              "minItems": 2
+            }
+          },
+          "required": [
+            "op",
+            "items"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "not"
+            },
+            "body": {
+              "$ref": "#/$defs/formula"
+            }
+          },
+          "required": [
+            "op",
+            "body"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "implies"
+            },
+            "antecedent": {
+              "$ref": "#/$defs/formula"
+            },
+            "consequent": {
+              "$ref": "#/$defs/formula"
+            }
+          },
+          "required": [
+            "op",
+            "antecedent",
+            "consequent"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "enum": [
+                "forall",
+                "exists"
+              ]
+            },
+            "variable": {
+              "$ref": "#/$defs/scoped"
+            },
+            "sort": {
+              "$ref": "#/$defs/scoped"
+            },
+            "body": {
+              "$ref": "#/$defs/formula"
+            }
+          },
+          "required": [
+            "op",
+            "variable",
+            "sort",
+            "body"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "modal"
+            },
+            "mode": {
+              "enum": [
+                "possible",
+                "necessary"
+              ]
+            },
+            "body": {
+              "$ref": "#/$defs/formula"
+            }
+          },
+          "required": [
+            "op",
+            "mode",
+            "body"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "assertion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/scoped"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "context": {
+          "$ref": "#/$defs/scoped"
+        },
+        "domain": {
+          "$ref": "#/$defs/scoped"
+        },
+        "modality": {
+          "enum": [
+            "asserted",
+            "possible",
+            "necessary"
+          ]
+        },
+        "status": {
+          "enum": [
+            "claim",
+            "definition",
+            "conjecture",
+            "hypothesis",
+            "observation",
+            "self-reported",
+            "proved"
+          ]
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/formula"
+          },
+          "maxItems": 32
+        },
+        "claim": {
+          "$ref": "#/$defs/formula"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "context",
+        "domain",
+        "modality",
+        "status",
+        "assumptions",
+        "claim"
+      ],
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "objectId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "objectRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "assertionId": {
+          "$ref": "#/$defs/scoped"
+        },
+        "assertionRevision": {
+          "$ref": "#/$defs/revision"
+        },
+        "sourceDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "review": {
+          "const": "author-reviewed"
+        },
+        "reviewedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "objectId",
+        "objectRevision",
+        "assertionId",
+        "assertionRevision",
+        "sourceDigest",
+        "review",
+        "reviewedBy"
+      ],
+      "additionalProperties": false
+    },
+    "assertions": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "sorts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scoped"
+          },
+          "maxItems": 64,
+          "minItems": 1
+        },
+        "constants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/scoped"
+              },
+              "sort": {
+                "$ref": "#/$defs/scoped"
+              }
+            },
+            "required": [
+              "id",
+              "sort"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        },
+        "functions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/scoped"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/scoped"
+                },
+                "maxItems": 16
+              },
+              "returns": {
+                "$ref": "#/$defs/scoped"
+              }
+            },
+            "required": [
+              "id",
+              "args",
+              "returns"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        },
+        "predicates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/scoped"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/scoped"
+                },
+                "maxItems": 16
+              }
+            },
+            "required": [
+              "id",
+              "args"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertion"
+          },
+          "maxItems": 64
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/binding"
+          },
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "version",
+        "sorts",
+        "constants",
+        "functions",
+        "predicates",
+        "assertions",
+        "bindings"
+      ],
+      "additionalProperties": false
+    },
+    "exercise": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "kind": {
+          "enum": [
+            "rational-add",
+            "rational-subtract",
+            "rational-multiply",
+            "finite-union",
+            "finite-intersection"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "public": {
+          "const": true
+        },
+        "review": {
+          "const": "author-reviewed"
+        },
+        "min": {
+          "type": "integer",
+          "minimum": -20,
+          "maximum": 20
+        },
+        "max": {
+          "type": "integer",
+          "minimum": -20,
+          "maximum": 20
+        },
+        "maxDenominator": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "setSize": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "source": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "kind",
+        "public",
+        "review",
+        "seed",
+        "source"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "rational-add",
+                  "rational-subtract",
+                  "rational-multiply"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "setSize"
+              ]
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "maxDenominator"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/htmlPath"
+        },
+        "anchor": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "path",
+        "anchor",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "record": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "public"
+          ],
+          "properties": {
+            "public": {
+              "const": false
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "public",
+            "review"
+          ],
+          "properties": {
+            "public": {
+              "const": true
+            },
+            "review": {
+              "enum": [
+                "candidate",
+                "declared"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/scoped"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "kind": {
+              "enum": [
+                "activity",
+                "output",
+                "outcome",
+                "impact",
+                "evidence",
+                "reflection"
+              ]
+            },
+            "public": {
+              "type": "boolean"
+            },
+            "review": {
+              "enum": [
+                "author-reviewed",
+                "candidate",
+                "declared"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "occurredOn": {
+              "$ref": "#/$defs/date"
+            },
+            "recordedOn": {
+              "$ref": "#/$defs/date"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "qualification": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/identifier"
+                },
+                {
+                  "$ref": "#/$defs/source"
+                }
+              ]
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "relation": {
+                    "enum": [
+                      "project",
+                      "role",
+                      "output",
+                      "outcome",
+                      "impact",
+                      "evidence",
+                      "reflection",
+                      "related"
+                    ]
+                  },
+                  "target": {
+                    "$ref": "#/$defs/scoped"
+                  }
+                },
+                "required": [
+                  "relation",
+                  "target"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 32
+            },
+            "supersedes": {
+              "$ref": "#/$defs/scoped"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "kind",
+            "public",
+            "review",
+            "label",
+            "occurredOn",
+            "source"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "target": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "public"
+          ],
+          "properties": {
+            "public": {
+              "const": false
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "public",
+            "review"
+          ],
+          "properties": {
+            "public": {
+              "const": true
+            },
+            "review": {
+              "enum": [
+                "candidate",
+                "declared"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/scoped"
+            },
+            "revision": {
+              "$ref": "#/$defs/revision"
+            },
+            "kind": {
+              "enum": [
+                "project",
+                "role"
+              ]
+            },
+            "public": {
+              "type": "boolean"
+            },
+            "review": {
+              "enum": [
+                "author-reviewed",
+                "candidate",
+                "declared"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/identifier"
+                },
+                {
+                  "$ref": "#/$defs/source"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "kind",
+            "public",
+            "review",
+            "label",
+            "source"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "period": {
+          "enum": [
+            "day",
+            "iso-week"
+          ]
+        },
+        "start": {
+          "$ref": "#/$defs/date"
+        },
+        "review": {
+          "type": "object",
+          "properties": {
+            "reviewer": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "date": {
+              "$ref": "#/$defs/date"
+            },
+            "sourceDigest": {
+              "$ref": "#/$defs/hash"
+            }
+          },
+          "required": [
+            "reviewer",
+            "date",
+            "sourceDigest"
+          ],
+          "additionalProperties": false
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target"
+          },
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "id",
+        "period",
+        "start"
+      ],
+      "additionalProperties": false
+    },
+    "sandboxSpec": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1800
+        },
+        "public": {
+          "const": true
+        },
+        "review": {
+          "const": "author-reviewed"
+        },
+        "atoms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 40,
+          "minItems": 1
+        },
+        "givens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "maxItems": 40
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "premises": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/identifier"
+                },
+                "maxItems": 40,
+                "minItems": 1
+              },
+              "conclusion": {
+                "$ref": "#/$defs/identifier"
+              }
+            },
+            "required": [
+              "id",
+              "premises",
+              "conclusion"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 80
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "maxItems": 40,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "revision",
+        "label",
+        "description",
+        "public",
+        "review",
+        "atoms",
+        "givens",
+        "rules",
+        "goals"
+      ],
+      "additionalProperties": false
+    },
+    "sandbox": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/sandboxSpec"
+        },
+        "source": {
+          "$ref": "#/$defs/identifier"
+        },
+        "route": {
+          "type": "object",
+          "properties": {
+            "snapshot": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}(?![\\s\\S])"
+            },
+            "goal": {
+              "$ref": "#/$defs/identifier"
+            },
+            "current": {
+              "$ref": "#/$defs/identifier"
+            }
+          },
+          "required": [
+            "snapshot",
+            "goal"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "spec",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "sessionMappingAtom": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "role": {
+          "enum": [
+            "claim",
+            "evidence",
+            "objection"
+          ]
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "maxItems": 40,
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "role"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "role"
+            ],
+            "properties": {
+              "role": {
+                "const": "claim"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "targets"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "sessionMapping": {
+      "type": "object",
+      "properties": {
+        "problem": {
+          "$ref": "#/$defs/identifier"
+        },
+        "atoms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sessionMappingAtom"
+          },
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "problem",
+        "atoms"
+      ],
+      "additionalProperties": false
+    },
+    "languageSource": {
+      "type": "object",
+      "properties": {
+        "pageId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "sourceDigest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "pageId",
+        "revision",
+        "sourceDigest"
+      ],
+      "additionalProperties": false
+    },
+    "languageAssertion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/scoped"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "irDigest": {
+          "$ref": "#/$defs/irDigest"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "irDigest"
+      ],
+      "additionalProperties": false
+    },
+    "languageRealisation": {
+      "type": "object",
+      "properties": {
+        "pageId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "url": {
+          "$ref": "#/$defs/htmlPath"
+        },
+        "revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "sourceDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "context": {
+          "$ref": "#/$defs/scoped"
+        },
+        "basedOn": {
+          "$ref": "#/$defs/languageSource"
+        },
+        "assertion": {
+          "$ref": "#/$defs/languageAssertion"
+        },
+        "review": {
+          "const": "author-reviewed"
+        },
+        "reviewedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "pageId",
+        "url",
+        "revision",
+        "language",
+        "sourceDigest",
+        "context",
+        "basedOn",
+        "review",
+        "reviewedBy"
+      ],
+      "additionalProperties": false
+    },
+    "languageSet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "context": {
+          "$ref": "#/$defs/scoped"
+        },
+        "source": {
+          "$ref": "#/$defs/languageSource"
+        },
+        "assertion": {
+          "$ref": "#/$defs/languageAssertion"
+        },
+        "realisations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/languageRealisation"
+          },
+          "maxItems": 16,
+          "minItems": 2
+        }
+      },
+      "required": [
+        "id",
+        "context",
+        "source",
+        "realisations"
+      ],
+      "additionalProperties": false
+    },
+    "publication": {
+      "type": "object",
+      "properties": {
+        "pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "url": {
+                "$ref": "#/$defs/htmlPath"
+              },
+              "revision": {
+                "$ref": "#/$defs/revision"
+              },
+              "language": {
+                "$ref": "#/$defs/language"
+              },
+              "sourceDigest": {
+                "$ref": "#/$defs/digest"
+              }
+            },
+            "required": [
+              "id",
+              "url",
+              "revision"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "maxItems": 512
+        },
+        "withdrawn": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "maxItems": 512
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "language-sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/languageSet"
+          },
+          "maxItems": 16
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "offline": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 67108864
+        },
+        "expiresDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "oer": {
+      "type": "object",
+      "properties": {
+        "source-consent": {
+          "const": true
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "licence": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "attribution": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "modifications": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "ai": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "path",
+              "licence",
+              "attribution",
+              "modifications",
+              "ai"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "include-runtime": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "source-consent",
+        "files"
+      ],
+      "additionalProperties": false
     }
   }
 }
