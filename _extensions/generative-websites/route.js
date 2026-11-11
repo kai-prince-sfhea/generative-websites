@@ -1,6 +1,6 @@
 /* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
 
-// GW-0 uses reviewed, authored relationships. It does not infer missing knowledge.
+// GW-0 uses authored relationships. It does not infer missing knowledge.
 const LEVELS = ["introductory", "advanced"];
 const ID = /^[A-Za-z][A-Za-z0-9._:-]*$/;
 const HASH = /^[a-f0-9]{40}$/;
@@ -73,6 +73,14 @@ export function validateCatalog(catalog) {
   if (!LEVELS.includes(catalog.defaultLevel)) fail("catalog.defaultLevel", "unknown expertise level");
 
   const ids = new Set();
+  function validateSourceOrigin(entry, path) {
+    if (Object.hasOwn(entry, 'authorship') && !['human', 'ai-assisted', 'ai-generated'].includes(entry.authorship)) {
+      fail(`${path}.authorship`, 'expected a recognised source authorship');
+    }
+    if (Object.hasOwn(entry, 'reviewedBy') || !Object.hasOwn(entry, 'authorship')) {
+      text(entry.reviewedBy, `${path}.reviewedBy`, 256);
+    }
+  }
   let expressionCount = 0;
   const validateExpression = (expression, path, depth) => {
     if (depth > 16) fail(path, "prerequisites exceed depth 16");
@@ -92,8 +100,8 @@ export function validateCatalog(catalog) {
   catalog.objects.forEach((object, index) => {
     const path = `catalog.objects[${index}]`;
     const fields = ["id", "conceptId", "revision", "label", "context", "reviewedBy", "views", "prerequisite"];
-    record(object, fields, path);
-    required(object, fields, path);
+    record(object, [...fields, 'authorship'], path);
+    required(object, fields.filter(key => key !== 'reviewedBy'), path);
     identifier(object.id, `${path}.id`);
     if (ids.has(object.id)) fail(`${path}.id`, "duplicate object identifier");
     ids.add(object.id);
@@ -102,18 +110,18 @@ export function validateCatalog(catalog) {
     text(object.revision, `${path}.revision`, 128);
     text(object.label, `${path}.label`, 256);
     text(object.context, `${path}.context`, 128);
-    text(object.reviewedBy, `${path}.reviewedBy`, 256);
+    validateSourceOrigin(object, path);
     array(object.views, `${path}.views`, 2, 2);
     const levels = new Set();
     object.views.forEach((view, viewIndex) => {
       const viewPath = `${path}.views[${viewIndex}]`;
       const viewFields = ["level", "revision", "reviewedBy", "anchor", "digest"];
-      record(view, viewFields, viewPath);
-      required(view, viewFields, viewPath);
+      record(view, [...viewFields, 'authorship'], viewPath);
+      required(view, viewFields.filter(key => key !== 'reviewedBy'), viewPath);
       if (!LEVELS.includes(view.level) || levels.has(view.level)) fail(`${viewPath}.level`, "expected one view of each expertise level");
       levels.add(view.level);
       text(view.revision, `${viewPath}.revision`, 128);
-      text(view.reviewedBy, `${viewPath}.reviewedBy`, 256);
+      validateSourceOrigin(view, viewPath);
       identifier(view.anchor, `${viewPath}.anchor`, 160);
       hash(view.digest, `${viewPath}.digest`);
     });
@@ -150,12 +158,12 @@ export function planRoute(catalog, options = {}) {
   const objects = new Map(catalog.objects.map((object) => [object.id, object]));
   const goalObject = objects.get(goal);
   const failure = (issues) => ({ ok: false, ...base, steps: [], issues });
-  if (!goalObject) return failure([issue("unavailable-goal", "The selected goal is unavailable; choose an object from this reviewed catalogue.", "options.goal")]);
+  if (!goalObject) return failure([issue("unavailable-goal", "The selected goal is unavailable; choose an object from this catalogue.", "options.goal")]);
 
   const knownIssues = [];
   for (const id of known) {
     const object = objects.get(id);
-    if (!object) knownIssues.push(issue("unavailable-known", "The selected known object is unavailable; choose an object from this reviewed catalogue.", "options.known"));
+    if (!object) knownIssues.push(issue("unavailable-known", "The selected known object is unavailable; choose an object from this catalogue.", "options.known"));
     else if (object.context !== goalObject.context) knownIssues.push(issue("incompatible-context", `Known object ${id} has a different declared context from ${goal}.`, id));
   }
   if (knownIssues.length) return failure(knownIssues);
@@ -196,7 +204,7 @@ export function planRoute(catalog, options = {}) {
   const visitObject = (id, parent, path) => {
     if (++visits > MAX_VISITS) return issue("search-limit", "Route search exceeded its bounded work limit.", path);
     const object = objects.get(id);
-    if (!object) return issue("unavailable-object", `Required reviewed object ${id} is unavailable.`, path);
+    if (!object) return issue("unavailable-object", `Required object ${id} is unavailable.`, path);
     if (object.context !== goalObject.context) return issue("incompatible-context", `Required object ${id} has a different declared context from ${goal}.`, path);
     if (id !== goal && knownSet.has(id)) return null;
     if (active.has(id)) return issue("cycle", `Prerequisite cycle encountered at ${id}.`, path);

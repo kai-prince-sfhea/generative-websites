@@ -78,7 +78,7 @@ export function resolveNativeViews(catalog, doc = document) {
           source.getAttribute('data-learning-level') !== view.level ||
           source.getAttribute('data-learning-object') !== object.id ||
           source.closest('.learning-object') !== node) {
-        throw new Error(`Native view ${view.anchor} does not match its reviewed object and level.`);
+        throw new Error(`Native view ${view.anchor} does not match its published object and level.`);
       }
       views.set(view.level, source);
     }
@@ -162,7 +162,7 @@ export function enhance(panel) {
   const controls = element('form', undefined, 'generative-websites-controls');
   const goal = labelledSelect('Learning goal ', objectOptions);
   goal.select.value = catalog.defaultGoal;
-  const expertise = labelledSelect('Reviewed level ', [
+  const expertise = labelledSelect('Explanation level ', [
     {value: 'introductory', label: 'Introductory'},
     {value: 'advanced', label: 'Advanced'}
   ]);
@@ -222,7 +222,7 @@ export function enhance(panel) {
   const exploreActions = element('div', undefined, 'generative-websites-actions');
   exploreActions.append(explore, back);
   exploration.append(exploreChoice.label, exploreActions, excursionStatus);
-  const snapshot = element('p', `Reviewed content snapshot ${catalog.snapshot.slice(0, 12)}. Routes use the fixed revisions included on this page.`, 'generative-websites-snapshot');
+  const snapshot = element('p', `Content snapshot ${catalog.snapshot.slice(0, 12)}. Routes use the fixed revisions included on this page.`, 'generative-websites-snapshot');
   slot.replaceChildren(controls, status, routeRegion, exploration, transfer, snapshot);
   slot.hidden = false;
 
@@ -262,8 +262,8 @@ export function enhance(panel) {
       expertise.select.value = level;
       if (route) applyLevel();
       status.textContent = route
-        ? `Native link selected reviewed ${level} views. Your route and its prerequisites are unchanged.`
-        : `Native link selected the reviewed ${level} level. All authored views remain available until you build a route.`;
+        ? `Native link selected ${level} views. Your route and its prerequisites are unchanged.`
+        : `Native link selected the ${level} level. All authored views remain available until you build a route.`;
     }
     const revealed = visibility.reveal(fragment.target);
     if (!revealed.ok) {
@@ -380,7 +380,7 @@ export function enhance(panel) {
       renderRoute();
       applyLevel();
       exportRoute.disabled = false;
-      status.textContent = `Route built for ${objects.get(route.goal).label}: ${route.steps.length} reviewed ${route.steps.length === 1 ? 'object' : 'objects'}. Changes to the goal or starting knowledge take effect when you build another route.`;
+      status.textContent = `Route built for ${objects.get(route.goal).label}: ${route.steps.length} ${route.steps.length === 1 ? 'object' : 'objects'}. Changes to the goal or starting knowledge take effect when you build another route.`;
     } catch (error) {
       route = null;
       activeObject = null;
@@ -459,8 +459,8 @@ export function enhance(panel) {
     level = expertise.select.value;
     if (route) applyLevel();
     status.textContent = route
-      ? `Reviewed ${level} views selected. The route and its prerequisites are unchanged.`
-      : `Reviewed ${level} level selected for the next valid route. All authored views remain available until then.`;
+      ? `Selected ${level} views for this route.`
+      : `Selected the ${level} explanation level. Build a route to use it for the steps.`;
   });
   listen(previous, 'click', () => selectStep(cursor - 1));
   listen(next, 'click', () => selectStep(cursor + 1));
@@ -526,7 +526,7 @@ export function enhance(panel) {
     importRoute.value = '';
     exportRoute.disabled = true;
     renderRoute();
-    status.textContent = 'Route controls reset to the authored defaults and all authored views restored. Build a route to select a reviewed level again. No reader state is stored between visits.';
+    status.textContent = 'Route controls reset to the authored defaults and all authored views restored. Build a route to select an explanation level again. No reader state is stored between visits.';
   });
   listen(exportRoute, 'click', () => {
     if (!route || excursions.depth) return;
@@ -545,7 +545,7 @@ export function enhance(panel) {
       URL.revokeObjectURL(url); downloadURLs.delete(url); downloadTimers.delete(timer);
     }, 60000);
     downloadTimers.add(timer);
-    status.textContent = 'Route download requested with its snapshot, current step and selected revisions. The file contains route settings, not reviewed content.';
+    status.textContent = 'Route download requested with its snapshot, current step and selected revisions. The file contains route settings, with links and revision identifiers.';
     } catch (error) {status.textContent = `Route download unavailable; your route is unchanged. ${error.message}`;}
   });
   listen(importRoute, 'change', async () => {
@@ -563,7 +563,7 @@ export function enhance(panel) {
       const known = new Set(route.known);
       for (const [id, input] of knownInputs) input.checked = known.has(id);
       renderRoute(); applyLevel();
-      status.textContent = 'Saved route restored against this exact reviewed snapshot. No file was uploaded. Select a step to continue.';
+      status.textContent = 'Saved route restored against the matching snapshot. Select a step to continue.';
     } catch (error) {if (!disposed && epoch === actionEpoch) status.textContent = `Saved route refused; your current route is unchanged. ${error.message}`;}
     finally {if (!disposed && epoch === actionEpoch) importRoute.value = '';}
   });

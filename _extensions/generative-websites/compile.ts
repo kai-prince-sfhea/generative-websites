@@ -13,7 +13,7 @@ import {fileURLToPath} from 'node:url';
 import {lstatSync,realpathSync,readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Buffer} from 'node:buffer';
-import {validateAdaptationPage,resolveAdaptation} from './adaptation.js';
+import {validateAdaptationPage,normalizeAdaptationPreferences,resolveAdaptation} from './adaptation.js';
 import {validateAssertionRegistry,canonicalAssertion} from './assertions.js';
 import {validatePublicPage,validatePublication} from './delivery.js';
 import {createExercise} from './exercises.js';
@@ -72,12 +72,15 @@ async function effectiveSiteURL(root:string){
 async function compile(input:any){
  own(input,['version','root','inputDir','pageURL','language','html','options','objects','pageSource','siteURL','controlled','realisations','scenarioRows','symbolRows','activities','activitySources','sourcePath','numbasRows','numbasRunId','numbasOutputRoot','translationRows'],['version','root','inputDir','pageURL','language','html','options','objects','pageSource']);
  if(input.version!==1||typeof input.html!=='boolean')throw Error('version');const root=resolve(input.root),inputDir=resolve(input.inputDir);
- let options=input.options;own(options,['translations','enabled','prerequisites','graph-prerequisites','local-ai-sources','catalogue','numbas','activities','controlled-authoring','scenario-candidates','wai-adapt','project','defaults','assertions','exercises','records','reports','sandbox','sandbox-session-mappings','publication','offline','oer']);
+ let options=input.options;own(options,['authorship','translations','enabled','prerequisites','graph-prerequisites','local-ai-sources','catalogue','numbas','activities','controlled-authoring','scenario-candidates','wai-adapt','project','defaults','assertions','exercises','records','reports','sandbox','sandbox-session-mappings','publication','offline','oer']);
  if(options.catalogue!==undefined){
   const bytes=ordinary(root,resolve(inputDir,txt(options.catalogue,2048)),1024*1024);
   const catalogue=parseYAML(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
   own(catalogue,['translations','version','numbas','activities','controlled-authoring','scenario-candidates','wai-adapt','project','defaults','prerequisites','assertions','exercises','records','reports','sandbox','sandbox-session-mappings','publication','offline','oer'],['version']);if(catalogue.version!==1)throw Error('catalogue-version');
-  options={...catalogue,...options,project:{...(catalogue.project??{}),...(options.project??{})},defaults:{...(catalogue.defaults??{}),...(options.defaults??{})}};
+  const catalogueDefaults=normalizeAdaptationPreferences(catalogue.defaults??{});
+  const pageDefaults=normalizeAdaptationPreferences(options.defaults??{});
+  const defaults={...catalogueDefaults,...pageDefaults,expertise:{...catalogueDefaults.expertise,...pageDefaults.expertise}};
+  options={...catalogue,...options,project:{...(catalogue.project??{}),...(options.project??{})},defaults};
  }
  async function prepareNumbas(){ let numbas=null;
  if(input.sourcePath!==undefined&&(options.numbas!==undefined||typeof input.numbasRunId==='string')){let requested=options.numbas;
@@ -93,7 +96,7 @@ return numbas;}
  const pageRevision=txt(project['page-revision']??revision,128),language=txt(input.language,64);
  const siteURL=input.siteURL??(input.html&&options.publication?.['language-sets']!==undefined?await effectiveSiteURL(root):undefined);
  const base=new URL(siteURL??'https://quarto.invalid/');if(!['https:','http:'].includes(base.protocol)||base.username||base.password||base.search||base.hash)throw Error('site-url');if(!base.pathname.endsWith('/'))base.pathname+='/';const baseURL=base.href;
- const defaults=options.defaults??{};own(defaults,['exposition','terminology','scaffolding','prerequisite-knowledge','reading-complexity','context-interest','representation','challenge','level']);for(const v of Object.values(defaults))txt(v,128);
+ const defaults=options.defaults??{};normalizeAdaptationPreferences(defaults);
  const pubOptions=options.publication??{};own(pubOptions,['pages','assets','withdrawn','expiresAt','language-sets']);
  let pageURL=project['page-url']??input.pageURL;
  if(!input.html&&!project['page-url']){const match=(pubOptions.pages??[]).find((v:any)=>v.id===pageId);if(!match)throw Error('native-public-url');pageURL=match.url;}
@@ -114,7 +117,7 @@ return numbas;}
  }
  const adaptationObjects:any[]=[],publicObjects:any[]=[],sourceById=new Map();
  for(const raw of arr(input.objects,50)){
-  own(raw,['id','revision','label','context','conceptId','reviewedBy','sourceDigest','sourceText','assertionId','groups'],['id','revision','label','context','conceptId','reviewedBy','sourceDigest','sourceText','groups']);
+  own(raw,['id','revision','label','context','conceptId','reviewedBy','sourceDigest','sourceText','assertionId','groups'],['id','revision','label','context','conceptId','sourceDigest','sourceText','groups']);
   const objectId=id(raw.id);if(sourceById.has(objectId))throw Error('duplicate-object');
   txt(raw.conceptId,512);if(!/^[A-Za-z][A-Za-z0-9+.-]*:[^\s<>"']+$/u.test(raw.conceptId))throw Error('concept-uri');
   const source={path:pageURL,anchor:objectId,sha256:sha(raw.sourceText)};sourceById.set(objectId,source);

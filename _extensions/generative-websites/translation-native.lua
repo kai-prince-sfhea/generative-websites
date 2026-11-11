@@ -39,6 +39,11 @@ function M.place(doc,packet,reviewYAML)
    target=pandoc.Div(body,pandoc.Attr(result.id,{'translation-candidate'},{lang=candidate.target.language}));appended:insert(target)
   end
   local body=pandoc.List({pandoc.Header(2,'Review translation: '..result.id),pandoc.Para({pandoc.Link({pandoc.Str('Original source')},'#'..result.sourceId),pandoc.Space(),pandoc.Link({pandoc.Str('Candidate wording')},'#'..result.id)}),notice})
+  if type(result.review)=='table' then
+   body:insert(pandoc.Para({pandoc.Str('Review declared on '..result.review.reviewedOn..'. Candidate snapshot '),pandoc.Code(result.snapshotSha256)}))
+  else
+   body:insert(pandoc.Para({pandoc.Str('Candidate awaiting review. Candidate snapshot '),pandoc.Code(result.snapshotSha256)}))
+  end
   body:insert(pandoc.Para({pandoc.Str('Compare meaning, assumptions, uncertainty, negation, scope and terminology in both languages. Exact protected objects, structure and numbers have been checked; ordinary prose equivalence has not.')}))
   for i,source in ipairs(candidate.sourceSegments)do local translated=candidate.targetSegments[i];body:insert(pandoc.Para({pandoc.Strong({pandoc.Str('Original '..source.id..': ')}),pandoc.Str(source.text)}));body:insert(pandoc.Para({pandoc.Strong({pandoc.Str('Candidate '..translated.id..': ')}),pandoc.Str(translated.text)}))end
   body:insert(pandoc.Para({pandoc.Str('Candidate JSON for explicit import, retaining the exact original source binding:')}));body:insert(pandoc.CodeBlock(pandoc.json.encode(candidate),pandoc.Attr('',{'json'})))
@@ -46,7 +51,7 @@ function M.place(doc,packet,reviewYAML)
  end
  for _,problem in ipairs(packet.problems or{})do appended:insert(pandoc.Div({pandoc.Header(2,'Translation unavailable: '..problem.id),pandoc.Para({pandoc.Str(problem.reason..'. '..problem.qualification)})},pandoc.Attr('',{'generative-translation-inspection'})))end
  for _,source in ipairs(packet.sources or{})do appended:insert(pandoc.Div({pandoc.Header(2,'Translation source packet: '..source.source.id),pandoc.Para({pandoc.Str('Copy this JSON to a private source-packet.json only when explicitly requesting a local candidate. Render and Preview never invoke a model.')}),pandoc.CodeBlock(pandoc.json.encode(source),pandoc.Attr('',{'json'}))},pandoc.Attr('',{'generative-translation-source-packet'})))end
- if type(reviewYAML)=='string'then appended:insert(pandoc.Para({pandoc.Str('After comparing the full original and target wording, set review: author-reviewed, replace reviewer/date placeholders and copy this map into the existing generative-websites configuration. Copying pins does not prove semantic fidelity.')}));appended:insert(pandoc.CodeBlock(reviewYAML,pandoc.Attr('',{'yaml'})))end
+ if type(reviewYAML)=='string'then appended:insert(pandoc.Para({pandoc.Str('These candidate fingerprints are available for projects using explicit reviewed translation configuration. Compare the full original and target wording in this output.')}));appended:insert(pandoc.CodeBlock(reviewYAML,pandoc.Attr('',{'yaml'})))end
  for _,b in ipairs(appended)do doc.blocks:insert(b)end
  return doc
 end

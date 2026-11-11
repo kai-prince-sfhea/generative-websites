@@ -1,22 +1,24 @@
 # Generative Websites
 
-Compose learning routes from explicitly reviewed Quarto content. This experimental
-**0.0.13** implementation keeps authored prose and mathematics in native fenced
-Divs, adds independent reviewed exposition/wording/scaffolding choices, finite
+Compose learning routes and reading choices from Quarto content. This experimental
+**0.0.14** implementation keeps authored prose and mathematics in native content,
+adds independent subject expertise, exposition, wording and support choices, finite
 practice, explicit cross-page routes and public publication tools without a
 language model. The earlier two-view/page-local route remains supported.
 This is experimental source; it is not a supported
 release or a claim of educational benefit. The bounded GW-0 development milestone
 is separate from the wider research roadmap and your acceptance of the extension.
 It is intended for authors of teaching and research pages who want readers to
-choose reviewed explanations and explore preparation without losing their route.
+choose published explanations and explore preparation without losing their route.
 
-Version 0.0.13 is development source distributed from the experimental `main`
+Version 0.0.14 is development source distributed from the experimental `main`
 branch. The GitHub and local-source instructions below provide alternative
 installation routes. Use matching companion versions and retain the documented
 verification limits; source publication does not establish a supported release.
 
-Current 0.0.13 improves reader controls and adds a narrowly supported external
+Version 0.0.14 adds subject-specific expertise controls and derives ordinary
+variant revisions and authorship records during rendering. Version 0.0.13
+improved reader controls and added a narrowly supported external
 Numbas DOM adapter during local preparation. Native templates, engine code,
 stylesheets, question text, keyboard listeners and marking remain unchanged.
 The earlier 0.0.12 translation and font-notice changes remain. Source/candidate
@@ -25,13 +27,13 @@ versions, meaning, human-review and rights qualifications.
 
 ## Start with one learning object
 
-The runnable [example.qmd](example.qmd) is the tutorial: render it, choose reviewed
+The runnable [example.qmd](example.qmd) is the tutorial: render it, choose published
 alternatives, change one YAML default and render again with native Preview.
 No model, prerequisite catalogue or author-written JavaScript is needed. This
 README provides the advanced configuration and integration reference; the
 separate [advanced.qmd](advanced.qmd) demonstrates a multi-object activity.
 
-The main reviewed preferences appear first; **More reviewed preferences** keeps
+The main preferences appear first. **More preferences** keeps
 additional axes available. Page-local routes put goal, level and Build first,
 with **Starting knowledge** and **Save or restore a route** as native disclosures.
 Cross-page routes keep navigation beside the route and group transfer/offline
@@ -163,7 +165,7 @@ does not change the question being answered.
 |---|---|
 | Object name shown in controls | Its `label` attribute and ordinary heading text |
 | Introductory/advanced explanations | The two `.learning-view` Div bodies |
-| Initial goal | Panel attribute `goal="sets"`; omit it to use the first reviewed object |
+| Initial goal | Panel attribute `goal="sets"`; omit it to use the first published object |
 | Initial explanation level | Panel attribute `level="advanced"`; omitted means `introductory` |
 | Panel title and introduction | Ordinary Markdown inside `.generative-route` |
 | Manual preparation | `generative-websites.prerequisites` in project or page YAML |
@@ -178,13 +180,10 @@ server. Use a declared shared-catalogue prefix or HTTP(S)/URN identity for
 graph-linked concepts. Copying a label is not enough to establish equivalence.
 Keep heading IDs distinct from object IDs, for example `#sets-title`.
 
-Check both views before declaring them reviewed. Replace each example
-`reviewed-by` value with the actual reviewer; use `review="candidate"` on an
-object that is still being drafted. A candidate remains visible as native
-content but is excluded from routes. After editing, update the affected view's
-`revision` and the object's `revision`; update the object revision for changed
-shared tasks, assumptions or qualifications. Saved routes intentionally refuse
-changed snapshots. Review markers are declarations, not a review service.
+Use `level` on each view. The render derives a revision from the content when
+you omit `revision`. Saved routes check the rendered snapshot before restoring.
+Older review attributes remain supported, including `review="candidate"` for
+content to exclude from the route.
 
 Quarto theme settings provide the default typography and colours. Optional CSS
 can target `.generative-websites-enhancement` (controls), `.learning-object`
@@ -229,16 +228,16 @@ exact mapping in `publication.pages`. Page IDs must be unique across selected
 pages; a logical page ID can equal an object ID without duplicating an HTML ID.
 
 ```markdown
-:::: {#sets .adaptive-object label="Sets" concept-id="urn:my-course:concept:sets" context="urn:my-course:context:sets" revision="v1" review="author-reviewed" reviewed-by="Your name"}
+:::: {#sets .adaptive-object label="Sets" concept-id="urn:my-course:concept:sets" context="urn:my-course:context:sets"}
 ## Sets {#sets-title}
 
 Keep the common task and qualifications here.
 
-::: {.learning-variant group="explanation" axis="exposition" value="introductory" default="true" revision="intro-v1" review="author-reviewed" reviewed-by="Your name"}
+::: {.learning-variant group="explanation" axis="exposition" value="introductory"}
 An authored introductory explanation of the same task.
 :::
 
-::: {.learning-variant group="explanation" axis="exposition" value="advanced" revision="advanced-v1" review="author-reviewed" reviewed-by="Your name"}
+::: {.learning-variant group="explanation" axis="exposition" value="advanced"}
 An authored advanced explanation with the same assumptions.
 :::
 ::::
@@ -254,16 +253,34 @@ language/notation or remove a scaffold. `level` explicitly aliases exposition;
 conflicting `level` and `exposition` settings are refused. Unsupported choices
 keep that group's author default and report the limitation.
 
-Each variant needs its own revision, explicit author review and reviewer.
-Exactly one `default="true"` marks the group default; otherwise the first variant
-is used. Group/value tokens use lowercase letters/digits/hyphens. Keep complete
-attribute lists on one line. Generated anchors follow
-`sets--explanation--introductory`; do not duplicate them elsewhere.
+The first variant is the group default. Set `default="true"` on one variant to
+choose a different default. Group/value tokens use lowercase letters, digits and
+hyphens. Keep attribute lists on one line. Generated anchors follow
+`sets--explanation--introductory` and must be unique on the page.
+
+`group`, `axis` and `value` are required on each `.learning-variant`. Choose any
+subset of the supported axes for a page. Each group uses a single axis. You can
+use `default` and `authorship` independently. The render can supply `revision`
+for an ordinary variant. When retaining an explicit `review="author-reviewed"`
+declaration, supply both `revision` and `reviewed-by`.
+
+The render records source authorship and content-derived revisions in the HTML
+output. Open **Source authorship, revisions and review** to inspect them. QMD
+defaults to human authorship. Declare `generative-websites: {authorship: ai-assisted}`
+or `ai-generated` in page YAML when applicable. An `authorship` attribute on a
+learning object or variant overrides the enclosing declaration. The output
+labels the declared AI source. Source authorship and editorial approval are
+separate. Older `revision`, `review` and `reviewed-by` attributes remain supported.
+Explicitly admitting derived candidates uses the applicable candidate checks below.
+
+Render and Preview read QMD and place derived content and its records in the
+rendered output. The optional model preparation command produces a separate
+candidate JSON for explicit import.
 
 Literal wording may use `.learning-variant` Spans inside the object:
 
 ```markdown
-**Wording:** [Plain: a collection.]{.learning-variant group="wording" axis="terminology" value="plain" default="true" revision="plain-v1" review="author-reviewed" reviewed-by="Your name"} [Technical: a set.]{.learning-variant group="wording" axis="terminology" value="technical" revision="technical-v1" review="author-reviewed" reviewed-by="Your name"}
+**Wording:** [Plain: a collection.]{.learning-variant group="wording" axis="terminology" value="plain"} [Technical: a set.]{.learning-variant group="wording" axis="terminology" value="technical"}
 ```
 
 Label the alternatives so the unenhanced page stays intelligible. Rich block
@@ -312,6 +329,60 @@ Only declare defaults whose alternatives you have authored. Use the same
 `.learning-variant` syntax shown above with the corresponding `axis` and your
 reviewed `value`; the controls offer choices present on that page. `level` remains
 an explicit alias for `exposition`, with conflicting values refused.
+
+### Subject expertise
+
+For a page covering several disciplines, prefix an `exposition` value with a
+subject. The part after the last hyphen can be `introduction`, `introductory`,
+`intermediate` or `advanced`. Choose your own subject prefix using lowercase
+letters, digits and hyphens, starting with a letter. The page's
+`.learning-preferences` panel uses the exact prefix as its identifier and
+capitalises the hyphen-separated words for display. For example,
+`computer-science-introduction` gives **Computer Science expertise** with an
+**Introduction** option. `math` and `mathematics` give separate selectors.
+Use the same prefix for alternatives that belong to the same subject. Ordinary
+values such as `introductory` use **Exposition**.
+The recognised endings are reserved for subject expertise. For example, if an
+older page used `very-advanced` as an ordinary label, rename it and its default
+to `advanced-detail` to keep it on **Exposition**.
+
+Inside an `.adaptive-object`, use a separate group for each independent passage.
+Use separate groups for general exposition and subject expertise.
+Both spans and divs support a single value or a list:
+
+```markdown
+[Start with a familiar collection.]{.learning-variant group="maths-example" axis="exposition" value="mathematics-introductory"}
+[Start with a finite set.]{.learning-variant group="maths-example" axis="exposition" value="mathematics-advanced"}
+
+[Start with a list of items.]{.learning-variant group="computing-example" axis="exposition" value="computer-science-introduction"}
+[Start with a set data structure.]{.learning-variant group="computing-example" axis="exposition" value="computer-science-advanced"}
+
+::: {.learning-variant group="shared-explanation" axis="exposition" value=[mathematics-introductory,computer-science-introduction]}
+Start with a collection of objects and a list of items in a program.
+:::
+
+::: {.learning-variant group="shared-explanation" axis="exposition" value="[mathematics-advanced, computer-science-introduction]"}
+Start with a finite set, then introduce how a program represents its elements.
+:::
+```
+
+Use one level per subject in a list. A bare list must have no spaces. Quote the
+whole list if it contains spaces. A group shows one alternative that matches all
+chosen levels for subjects used by that group. The first authored match wins
+when several match. If the author has supplied no matching combination, the
+group shows its default and the panel reports the unavailable combination.
+
+Optional page or project YAML can set starting levels. These defaults also
+select the alternatives for Word and EPUB. When a page overrides catalogue
+expertise defaults, it replaces the levels for the named subjects:
+
+```yaml
+generative-websites:
+  defaults:
+    expertise:
+      mathematics: advanced
+      computer-science: introduction
+```
 
 ### Structured activities and private reader progress
 
@@ -578,17 +649,16 @@ Lisez la définition avant d'essayer l'exemple.
 :::
 ```
 
-Render or Preview normally. The original and candidate stay readable, followed
-by a comparison, exact source/candidate fingerprints, a source JSON packet and
-copyable YAML review pins. The default is `translations.mode: inspect`; copying
-the pins does not approve the wording. After a competent language review,
-change the suggested `review` to `author-reviewed`, supply a deliberately public
-or consented reviewer name **or an opaque public review identifier**, and the
-real review date, then copy the map into your existing configuration. Keep any
-private identity mapping and detailed review receipt outside Git and QMD. In
-`mode: reviewed`, changed source, target, language, revision or compiler pins
-refuse the old review. Inspection can label unsupported content while retaining
-the authored wording. `translations: false` leaves these Divs as ordinary text.
+Render or Preview normally. In the default `translations.mode: inspect`, read
+the original, candidate, comparison and candidate fingerprint in the output.
+The candidate stays pending review. The render leaves the QMD source intact.
+
+Existing projects can use `mode: reviewed` and explicit review configuration to
+admit an exact candidate. The output records the declared review date and
+fingerprint. Changed source, target, language, revision or compiler pins require
+a fresh review decision. Use a deliberately public reviewer label or opaque
+identifier for any explicit admission input. `translations: false` renders the
+Divs as ordinary text.
 
 The finite projection supports paragraphs, plain text, ordinary emphasis,
 lists, inline spans and links. It retains Math, citations, code, quoted evidence,
@@ -1306,21 +1376,19 @@ to conceal incomplete or stale output.
 
 Use a native ID for each occurrence and a scoped URI for the concept it discusses
 (or the shared canonical `semantic-id` supplied by Maths Knowledge Graph).
-Review and revisions are explicit author declarations; the extension cannot
-establish mathematical truth or equivalence between two explanations. `context`
-is an author-controlled compatibility label; matching labels are not proof of
-compatible assumptions. Keep the assumptions and qualifications in the prose.
+Use `context` as an author-controlled compatibility label. Write the assumptions
+and qualifications in the shared prose and check both explanations against them.
 
 ```markdown
-:::: {#sets .learning-object concept-id="urn:example:concept:sets" revision="sets-1" label="Sets" context="elementary-maths" review="author-reviewed" reviewed-by="Your name"}
+:::: {#sets .learning-object concept-id="urn:example:concept:sets" label="Sets" context="elementary-maths"}
 ## Sets {#sets-title}
 
-::: {.learning-view level="introductory" revision="sets-intro-1" review="author-reviewed" reviewed-by="Your name"}
+::: {.learning-view level="introductory"}
 A set is a collection of objects.
 :::
 
-::: {.learning-view level="advanced" revision="sets-advanced-1" review="author-reviewed" reviewed-by="Your name"}
-State the reviewed advanced explanation and its assumptions here.
+::: {.learning-view level="advanced"}
+State the advanced explanation and its assumptions here.
 :::
 ::::
 ```
@@ -1329,7 +1397,7 @@ Each selected object requires exactly one **direct child** view of each level.
 The extension supplies view anchors such as `sets--introductory`; do not author
 view IDs. IDs start with an ASCII letter, contain letters/digits/`._:-`, and
 are at most 128 bytes. Concept IDs identify a scoped concept, not an automatic
-equivalence assertion. Update object/view revisions after editorial changes.
+equivalence assertion. Omitted revisions derive from the rendered source content.
 `constructor` and `prototype` are reserved and cannot be object/reference IDs.
 Keep heading IDs distinct from object IDs, as `sets-title` above; native automatic
 heading IDs can otherwise collide with a Div of the same name. Objects and route
@@ -1576,8 +1644,8 @@ evaluation. No AI inference runs while rendering or using GW-0, and AI assistanc
 does not imply University of Manchester approval or replace applicable human
 review and Responsible AI guidance.
 
-The example is deliberately synthetic and AI-assisted. Its review fields
-demonstrate authoring syntax; they are not records of independent human approval.
+The examples are deliberately synthetic and declare their AI-assisted authorship.
+The rendered source details record the declaration and the revision.
 Authors remain responsible for checking content, rights, publication scope and
 the institutional rules applicable to their use. Automated checks do not establish
 originality of every contribution, mathematical correctness or learning benefit.

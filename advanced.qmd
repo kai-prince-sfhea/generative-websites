@@ -4,6 +4,7 @@ lang: en
 filters:
   - kai-prince-sfhea/generative-websites
 generative-websites:
+  authorship: ai-assisted
   prerequisites:
     functions: sets
     bijections:
@@ -14,8 +15,8 @@ generative-websites:
             - proofs
 ---
 
-This synthetic authoring example demonstrates the controls. Its review declarations
-illustrate the contract; they do not record independent mathematical or learner review.
+This synthetic authoring example demonstrates the controls with two published
+views per learning object.
 The first alternative for proof preparation is deliberately unavailable, so the
 route uses the authored proof-pattern object.
 
@@ -34,7 +35,7 @@ Select a goal and knowledge you already have. Explore an unfamiliar concept and
 return to your original route.
 :::
 
-:::: {#sets .learning-object concept-id="urn:example:concept:sets" revision="sets-2" label="Sets" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+:::: {#sets .learning-object concept-id="urn:example:concept:sets" label="Sets" context="elementary-maths"}
 ## Sets {#sets-title}
 
 **Objective:** Read a membership statement for a specified finite set.
@@ -42,19 +43,19 @@ return to your original route.
 **Quick check:** If $A=\{1,2\}$, which of $1\in A$ and $3\in A$ holds?
 Explain your choice before consulting an explanation.
 
-::: {.learning-view level="introductory" revision="sets-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="introductory"}
 A set is a collection of objects. We write $x \in A$ when $x$ belongs to $A$.
 For example, $A=\{1,2\}$ contains two elements.
 :::
 
-::: {.learning-view level="advanced" revision="sets-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="advanced"}
 Here sets are used in ordinary elementary mathematics. Membership is denoted
 by $\in$, and $A\subseteq B$ means every element of $A$ is an element of $B$.
 No foundational axiom system is supplied by this example.
 :::
 ::::
 
-:::: {#functions .learning-object concept-id="urn:example:concept:functions" revision="functions-2" label="Functions" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+:::: {#functions .learning-object concept-id="urn:example:concept:functions" label="Functions" context="elementary-maths"}
 ## Functions {#functions-title}
 
 **Objective:** Identify the domain, codomain and output of a specified function.
@@ -62,20 +63,20 @@ No foundational axiom system is supplied by this example.
 **Quick check:** For $f:\{1,2\}\to\{2,4\}$ with $f(x)=2x$, state the
 domain, codomain and value of $f(2)$.
 
-::: {.learning-view level="introductory" revision="functions-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="introductory"}
 A function $f:A\to B$ assigns exactly one element of $B$ to each element of $A$.
 For example, $f:\{1,2\}\to\{2,4\}$ with $f(x)=2x$ is a function.
 Review [sets](#sets) if the domain and codomain are unfamiliar.
 :::
 
-::: {.learning-view level="advanced" revision="functions-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="advanced"}
 A function $f:A\to B$ is a total, single-valued relation from $A$ to $B$:
 for every $a\in A$ there exists exactly one $b\in B$ with $(a,b)\in f$.
 Its domain and codomain are part of the specified function.
 :::
 ::::
 
-:::: {#proofs .learning-object concept-id="urn:example:concept:proof-patterns" revision="proofs-2" label="Proof patterns" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+:::: {#proofs .learning-object concept-id="urn:example:concept:proof-patterns" label="Proof patterns" context="elementary-maths"}
 ## Proof patterns {#proofs-title}
 
 **Objective:** Distinguish a universal justification from a few supporting examples.
@@ -83,20 +84,20 @@ Its domain and codomain are part of the specified function.
 **Quick check:** Why would checking two integers usually be insufficient to prove
 a statement about every integer? What could a single counterexample establish?
 
-::: {.learning-view level="introductory" revision="proofs-intro-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="introductory"}
 To prove a statement holds for every element, start with an arbitrary element
 and justify the required conclusion. A worked example alone does not prove
 a statement about every element.
 :::
 
-::: {.learning-view level="advanced" revision="proofs-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="advanced"}
 For universal introduction, choose an arbitrary element satisfying the stated
 domain assumptions and derive the predicate without additional restrictions
 on that element. This is pedagogical preparation, not a formal proof checker.
 :::
 ::::
 
-:::: {#bijections .learning-object concept-id="urn:example:concept:bijections" revision="bijections-2" label="Bijections" context="elementary-maths" review="author-reviewed" reviewed-by="Example fixture declaration"}
+:::: {#bijections .learning-object concept-id="urn:example:concept:bijections" label="Bijections" context="elementary-maths"}
 ## Bijections {#bijections-title}
 
 ::: {#bijections-task}
@@ -115,12 +116,12 @@ Which properties does $g$ have? Explain why a claim about $f$ cannot simply be
 transferred to $g$ without checking the specified codomain.
 :::
 
-::: {.learning-view level="introductory" revision="bijections-intro-2" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="introductory"}
 A bijection $f:A\to B$ pairs the elements of $A$ and $B$ one to one:
 different inputs have different outputs, and every element of $B$ is reached.
 :::
 
-::: {.learning-view level="advanced" revision="bijections-advanced-1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-view level="advanced"}
 A bijection $f:A\to B$ is injective and surjective:
 $f(a)=f(a')\Rightarrow a=a'$ for $a,a'\in A$, and
 $\forall b\in B\,\exists a\in A\;(f(a)=b)$.

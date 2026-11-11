@@ -2,7 +2,7 @@
 -- Native authored content is authoritative; the installed helper only validates
 -- finite data and prepares explicit public projections. It invokes no AI.
 local M={}
-local function fail()assert(false,'generative-websites: cannot prepare the selected reviewed features; check the installed reference, explicit revisions and public source selection')end
+local function fail()assert(false,'generative-websites: cannot prepare the selected features; check the installed reference and public source selection')end
 local function has(el,name)return el.classes and el.classes:includes(name)end
 local function nonpublic(el)
   local a=el.attributes or{}
@@ -21,6 +21,20 @@ end
 local function token(value)
   local s=text(value,128);if not s:match('^[A-Za-z][A-Za-z0-9._:%-]*$')or s=='constructor'or s=='prototype'then fail()end;return s
 end
+local function variant_value(value)
+  local raw=text(value,1024)
+  if not raw:match('^%[') then return token(raw),raw end
+  local body=raw:match('^%[(.*)%]$')
+  assert(body,'generative-websites: use a bracketed list of subject expertise values')
+  local values=pandoc.List()
+  for part in (body..','):gmatch('(.-),') do
+    values:insert(token(part:match('^%s*(.-)%s*$')))
+    if #values>8 then fail() end
+  end
+  local sorted={table.unpack(values)}
+  table.sort(sorted)
+  return values,'subjects-'..pandoc.utils.sha1(table.concat(sorted,','))
+end
 local function plain(value,depth)
   depth=(depth or 0)+1;if depth>32 then fail()end
   local kind=pandoc.utils.type(value)
@@ -37,6 +51,12 @@ local function source(el)
   return pandoc.write(pandoc.Pandoc(blocks),'json')
 end
 local function digest(el)return 'sha1:'..pandoc.utils.sha1(source(el))end
+local function authorship(value, fallback)
+  if value==nil then return fallback end
+  if value=='human' or value=='ai-assisted' or value=='ai-generated' then return value end
+  assert(false,'generative-websites: authorship must be human, ai-assisted or ai-generated')
+end
+local originLabels={human='Human-authored source',['ai-assisted']='AI-assisted source',['ai-generated']='AI-generated source'}
 local function native_location(cwd,root)
   local input=quarto.doc.input_file
   if not pandoc.path.is_absolute(input)then input=pandoc.path.join({cwd,input})end
@@ -68,9 +88,10 @@ function M.process(doc,runtime,native_directory,project_root)
   local professional=doc.meta['interactive-cv']~=nil
   if not professional then doc:walk({Div=function(el)if has(el,'cv-index')then professional=true end end})end
   if professional and quarto.doc.is_format('html:js')then
-    quarto.doc.add_html_dependency({name='generative-websites-professional',version='0.0.13',scripts={{path='professional-browser.js',attribs={type='module'}}}})
+    quarto.doc.add_html_dependency({name='generative-websites-professional',version='0.0.14',scripts={{path='professional-browser.js',attribs={type='module'}}}})
   end
   local options=raw and plain(raw)or{}
+  local pageAuthorship=authorship(options.authorship,'human')
   local translationAPI=dofile(pandoc.path.join({runtime,'translation-native.lua'}))
   local translationRows=translationAPI.capture(doc,options.translations)
   local all,anchors,panels,roles={}, {}, {}, {}
@@ -86,7 +107,11 @@ function M.process(doc,runtime,native_directory,project_root)
   local restricted={}
   local function guarded(el)
     if nonpublic(el)or el.attributes.hidden~=nil or el.attributes.inert~=nil or el.attributes['aria-hidden']=='true'then
-      el:walk({Div=function(child)if has(child,'controlled-assertion')or has(child,'reviewed-realisation')then restricted[child.identifier]=true end end})
+      el:walk({Div=function(child)
+        if has(child,'adaptive-object')or has(child,'learning-object')or has(child,'controlled-assertion')or has(child,'reviewed-realisation')then
+          restricted[child.identifier]=true
+        end
+      end})
       return el,false
     end
   end
@@ -115,31 +140,45 @@ function M.process(doc,runtime,native_directory,project_root)
     pandoc.Inlines({el}):walk({Span=function(child)if has(child,'learning-variant')then fail()end end,
       Div=function(child)if has(child,'learning-variant')then fail()end end})
   end
+  local function protected_container(el)
+    if not has(el,'protected-assertion')and not has(el,'learning-invariant')then return end
+    local function reject_variant(child)if has(child,'learning-variant')then fail()end end
+    el.content:walk({Span=reject_variant,Div=reject_variant})
+  end
   local objects=pandoc.List();local selected={};local originals={};local variants={};local publicRoleIndex=0
   for _,panel in ipairs(realisations)do if anchors[panel.id]~=1 then fail()end end
   for _,el in ipairs(all)do
-    if el.attributes.review=='author-reviewed'then
+    local declaredReview=el.attributes.review
+    local ordinary=not has(el,'controlled-assertion')
+    if declaredReview=='author-reviewed' or (ordinary and declaredReview==nil) then
       local id=token(el.identifier);if anchors[id]~=1 or selected[id]then fail()end
-      if has(el,'controlled-assertion')and(restricted[id]or el.attributes.public~='true')then fail()end
+      if restricted[id]or(has(el,'controlled-assertion')and el.attributes.public~='true')then fail()end
       if nonpublic(el)or el.attributes.hidden~=nil or el.attributes.inert~=nil or el.attributes['aria-hidden']=='true'then fail()end
       el.content:walk({Cite=forbid,Quoted=forbid,Div=function(child)
         if has(child,'adaptive-object')or has(child,'learning-object')or has(child,'reviewed-realisation')or child.attributes.hidden~=nil or child.attributes.inert~=nil or child.attributes['aria-hidden']=='true'then fail()end
-        if has(child,'protected-assertion')or has(child,'learning-invariant')then
-          child.content:walk({Span=function(v)if has(v,'learning-variant')then fail()end end,Div=function(v)if has(v,'learning-variant')then fail()end end})
-        end
-      end,Span=function(child)if child.attributes.hidden~=nil or child.attributes.inert~=nil or child.attributes['aria-hidden']=='true'then fail()end end})
-      local reviewer=text(el.attributes['reviewed-by']);local objectSource=source(el)
-      local item={id=id,revision=text(el.attributes.revision,128),label=text(el.attributes.label),context=text(el.attributes.context,128),
+        protected_container(child)
+      end,Span=function(child)
+        if child.attributes.hidden~=nil or child.attributes.inert~=nil or child.attributes['aria-hidden']=='true'then fail()end
+        protected_container(child)
+      end})
+      local reviewer=declaredReview=='author-reviewed' and text(el.attributes['reviewed-by']) or nil
+      local origin=authorship(el.attributes.authorship,pageAuthorship)
+      local objectSource=source(el)
+      local objectDigest='sha1:'..pandoc.utils.sha1(objectSource)
+      local item={id=id,revision=declaredReview==nil and el.attributes.revision==nil and objectDigest or text(el.attributes.revision,128),label=text(el.attributes.label),context=text(el.attributes.context,128),
         conceptId=text(el.attributes['concept-id']or el.attributes['semantic-id'],512),reviewedBy=reviewer,
-        sourceDigest=digest(el),sourceText=objectSource,assertionId=str(el.attributes['assertion-id']),groups=pandoc.List()}
+        sourceDigest=objectDigest,sourceText=objectSource,assertionId=str(el.attributes['assertion-id']),groups=pandoc.List()}
       local groups={};local count=0
       local function variant(child)
         if not has(child,'learning-variant')then return end
         if nonpublic(child)or has(child,'protected-assertion')or has(child,'learning-invariant')then fail()end
         count=count+1;if count>100 then fail()end
-        local group,axis,value=token(child.attributes.group),text(child.attributes.axis,32),token(child.attributes.value)
+        local group,axis=token(child.attributes.group),text(child.attributes.axis,32)
+        local value,anchorValue=variant_value(child.attributes.value)
         if not ({['exposition']=true,['terminology']=true,['scaffolding']=true,['prerequisite-knowledge']=true,['reading-complexity']=true,['context-interest']=true,['representation']=true,['challenge']=true})[axis] then fail() end
-        if child.attributes.review~='author-reviewed'then fail()end
+        local review=child.attributes.review
+        if review~='author-reviewed' and (review~=nil or not ordinary) then fail()end
+        local variantOrigin=authorship(child.attributes.authorship,origin)
         local blocked=false
         local content=child.content
         content:walk({RawBlock=function()blocked=true end,RawInline=function()blocked=true end,
@@ -151,16 +190,27 @@ function M.process(doc,runtime,native_directory,project_root)
           Code=function()if child.t=='Span'then blocked=true end end})
         if blocked then fail()end
         local anchor=child.identifier
-        if anchor==''then anchor=id..'--'..group..'--'..value;if anchors[anchor]then fail()end;anchors[anchor]=1;child.identifier=anchor
+        if anchor==''then anchor=id..'--'..group..'--'..anchorValue;if anchors[anchor]then fail()end;anchors[anchor]=1;child.identifier=anchor
         elseif anchors[anchor]~=1 then fail()end
         local bucket=groups[group]
         if not bucket then bucket={id=group,axis=axis,variants=pandoc.List()};groups[group]=bucket;item.groups:insert(bucket)elseif bucket.axis~=axis then fail()end
         local isDefault=child.attributes['default']=='true'
         if isDefault and bucket.defaultValue then fail()end
         if isDefault then bucket.defaultValue=value end
-        local v={value=value,anchor=anchor,revision=text(child.attributes.revision,128),sourceDigest=digest(child),review='author-reviewed',reviewedBy=text(child.attributes['reviewed-by'])}
+        local variantDigest=digest(child)
+        local v={value=value,anchor=anchor,revision=review==nil and child.attributes.revision==nil and variantDigest or text(child.attributes.revision,128),
+          sourceDigest=variantDigest,authorship=variantOrigin,review=review or 'not-declared',
+          reviewedBy=review=='author-reviewed' and text(child.attributes['reviewed-by']) or nil}
         bucket.variants:insert(v);variants[anchor]=child
-        child.attributes['data-gw-object']=id;child.attributes['data-gw-group']=group;child.attributes['data-gw-axis']=axis;child.attributes['data-gw-value']=value
+        child.attributes['data-gw-object']=id;child.attributes['data-gw-group']=group;child.attributes['data-gw-axis']=axis;child.attributes['data-gw-value']=child.attributes.value
+        if variantOrigin~=origin then
+          local label=pandoc.Strong({pandoc.Str(originLabels[variantOrigin])})
+          if child.t=='Span' then
+            child.content:insert(1,pandoc.Space());child.content:insert(1,label)
+          else
+            child.content:insert(1,pandoc.Para({label}))
+          end
+        end
         return child
       end
       el.content=el.content:walk({Div=variant,Span=variant})
@@ -190,6 +240,9 @@ function M.process(doc,runtime,native_directory,project_root)
         if not found then row.unsupported='native-controlled-claim'end
         controlled:insert(row)
       end
+      if origin~='human' and not has(el,'learning-object') then
+        el.content:insert(1,pandoc.Para({pandoc.Strong({pandoc.Str(originLabels[origin])})}))
+      end
       selected[id]=item;originals[id]=el;objects:insert(item)
     elseif el.attributes.review~='candidate'then fail()end
   end
@@ -215,26 +268,42 @@ function M.process(doc,runtime,native_directory,project_root)
     return nonpublic(role)or kind=='hint'or kind=='solution'or kind=='answer'or kind=='feedback'or kind=='post-attempt'or has(role,'generative-solution')or has(role,'generative-answer')or has(role,'generative-feedback')or role.attributes.hidden~=nil or role.attributes.inert~=nil or role.attributes['aria-hidden']=='true'
   end
   if options['local-ai-sources']~=false then
-    for _,item in ipairs(objects)do local owner=originals[item.id];owner.content=owner.content:walk({traverse='topdown',Div=function(role)
-      if excludedRole(role)then return role,false end
-      local kind=role.attributes['learning-role']or role.attributes['data-learning-role']
-      if publicRoles[kind]then
-        local excluded=false
-        role.content:walk({Div=function(child)if excludedRole(child)then excluded=true end end,Span=function(child)if excludedRole(child)then excluded=true end end})
-        if excluded then return role end
-        publicRoleIndex=publicRoleIndex+1
-        role.attributes['data-learning-role']=kind
-        if role.identifier==''then local id=owner.identifier..'--public-'..publicRoleIndex;if anchors[id]then fail()end;role.identifier=id;anchors[id]=1 end
-        if not has(role,'local-ai-source')then role.classes:insert('local-ai-source')end
-        role.attributes['data-source-review']='author-reviewed'
-        if not role.attributes['data-source-label']then role.attributes['data-source-label']='Authored '..kind end
-        return role,false
+    local function unreviewedVariant(el)
+      return (has(el,'learning-variant') or has(el,'learning-view')) and el.attributes.review~='author-reviewed'
+    end
+    for _,item in ipairs(objects)do
+      local owner=originals[item.id]
+      local function capture(role,reviewed)
+        if excludedRole(role)then return role,false end
+        if unreviewedVariant(role)then reviewed=false end
+        local kind=role.attributes['learning-role']or role.attributes['data-learning-role']
+        if publicRoles[kind]then
+          local excluded=false
+          local function inspect(child)
+            if excludedRole(child)then excluded=true end
+            if unreviewedVariant(child)then reviewed=false end
+          end
+          role.content:walk({Div=inspect,Span=inspect})
+          if excluded then return role end
+          publicRoleIndex=publicRoleIndex+1
+          role.attributes['data-learning-role']=kind
+          if role.identifier==''then local id=owner.identifier..'--public-'..publicRoleIndex;if anchors[id]then fail()end;role.identifier=id;anchors[id]=1 end
+          if not has(role,'local-ai-source')then role.classes:insert('local-ai-source')end
+          role.attributes['data-source-review']=reviewed and 'author-reviewed' or 'declared'
+          if not role.attributes['data-source-label']then role.attributes['data-source-label']='Authored '..kind end
+          return role,false
+        end
+        if unreviewedVariant(role) then
+          role.content=role.content:walk({traverse='topdown',Div=function(child)return capture(child,false)end})
+          return role,false
+        end
       end
-    end})end
+      owner.content=owner.content:walk({traverse='topdown',Div=function(role)return capture(role,item.reviewedBy~=nil)end})
+    end
   end
   doc.blocks=doc.blocks:walk({Div=function(el)if originals[el.identifier]then return originals[el.identifier]end end})
   local activityAPI=dofile(pandoc.path.join({runtime,'activity-native.lua'}))
-  local activityObservations,activitySources=activityAPI.capture(doc)
+  local activityObservations,activitySources=activityAPI.capture(doc,selected)
   local root,inputDir,page,offset=native_location(native_directory,project_root())
   local html=quarto.doc.is_format('html:js')
   local numbasRunId=numbasAPI.run_id(root)
@@ -358,7 +427,7 @@ function M.process(doc,runtime,native_directory,project_root)
     local workers=nil
     if compiled.offline and compiled.offline.enabled then workers={{source='gw-offline-worker.js',destination=quarto.project.directory and'/gw-offline-worker.js'or'gw-offline-worker.js'}}end
     if head~=''then quarto.doc.include_text('in-header',head)end
-    quarto.doc.add_html_dependency({name='generative-websites-features',version='0.0.13',scripts={{path='features-browser.js',attribs={type='module'}}},stylesheets={'features.css'},serviceworkers=workers})
+    quarto.doc.add_html_dependency({name='generative-websites-features',version='0.0.14',scripts={{path='features-browser.js',attribs={type='module'}}},stylesheets={'features.css'},serviceworkers=workers})
   end
   return doc
 end

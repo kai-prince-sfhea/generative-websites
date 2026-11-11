@@ -1,5 +1,5 @@
 // Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
-import {validateAdaptationPage,resolveAdaptation,ADAPTATION_AXES} from './adaptation.js';
+import {validateAdaptationPage,normalizeAdaptationPreferences,resolveAdaptation,subjectExpertise,ADAPTATION_AXES,EXPERTISE_LEVELS} from './adaptation.js';
 import {validatePublicPage,parseDeliveryJSON,loadPublication,selectClosure,prepareOffline,inspectOffline,clearOffline,applyOfflineWithdrawals} from './delivery.js';
 import {checkAnswer,createExercise} from './exercises.js';
 import {buildOerZip} from './oer.js';
@@ -24,34 +24,76 @@ export function journeyControlState({loading=false,exporting=false,catalogue=fal
  const busy=loading||exporting,ready=!!catalogue&&route?.status==='complete'&&Array.isArray(route.steps)&&route.steps.length>0;
  return{load:busy,cancel:!busy,goal:busy||!catalogue||!goals,build:busy||!catalogue||!goals||detours>0,complete:busy||!ready||current>=route.steps.length-1,explore:busy||!ready||detours>=32,back:busy||!(detours||savedReturn),download:busy||!ready,transfer:busy,offline:busy||!ready||!consent};
 }
-function uniqueAnchor(id){const all=[...document.querySelectorAll('[id]')].filter(el=>el.id===id);if(all.length!==1)throw Error('A reviewed native anchor is missing or ambiguous.');return all[0];}
+function uniqueAnchor(id){const all=[...document.querySelectorAll('[id]')].filter(el=>el.id===id);if(all.length!==1)throw Error('A native anchor is missing or ambiguous.');return all[0];}
 
 function preferences(page,config){
  if(!page.adaptation)return;
+ const panels=[...document.querySelectorAll('.learning-preferences')].filter(panel=>!managed.has(panel));
+ if(!panels.length)return;
  const adaptation=validateAdaptationPage(page.adaptation,{baseURL:config.baseURL});
- for(const panel of document.querySelectorAll('.learning-preferences')){
-  if(managed.has(panel))continue;managed.add(panel);
-  const box=node('div');box.className='generative-feature-controls';const status=node('p','Choose reviewed alternatives. This does not infer your knowledge or translate the page.');status.setAttribute('role','status');
-  const authoredDefaults={...config.defaults};if(authoredDefaults.exposition===undefined&&authoredDefaults.level!==undefined)authoredDefaults.exposition=authoredDefaults.level;delete authoredDefaults.level;
-  const choices={...authoredDefaults},controls=[],more=node('details');more.className='generative-feature-advanced';more.append(node('summary','More reviewed preferences'));
-  for(const axis of ADAPTATION_AXES){
-   const values=[...new Set(adaptation.objects.flatMap(object=>object.groups.filter(group=>group.axis===axis).flatMap(group=>group.variants.map(variant=>variant.value))))];
-   if(!values.length)continue;const entry=select(({exposition:'Exposition',terminology:'Terminology',scaffolding:'Scaffolding','prerequisite-knowledge':'Prerequisite familiarity','reading-complexity':'Reading complexity','context-interest':'Context and interest',representation:'Representation',challenge:'Challenge'})[axis],[{value:'',label:'Author defaults'},...values.map(value=>({value,label:value}))]);
-   entry.control.value=choices[axis]??'';entry.control.addEventListener('change',()=>{if(entry.control.value)choices[axis]=entry.control.value;else if(authoredDefaults[axis]!==undefined)choices[axis]=authoredDefaults[axis];else delete choices[axis];apply();});(['exposition','representation','terminology'].includes(axis)?box:more).append(entry.wrapper);controls.push({...entry,axis});
+ const axes=new Map(),subjects=new Map(),original=[],controls=[],statuses=[];
+ const add=(map,key,value)=>{
+  if(!map.has(key))map.set(key,new Set());
+  map.get(key).add(value);
+ };
+ for(const object of adaptation.objects)for(const group of object.groups)for(const variant of group.variants){
+  const el=uniqueAnchor(variant.anchor);
+  if(el.getAttribute('data-gw-object')!==object.id)throw Error('A native variant changed.');
+  original.push({el,hidden:el.hidden});
+  const values=Array.isArray(variant.value)?variant.value:[variant.value];
+  for(const value of values){
+   const scope=group.axis==='exposition'?subjectExpertise(value):null;
+   if(scope)add(subjects,scope.subject,scope.level);
+   else add(axes,group.axis,value);
   }
-  const allVariants=adaptation.objects.flatMap(object=>object.groups.flatMap(group=>group.variants));
-  const original=allVariants.map(variant=>{const el=uniqueAnchor(variant.anchor);if(el.getAttribute('data-gw-object')!==adaptation.objects.find(object=>object.groups.some(group=>group.variants.includes(variant))).id)throw Error('A native variant changed.');return{el,hidden:el.hidden};});
-  let current;
-  function apply(){
-   current=resolveAdaptation(adaptation,choices);const selected=new Set(current.objects.flatMap(object=>object.groups.map(group=>group.anchor)));
-   for(const entry of original)entry.el.hidden=!selected.has(entry.el.id);
-   status.textContent=current.unsupportedPreferences.length?'Some choices are unavailable here; their author defaults are retained.':'Reviewed alternatives selected. Tasks, protected assertions, citations and mathematical notation retain their authored forms.';
-  }
-  box.append(button('Restore author defaults',()=>{for(const key of Object.keys(choices))delete choices[key];Object.assign(choices,authoredDefaults);for(const entry of controls)entry.control.value=choices[entry.axis]??'';apply();}),node('p','Choices select reviewed alternatives; they do not infer your knowledge or translate the page. Tasks, protected assertions, citations and mathematical notation remain authored.'),status);
-  if(more.childNodes.length>1)box.append(more);
-  describe(box,'Inspect source revisions and review declarations',{page:adaptation.page,objects:adaptation.objects,assertions:page.assertions});panel.append(box);apply();
-  const restore=()=>{for(const entry of original)entry.el.hidden=entry.hidden;};window.addEventListener('pagehide',restore);window.addEventListener('pageshow',apply);
  }
+ const defaults=normalizeAdaptationPreferences(config.defaults);
+ const subjectDefaults=Object.fromEntries(Object.entries(defaults.expertise??{}).filter(([subject])=>subjects.has(subject)));
+ defaults.expertise=subjectDefaults;
+ const reset=()=>({...defaults,expertise:{...subjectDefaults}});
+ let choices=reset();
+ function apply(){
+  const result=resolveAdaptation(adaptation,choices);
+  const selected=new Set(result.objects.flatMap(object=>object.groups.map(group=>group.anchor)));
+  for(const entry of original)entry.el.hidden=entry.hidden||!selected.has(entry.el.id);
+  for(const {control,subject,key,values} of controls){
+   const source=subject?choices.expertise:choices;
+   control.value=Object.hasOwn(source,key)&&values.includes(source[key])?source[key]:'';
+  }
+  for(const status of statuses)status.textContent=result.unsupportedPreferences.length
+   ? 'Some choices are unavailable here. Those sections use their author defaults.'
+   : 'Published alternatives selected.';
+ }
+ const labels={exposition:'Exposition',terminology:'Terminology',scaffolding:'Scaffolding','prerequisite-knowledge':'Prerequisite familiarity','reading-complexity':'Reading complexity','context-interest':'Context and interest',representation:'Representation',challenge:'Challenge'};
+ const title=value=>value.split('-').map(word=>word[0].toUpperCase()+word.slice(1)).join(' ');
+ for(const panel of panels){
+  managed.add(panel);
+  const box=node('div');box.className='generative-feature-controls';const status=node('p','Choose a published alternative.');status.setAttribute('role','status');
+  statuses.push(status);
+  const more=node('details');more.className='generative-feature-advanced';more.append(node('summary','More preferences'));
+  function mount(label,key,values,parent,subject=false){
+   const entry=select(label,[{value:'',label:'Author defaults'},...values.map(value=>({value,label:subject?title(value):value}))]);
+   entry.control.addEventListener('change',()=>{
+    const target=subject?choices.expertise:choices,initial=subject?defaults.expertise??{}:defaults;
+    if(entry.control.value)target[key]=entry.control.value;
+    else if(Object.hasOwn(initial,key))target[key]=initial[key];
+    else delete target[key];
+    apply();
+   });
+   parent.append(entry.wrapper);
+   controls.push({control:entry.control,key,subject,values});
+  }
+  for(const axis of ADAPTATION_AXES){
+   if(axes.has(axis))mount(labels[axis],axis,[...axes.get(axis)],['exposition','representation','terminology'].includes(axis)?box:more);
+  }
+  for(const [subject,levels] of subjects)mount(`${title(subject)} expertise`,subject,EXPERTISE_LEVELS.filter(level=>levels.has(level)),box,true);
+  box.append(button('Restore author defaults',()=>{choices=reset();apply();}),status);
+  if(more.childNodes.length>1)box.append(more);
+  describe(box,'Source authorship, revisions and review',{page:adaptation.page,objects:adaptation.objects,assertions:page.assertions});panel.append(box);
+ }
+ apply();
+ window.addEventListener('pagehide',()=>{for(const entry of original)entry.el.hidden=entry.hidden;});
+ window.addEventListener('pageshow',apply);
 }
 function practice(exercises,activityController=null){
  for(const instance of exercises??[]){const panel=uniqueAnchor(instance.spec.id);if(managed.has(panel))continue;managed.add(panel);let current=instance;
@@ -95,7 +137,7 @@ function journeys(page,config,oer){
   });
   const bookmark=()=>route&&catalogue?createJourney(catalogue,route,{current:active,detours:[...detours]}):null;
   const store=()=>{const value=bookmark();if(!value)return;try{sessionStorage.setItem(key,JSON.stringify(value));}catch{status.textContent='This tab cannot save its route. Ordinary page links remain available.';}};
-  function renderRoute(){refreshControls();replaceOutput();if(!route||route.status!=='complete'){output.append(node('p',route?.reason??'No route selected.'));return;}const list=node('ol');route.steps.forEach((step,index)=>{const li=node('li'),link=node('a',(index===active?'Current: ':'')+step.key);link.href=step.url;link.addEventListener('click',()=>{active=index;store();refreshControls();});li.append(link,node('span',' — '+step.reason));list.append(li);});output.append(list);status.textContent='Route prepared from reviewed records. Following a link does not establish completion or mastery.';store();}
+  function renderRoute(){refreshControls();replaceOutput();if(!route||route.status!=='complete'){output.append(node('p',route?.reason??'No route selected.'));return;}const list=node('ol');route.steps.forEach((step,index)=>{const li=node('li'),link=node('a',(index===active?'Current: ':'')+step.key);link.href=step.url;link.addEventListener('click',()=>{active=index;store();refreshControls();});li.append(link,node('span',' — '+step.reason));list.append(li);});output.append(list);status.textContent='Route prepared from the published records.';store();}
   const build=actionButton('Build cross-page route',()=>{if(!catalogue)return;const parts=goal.control.value.split('#');route=selectClosure(catalogue,{pageId:parts[0],objectId:parts[1]});active=0;detours.length=0;renderRoute();});build.disabled=true;
   const complete=actionButton('Mark current step complete and continue',()=>{if(!route?.steps.length)return;active=Math.min(active+1,route.steps.length-1);renderRoute();});
   const resume=actionButton('Resume this tab’s route',async()=>{
@@ -127,7 +169,7 @@ function journeys(page,config,oer){
    for(const [control,key]of controls){const waiting=control.tagName==='BUTTON'&&state[key]&&!idle[key],disabled=state[key]&&!waiting;if(disabled&&focused===control)handoff=true;control.disabled=disabled;if(waiting)control.setAttribute('aria-disabled','true');else control.removeAttribute('aria-disabled');}
    if(handoff){const target=!state.cancel?abortRequest:load;if(!target.disabled&&target.getAttribute('aria-disabled')!=='true')target.focus();else status.focus();}
   };
-  box.append(node('p','Routes use reviewed source declarations and hard prerequisites. Unavailable pages remain unknown; following a route does not establish learning or mastery.'),status,output,advanced);refreshControls();panel.append(box);
+  box.append(node('p','Routes use published learning objects and their declared prerequisites.'),status,output,advanced);refreshControls();panel.append(box);
   window.addEventListener('pagehide',()=>{epoch++;abort?.abort();});
  }
 }
@@ -148,6 +190,6 @@ function boot(){
   if(activityControls)activityControls.ready.then(()=>practice(exercises,activityControls)).catch(()=>practice(exercises));else practice(exercises);sandbox(marker('generative-sandbox-data'),page,config,marker('generative-sandbox-session-mappings-data'));journeys(page,config,marker('generative-oer-data',2097152));
   restorePendingSessionReturn(page,config).catch(()=>{});
   applyOfflineWithdrawals(config.publication,{baseURL}).catch(()=>{});
- }catch{for(const panel of document.querySelectorAll('.learning-preferences,.learning-journey,.learning-export'))if(!managed.has(panel)){managed.add(panel);panel.append(node('p','Optional reviewed controls are unavailable. The authored content remains readable.'));}}
+ }catch{for(const panel of document.querySelectorAll('.learning-preferences,.learning-journey,.learning-export'))if(!managed.has(panel)){managed.add(panel);panel.append(node('p','Optional controls are unavailable. The authored content remains readable.'));}}
 }
 if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('pageshow',boot);window.addEventListener('pagehide',()=>{for(const controls of numbasControls)controls.dispose();numbasControls=[];waiControls?.dispose();waiControls=null;});}

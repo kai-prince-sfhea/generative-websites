@@ -42,7 +42,7 @@ function sameData(actual, expected, path) {
     const keys = Object.keys(left);
     return keys.length === Object.keys(right).length && keys.every(key => Object.hasOwn(right, key) && equal(left[key], right[key]));
   };
-  if (!equal(actual, expected)) fail(path, 'does not match the current reviewed content and deterministic route');
+  if (!equal(actual, expected)) fail(path, 'does not match the current published content and deterministic route');
 }
 
 function validateChoices(choices, path) {
@@ -114,7 +114,7 @@ function currentRoute(catalog, route) {
   });
   validateChoices(route.choices, 'route.choices');
   const canonical = planRoute(catalog, {goal: route.goal, known: route.known});
-  if (!canonical.ok) fail('route', 'the requested route is no longer available in this reviewed catalogue');
+  if (!canonical.ok) fail('route', 'the requested route is no longer available in this catalogue');
   sameData(route.known, canonical.known, 'route.known');
   sameData(route.choices, canonical.choices, 'route.choices');
   const reasons = new Map(canonical.steps.map(step => [step.id, step.reason]));
@@ -249,13 +249,13 @@ export function createRouteRecord(catalog, route, options) {
   return record;
 }
 
-/** Replan against current reviewed inputs and reconstruct trusted author reasons. */
+/** Replan against current published inputs and reconstruct trusted author reasons. */
 export function restoreRouteRecord(catalog, record) {
   validateCatalog(catalog);
   dataRecord(record, ['version', 'language', 'snapshot', 'goal', 'known', 'level', 'cursor', 'steps', 'choices', 'revisions'], 'record');
   boundJSON(record);
   if (record.version !== 1) fail('record.version', 'only route record version 1 is supported');
-  if (record.language !== catalog.language || record.snapshot !== catalog.snapshot) fail('record.snapshot', 'language or reviewed content snapshot has changed; build a new route');
+  if (record.language !== catalog.language || record.snapshot !== catalog.snapshot) fail('record.snapshot', 'language or content snapshot has changed; build a new route');
   identifier(record.goal, 'record.goal');
   dataArray(record.known, 'record.known', 0, 50);
   record.known.forEach((id, index) => identifier(id, `record.known[${index}]`));
@@ -270,7 +270,7 @@ export function restoreRouteRecord(catalog, record) {
     for (const field of ['level', 'revision', 'digest']) if (typeof revision.view[field] !== 'string' || UTF8.encode(revision.view[field]).length > 512) fail(`${path}.view.${field}`, 'expected bounded view identity text');
   }
   const canonical = planRoute(catalog, {goal: record.goal, known: record.known});
-  if (!canonical.ok) fail('record', 'the requested route is unavailable in this reviewed catalogue');
+  if (!canonical.ok) fail('record', 'the requested route is unavailable in this catalogue');
   sameData(record.known, canonical.known, 'record.known');
   sameData(record.choices, canonical.choices, 'record.choices');
   const route = orderedCanonical(canonical, record.steps, orderConstraints(catalog, canonical));

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.14 — subject expertise and simpler source authoring
+
+- Use subject prefixes and bracketed lists on exposition variants to give
+  readers independent expertise choices on multidisciplinary pages.
+- Derive display labels from the exact subject prefix. Use the same prefix
+  consistently for a shared selector. Existing unqualified values still use
+  Exposition. A value with a recognised subject-level suffix now selects a
+  subject, so rename an older unscoped label such as `very-advanced` to
+  `advanced-detail` if it should stay on Exposition.
+- Author published alternatives and learning views without per-block review
+  fields or manual revisions. The render records content-derived revisions and
+  uses human source authorship by default. Declare `authorship: ai-assisted` or
+  `ai-generated` in page metadata or set an `authorship` attribute on a block.
+- Include source authorship and declared review in rendered inspection. Keep
+  explicit review inputs for existing workflows and for admitting derived candidates.
+
 ## 0.0.13 — reader controls and bounded Numbas DOM relationships — local development
 
 - Put core preferences and route-building/navigation actions first. Keep other

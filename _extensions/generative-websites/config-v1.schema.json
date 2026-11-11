@@ -22,6 +22,15 @@
         "type": "boolean",
         "default": true
       },
+      "authorship": {
+        "enum": [
+          "human",
+          "ai-assisted",
+          "ai-generated"
+        ],
+        "default": "human",
+        "description": "Source origin of published alternatives and learning views. A block may override it. This is separate from review."
+      },
       "local-ai-sources": {
         "type": "boolean",
         "default": true,
@@ -1304,6 +1313,22 @@
         },
         "level": {
           "$ref": "#/$defs/choice"
+        },
+        "expertise": {
+          "type": "object",
+          "maxProperties": 32,
+          "propertyNames": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?![\\s\\S])"
+          },
+          "additionalProperties": {
+            "enum": [
+              "introduction",
+              "introductory",
+              "intermediate",
+              "advanced"
+            ]
+          }
         }
       },
       "required": [],

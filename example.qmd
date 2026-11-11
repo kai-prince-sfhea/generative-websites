@@ -1,10 +1,11 @@
 ---
-title: "Generative Websites: your first reviewed alternatives"
+title: "Generative Websites: your first alternatives"
 lang: en
 format: html
 filters:
   - kai-prince-sfhea/generative-websites
 generative-websites:
+  authorship: ai-assisted
   project:
     id: first-learning-page
     revision: v1
@@ -43,60 +44,58 @@ quarto render example.qmd
 quarto preview example.qmd
 ```
 
-You should see the **Choose reviewed alternatives** controls and the **Sets**
+You should see the **Choose alternatives** controls and the **Sets**
 task below. With JavaScript unavailable, the labelled authored alternatives
-remain readable. Core preferences appear first; open **More reviewed preferences**
-for other available axes. Source/review declarations remain separately inspectable.
+remain readable. Core preferences appear first. Open **More preferences**
+for other available axes. **Source authorship, revisions and review** describes the rendered alternatives.
 Nothing is downloaded from an AI provider.
 
 ## 2. Choose one option at a time
 
 Change **Exposition** to **advanced**. Then change **Terminology** to
-**technical**, then open **More reviewed preferences** and change **Scaffolding**
-to **expanded**. Each control selects existing
-reviewed text; changing one does not infer your knowledge or alter another axis.
+**technical**, then open **More preferences** and change **Scaffolding**
+to **expanded**. Each control selects a published alternative independently.
 The common task stays fixed. **Restore author defaults** resets the choices.
 
 ::: {.learning-preferences}
-### Choose reviewed alternatives
+### Choose alternatives
 
-Try the three independent choices. Source/review inspection shows which authored
-versions were supplied; it does not establish independent review.
+Try the three independent choices and inspect the source information in the rendered page.
 :::
 
-The review fields in this original synthetic tutorial demonstrate syntax.
-Replace the reviewer and revisions after checking your own content. Use
-`review="candidate"` on an object still being drafted.
+Use `group`, `axis` and `value` to label each alternative. QMD defaults to human
+authorship. This tutorial declares `authorship: ai-assisted` because it was
+prepared with Codex. The render derives the revisions from the content.
 
-:::: {#sets .adaptive-object concept-id="urn:example:concept:sets" revision="sets-v1" label="Sets" context="urn:example:context:sets" review="author-reviewed" reviewed-by="Example fixture declaration"}
+:::: {#sets .adaptive-object concept-id="urn:example:concept:sets" label="Sets" context="urn:example:context:sets"}
 ### Sets {#sets-title}
 
 **Common task:** For $A=\{1,2\}$, decide whether $1\in A$ and $3\in A$.
 Explain your choices. Every alternative uses this same set and question.
 
-::: {.learning-variant group="explanation" axis="exposition" value="introductory" default="true" revision="intro-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-variant group="explanation" axis="exposition" value="introductory" default="true"}
 #### Introductory explanation
 
 A set is described by its listed members. This set contains one and two.
 Check each proposed member against that list before explaining your choice.
 :::
 
-::: {.learning-variant group="explanation" axis="exposition" value="advanced" revision="advanced-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-variant group="explanation" axis="exposition" value="advanced"}
 #### Advanced explanation
 
 Membership in this finite set is decided by checking the displayed elements.
 One is listed and three is absent; these observations apply to the stated set.
 :::
 
-**Available wording:** [Plain wording: a collection.]{.learning-variant group="wording" axis="terminology" value="plain" default="true" revision="plain-v1" review="author-reviewed" reviewed-by="Example fixture declaration"} [Technical wording: a set.]{.learning-variant group="wording" axis="terminology" value="technical" revision="technical-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+**Available wording:** [Plain wording: a collection.]{.learning-variant group="wording" axis="terminology" value="plain" default="true"} [Technical wording: a set.]{.learning-variant group="wording" axis="terminology" value="technical"}
 
-::: {.learning-variant group="support" axis="scaffolding" value="standard" default="true" revision="support-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-variant group="support" axis="scaffolding" value="standard" default="true"}
 #### Standard starting prompt
 
 Check each proposed member and state your reason.
 :::
 
-::: {.learning-variant group="support" axis="scaffolding" value="expanded" revision="expanded-v1" review="author-reviewed" reviewed-by="Example fixture declaration"}
+::: {.learning-variant group="support" axis="scaffolding" value="expanded"}
 #### Additional scaffold
 
 Read the listed elements aloud or write them on separate lines. Compare the
@@ -121,9 +120,9 @@ current indentation. Render again and refresh Preview. **Exposition** should
 start at **advanced** while wording and scaffolding keep their own defaults.
 You have changed a starting preference, not the shared task or its review.
 
-Next, edit a variant's prose. Review the revised passage and common assumptions,
-then update that variant's `revision` and the object's `revision`. Keep stable
-IDs while changing visible labels. Copy a group to add your own approved choices.
+Next, edit a variant's prose and render again. Its revision in the rendered
+source information changes with the content. Keep stable IDs while changing
+visible labels. Copy a group to add your own choices.
 
 ## 4. Keep a native document
 

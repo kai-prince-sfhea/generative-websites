@@ -60,6 +60,21 @@ local function mapping(value)
   local kind = pandoc.utils.type(value)
   return kind == 'MetaMap' or kind == 'table'
 end
+local function source_authorship(value, fallback)
+  if value==nil then return fallback end
+  local origin=pandoc.utils.stringify(value)
+  if origin~='human' and origin~='ai-assisted' and origin~='ai-generated' then
+    fail('authorship must be human, ai-assisted or ai-generated')
+  end
+  return origin
+end
+local source_labels={human='Human-authored source',['ai-assisted']='AI-assisted source',['ai-generated']='AI-generated source'}
+local function nonpublic(el)
+  local a=el.attributes
+  return a.public=='false' or a.consent=='false' or a.visibility=='private' or a.audience=='private'
+    or a.hidden~=nil or a.inert~=nil or a['aria-hidden']=='true'
+    or has(el,'private') or has(el,'content-hidden') or has(el,'hidden')
+end
 local function config(meta)
   local input = meta['generative-websites']
   if input == nil then return {enabled=true, prerequisites={}, graph_prerequisites='website', local_ai_sources=true} end
@@ -79,6 +94,8 @@ local function config(meta)
       if value==false then result.graph_prerequisites=false
       elseif value==true then result.graph_prerequisites='website'
       else local kind=pandoc.utils.type(value);if kind~='string' and kind~='Inlines' and kind~='MetaString' and kind~='MetaInlines' then fail('graph-prerequisites must be true, false or a graph ID') end;local id=pandoc.utils.stringify(value);if #id>64 or not id:match('^[a-z][a-z0-9%-]*$') then fail('graph-prerequisites must be true, false or a graph ID') end;result.graph_prerequisites=id end
+    elseif key=='authorship' then
+      result.authorship=source_authorship(value)
     elseif key=='translations' or key=='numbas' or key=='activities' or key=='controlled-authoring' or key=='scenario-candidates' or key=='wai-adapt' or key=='project' or key=='defaults' or key=='assertions' or key=='exercises' or key=='records' or key=='reports' or key=='sandbox' or key=='sandbox-session-mappings' or key=='publication' or key=='offline' or key=='oer' or key=='catalogue' then
       -- The additive native compiler validates these closed, versioned records.
     else fail('generative-websites has an unknown option; use the installed configuration reference') end
@@ -254,6 +271,17 @@ local function process(doc)
   pandoc.Div(panels[1].content):walk({Div=function(child)
     if has(child,'learning-object') or has(child,'learning-view') then fail('route panels cannot contain learning objects or views') end
   end})
+  local restricted={}
+  local function restrict_object(el)
+    if has(el,'learning-object') then restricted[el.identifier]=true end
+  end
+  doc:walk({traverse='topdown',Div=function(el)
+    if nonpublic(el) then
+      restrict_object(el)
+      el.content:walk({Div=restrict_object})
+      return el,false
+    end
+  end})
   for object_index,el in ipairs(all_objects) do
     local location='learning object occurrence ' .. object_index
     pandoc.Div(el.content):walk({Div=function(child)
@@ -261,14 +289,15 @@ local function process(doc)
       if has(child,'generative-route') then fail('route panels cannot be nested inside learning objects') end
     end})
     local status=el.attributes.review
-    if status ~= 'author-reviewed' and status ~= 'candidate' then fail('learning objects require review="author-reviewed" or review="candidate"') end
-    if status == 'author-reviewed' then
-      if #objects >= 50 then fail('at most 50 reviewed objects are supported per document') end
+    if status ~= nil and status ~= 'author-reviewed' and status ~= 'candidate' then fail('learning objects accept review="author-reviewed" or review="candidate"') end
+    if status ~= 'candidate' and not restricted[el.identifier] then
+      if #objects >= 50 then fail('at most 50 learning objects are supported per document') end
       local id=identifier(el.identifier,'learning object ID')
       if anchors[id] ~= 1 then fail(location .. '.id is a duplicate native object anchor; assign a unique native ID') end
       -- Bind common assumptions/prose as well as the two view realisations.
       -- This runs after native visibility, before adding generated labels/IDs.
-      source_digests[#source_digests+1]={id=id,digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(el.content),'json'))}
+      local sourceDigest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(el.content),'json'))
+      source_digests[#source_digests+1]={id=id,digest=sourceDigest}
       local concept=text(el.attributes['concept-id'] or el.attributes['semantic-id'],location .. '.concept-id (or shared semantic-id)',512)
       if el.attributes['concept-id'] and el.attributes['semantic-id'] and el.attributes['concept-id']~=el.attributes['semantic-id'] then fail(location .. ' concept-id conflicts with its shared semantic-id') end
       local unsafe=false
@@ -276,17 +305,22 @@ local function process(doc)
       if not concept:match('^[A-Za-z][A-Za-z0-9+%.%-]*:.+') or unsafe or concept:find('[<>"\']') then
         fail('concept-id must be a scoped URI without whitespace or unsafe delimiters')
       end
-      local item={id=id,conceptId=concept,revision=text(el.attributes.revision,location .. '.revision',128),
+      local declaredOrigin=el.attributes.authorship or options.authorship
+      local origin=source_authorship(declaredOrigin,'human')
+      local item={id=id,conceptId=concept,revision=status==nil and el.attributes.revision==nil and 'sha1:'..sourceDigest or text(el.attributes.revision,location .. '.revision',128),
         label=text(el.attributes.label,location .. '.label',256),context=text(el.attributes.context,location .. '.context',128),
-        reviewedBy=text(el.attributes['reviewed-by'],location .. '.reviewed-by',256),views=array(),prerequisite=NULL}
+        reviewedBy=status=='author-reviewed' and text(el.attributes['reviewed-by'],location .. '.reviewed-by',256) or nil,
+        authorship=(status==nil or declaredOrigin~=nil) and origin or nil,views=array(),prerequisite=NULL}
       local levels={}
       for _,child in ipairs(el.content) do
         if child.t == 'Div' and has(child,'learning-object') then fail('learning objects cannot be nested') end
         if child.t == 'Div' and has(child,'learning-view') then
+          if nonpublic(child) then fail('learning route views must be public and visible') end
           local level=child.attributes.level
           if level ~= 'introductory' and level ~= 'advanced' then fail('views require level="introductory" or level="advanced"') end
           if levels[level] then fail(location .. ' has a duplicate ' .. level .. ' view; keep one direct view of each supported level') end
-          if child.attributes.review ~= 'author-reviewed' then fail('every selected view requires explicit review="author-reviewed"') end
+          local review=child.attributes.review
+          if review~=nil and review~='author-reviewed' then fail('selected views accept review="author-reviewed"') end
           local anchor=id .. '--' .. level
           if child.identifier ~= '' then fail('view IDs are generated; remove the authored view ID') end
           if anchors[anchor] then fail(location .. ' generated view anchor collides with native content; change the object ID or conflicting native ID') end
@@ -294,15 +328,21 @@ local function process(doc)
           child.identifier=anchor
           child.attributes['data-learning-level']=level
           child.attributes['data-learning-object']=id
-          local revision=text(child.attributes.revision,location .. '.' .. level .. '.revision',128)
-          local reviewer=text(child.attributes['reviewed-by'],location .. '.' .. level .. '.reviewed-by',256)
           local digest=pandoc.utils.sha1(pandoc.write(pandoc.Pandoc(child.content),'json'))
-          item.views[#item.views+1]={level=level,revision=revision,reviewedBy=reviewer,anchor=anchor,digest=digest}
+          local revision=review==nil and child.attributes.revision==nil and 'sha1:'..digest or text(child.attributes.revision,location .. '.' .. level .. '.revision',128)
+          local reviewer=review=='author-reviewed' and text(child.attributes['reviewed-by'],location .. '.' .. level .. '.reviewed-by',256) or nil
+          local viewOrigin=source_authorship(child.attributes.authorship,origin)
+          item.views[#item.views+1]={level=level,revision=revision,reviewedBy=reviewer,anchor=anchor,digest=digest,
+            authorship=(review==nil or declaredOrigin~=nil or child.attributes.authorship~=nil) and viewOrigin or nil}
           levels[level]=true
+          if viewOrigin~=origin then
+            child.content:insert(1,pandoc.Para({pandoc.Strong({pandoc.Str(source_labels[viewOrigin])})}))
+          end
           child.content:insert(1,pandoc.Para({pandoc.Strong({pandoc.Str(level == 'introductory' and 'Introductory view' or 'Advanced view')})}))
         end
       end
       if not levels.introductory or not levels.advanced then fail(location .. ' requires one direct introductory and one direct advanced view') end
+      if origin~='human' then el.content:insert(1,pandoc.Para({pandoc.Strong({pandoc.Str(source_labels[origin])})})) end
       objects[#objects+1]=item
       selected[id]=item
       selected_originals[id]=el
@@ -319,7 +359,7 @@ local function process(doc)
       end
     end
   end
-  if #objects == 0 then fail('a route panel requires at least one explicitly reviewed learning object') end
+  if #objects == 0 then fail('a route panel requires at least one published learning object') end
   local prerequisite_index, unbound_count = 0, 0
   for key,value in pairs(options.prerequisites) do
     prerequisite_index=prerequisite_index+1
@@ -348,7 +388,7 @@ local function process(doc)
     for _,step in ipairs(steps) do entries[#entries+1]={pandoc.Plain({pandoc.Link({pandoc.Str(selected[step.id].label)},'#' .. step.id),pandoc.Str(' — ' .. step.reason)})} end
     native:insert(pandoc.OrderedList(entries))
   else native:insert(pandoc.Para({pandoc.Str('Route unavailable: ' .. why)})) end
-  native:insert(pandoc.Para({pandoc.Str('Both authored views remain below. Prerequisites describe pedagogical preparation; review is declared by the author.')}))
+  native:insert(pandoc.Para({pandoc.Str('Both source views remain below. Prerequisites describe pedagogical preparation.')}))
   local html=quarto.doc.is_format('html:js')
   doc.blocks=doc.blocks:walk({Div=function(el)
     if has(el,'learning-object') and selected[el.identifier] then
@@ -364,7 +404,7 @@ local function process(doc)
       return el
     end
   end})
-  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.13',
+  if html then quarto.doc.add_html_dependency({name='generative-websites',version='0.0.14',
     -- Original modules are preassembled at development time; no relative imports
     -- remain when Pandoc embeds the browser entry in a data URL.
     scripts={{path='generative-websites-browser.js',attribs={type='module'}}},

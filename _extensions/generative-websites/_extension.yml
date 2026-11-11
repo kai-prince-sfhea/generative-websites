@@ -1,6 +1,6 @@
 title: Generative Websites
 author: Kai Prince
-version: 0.0.13
+version: 0.0.14
 quarto-required: '>=1.11.5'
 contributes:
   metadata:

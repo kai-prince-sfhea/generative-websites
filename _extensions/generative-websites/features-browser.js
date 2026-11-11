@@ -6,11 +6,14 @@ const adaptation = (() => {
 // Finite reviewed native variants. This module performs no DOM, network or model work.
 const ADAPTATION_VERSION = 1;
 const ADAPTATION_AXES = Object.freeze(['exposition','terminology','scaffolding','prerequisite-knowledge','reading-complexity','context-interest','representation','challenge']);
+const EXPERTISE_LEVELS = Object.freeze(['introduction','introductory','intermediate','advanced']);
 const ADAPTATION_LIMITS = Object.freeze({maxObjects:50,maxGroupsPerObject:32,
   maxGroups:128,maxVariantsPerGroup:16,maxVariants:512});
-const failure = code => {const error=new Error(code==='invalid-adaptation-preferences'
-  ? 'Generative Websites: invalid adaptation preferences.'
-  : 'Generative Websites: invalid reviewed adaptation page.');error.code=code;throw error;};
+const failure = (code,detail='') => {
+  const message=code==='invalid-adaptation-preferences'?'Invalid adaptation preferences.':'Invalid adaptation page.';
+  const error=new Error(`Generative Websites: ${message}${detail?' '+detail:''}`);
+  error.code=code;throw error;
+};
 const PAGE='invalid-adaptation-page',PREF='invalid-adaptation-preferences';
 const object = (value,allowed,required,code=PAGE) => {
   if(!value||typeof value!=='object'||Array.isArray(value)||![Object.prototype,null].includes(Object.getPrototypeOf(value)))failure(code);
@@ -39,6 +42,34 @@ const anchor = value => {
 const token = (value,code=PAGE) => {
   value=text(value,64,code);if(!/^[a-z][a-z0-9-]{0,63}$/u.test(value))failure(code);return value;
 };
+const subjectPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
+const maximumSubjects = 32;
+
+function subjectExpertise(value) {
+  if(typeof value!=='string')return null;
+  const separator=value.lastIndexOf('-');
+  if(separator<1)return null;
+  const subject=value.slice(0,separator),level=value.slice(separator+1);
+  return subjectPattern.test(subject)&&EXPERTISE_LEVELS.includes(level)?{subject,level}:null;
+}
+
+function subjectChoices(axis,value) {
+  if(axis!=='exposition') return [];
+  return (Array.isArray(value)?value:[value]).map(subjectExpertise).filter(Boolean);
+}
+
+function variantValue(value,axis) {
+  if(!Array.isArray(value)) return token(value);
+  const values=array(value,8).map(item=>token(item));
+  const choices=subjectChoices(axis,values);
+  if(!values.length||choices.length!==values.length||new Set(choices.map(item=>item.subject)).size!==choices.length)failure(PAGE);
+  return values;
+}
+
+function variantKey(axis,value) {
+  const choices=subjectChoices(axis,value);
+  return choices.length ? choices.map(({subject,level})=>`${subject}:${level}`).sort().join(',') : value;
+}
 const identity = value => {
   value=text(value,512);if(/[\s<>"'`]/u.test(value))failure(PAGE);return value;
 };
@@ -81,7 +112,7 @@ function validateAdaptationPage(input,options={}) {
   const page={id:anchor(input.page.id),url:pageURL(input.page.url,options.baseURL),language:language(input.page.language),sourceDigest:digest(input.page.sourceDigest)};
   // The logical page ID is not a native DOM anchor. It can legitimately equal
   // an object ID (for example groups.qmd containing #groups).
-  const ids=new Set(),anchors=new Set();let groupCount=0,variantCount=0;
+  const ids=new Set(),anchors=new Set(),subjects=new Set();let groupCount=0,variantCount=0;
   const values=array(input.objects,limits.maxObjects);if(!values.length)failure(PAGE);
   // Reserve every object ID before admitting variants, including later objects.
   for(const value of values){
@@ -98,18 +129,31 @@ function validateAdaptationPage(input,options={}) {
       if(++groupCount>limits.maxGroups)failure(PAGE);
       object(group,['id','axis','defaultValue','variants'],['id','axis','defaultValue','variants']);
       const id=token(group.id);if(groupIds.has(id)||!ADAPTATION_AXES.includes(group.axis))failure(PAGE);groupIds.add(id);
-      const defaultValue=token(group.defaultValue),seen=new Set(),raw=array(group.variants,limits.maxVariantsPerGroup);
+      const defaultValue=variantValue(group.defaultValue,group.axis),seen=new Set(),raw=array(group.variants,limits.maxVariantsPerGroup);
       if(!raw.length)failure(PAGE);
+      let subjectScoped;
       const variants=raw.map(variant=>{
         if(++variantCount>limits.maxVariants)failure(PAGE);
-        object(variant,['value','anchor','revision','sourceDigest','review','reviewedBy'],['value','anchor','revision','sourceDigest','review','reviewedBy']);
-        const selected=token(variant.value),destination=anchor(variant.anchor);
-        if(seen.has(selected)||anchors.has(destination)||variant.review!=='author-reviewed')failure(PAGE);
-        seen.add(selected);anchors.add(destination);
+        object(variant,['value','anchor','revision','sourceDigest','authorship','review','reviewedBy'],['value','anchor','revision','sourceDigest','review']);
+        const selected=variantValue(variant.value,group.axis),destination=anchor(variant.anchor);
+        const scoped=subjectChoices(group.axis,selected);
+        if(subjectScoped!==undefined&&subjectScoped!==(scoped.length>0)){
+          failure(PAGE,'Use separate groups for general exposition and subject expertise.');
+        }
+        subjectScoped=scoped.length>0;
+        const key=variantKey(group.axis,selected);
+        if(seen.has(key)||anchors.has(destination))failure(PAGE);
+        for(const {subject} of scoped)subjects.add(subject);
+        if(subjects.size>maximumSubjects)failure(PAGE);
+        const origin=Object.hasOwn(variant,'authorship')?variant.authorship:undefined;
+        if(Object.hasOwn(variant,'authorship')&&!['human','ai-assisted','ai-generated'].includes(origin))failure(PAGE);
+        const reviewed=variant.review==='author-reviewed';
+        if(!reviewed&&(variant.review!=='not-declared'||origin===undefined||Object.hasOwn(variant,'reviewedBy')))failure(PAGE);
+        seen.add(key);anchors.add(destination);
         return {value:selected,anchor:destination,revision:text(variant.revision,128),sourceDigest:digest(variant.sourceDigest),
-          review:'author-reviewed',reviewedBy:text(variant.reviewedBy)};
+          ...(origin===undefined?{}:{authorship:origin}),review:variant.review,...(reviewed?{reviewedBy:text(variant.reviewedBy)}:{})};
       });
-      if(!seen.has(defaultValue))failure(PAGE);
+      if(!seen.has(variantKey(group.axis,defaultValue)))failure(PAGE);
       return {id,axis:group.axis,defaultValue,variants};
     });
     return result;
@@ -117,10 +161,8 @@ function validateAdaptationPage(input,options={}) {
   return freeze({version:ADAPTATION_VERSION,kind:'generative-adaptation-page',page,objects});
 }
 
-/** Independent reader choices select existing anchors; no string or AST replacement. */
-function resolveAdaptation(page,preferences={}) {
-  page=validateAdaptationPage(page);
-  object(preferences,[...ADAPTATION_AXES,'level'],[],PREF);
+function normalizeAdaptationPreferences(preferences) {
+  object(preferences,[...ADAPTATION_AXES,'level','expertise'],[],PREF);
   const requested={};
   for(const axis of ADAPTATION_AXES)if(Object.hasOwn(preferences,axis))requested[axis]=token(preferences[axis],PREF);
   if(Object.hasOwn(preferences,'level')){
@@ -128,19 +170,60 @@ function resolveAdaptation(page,preferences={}) {
     if(requested.exposition!==undefined&&requested.exposition!==level)failure(PREF);
     requested.exposition=level;
   }
-  const unsupportedPreferences=[],axes=new Set();
+  const expertise=new Map();
+  function setExpertise(subject,level){
+    subject=token(subject,PREF);
+    if(!subjectPattern.test(subject)||!EXPERTISE_LEVELS.includes(level)||expertise.has(subject)&&expertise.get(subject)!==level)failure(PREF);
+    expertise.set(subject,level);
+    if(expertise.size>maximumSubjects)failure(PREF);
+  }
+  if(Object.hasOwn(preferences,'expertise')){
+    const values=preferences.expertise;
+    if(!values||typeof values!=='object'||Array.isArray(values))failure(PREF);
+    const keys=Object.keys(values);
+    object(values,keys,[],PREF);
+    if(keys.length>maximumSubjects)failure(PREF);
+    for(const key of keys)setExpertise(key,values[key]);
+  }
+  const scoped=subjectExpertise(requested.exposition??'');
+  if(scoped){
+    setExpertise(scoped.subject,scoped.level);
+    delete requested.exposition;
+  }
+  if(expertise.size)requested.expertise=Object.fromEntries(expertise);
+  return requested;
+}
+
+/** Independent reader choices select existing anchors. */
+function resolveAdaptation(page,preferences={}) {
+  page=validateAdaptationPage(page);
+  const requested=normalizeAdaptationPreferences(preferences),expertise=requested.expertise??{};
+  const unsupportedPreferences=[],axes=new Set(),subjects=new Set();
   const objects=page.objects.map(value=>({id:value.id,groups:value.groups.map(group=>{
-    axes.add(group.axis);const choice=requested[group.axis],selected=group.variants.find(item=>item.value===choice);
-    const variant=selected??group.variants.find(item=>item.value===group.defaultValue);
-    if(choice!==undefined&&!selected)unsupportedPreferences.push({objectId:value.id,groupId:group.id,axis:group.axis,value:choice,reason:'unsupported-value'});
+    const entries=group.variants.map(variant=>({variant,choices:subjectChoices(group.axis,variant.value)}));
+    const groupSubjects=new Set(entries.flatMap(entry=>entry.choices.map(item=>item.subject)));
+    for(const subject of groupSubjects)subjects.add(subject);
+    const activeSubjects=[...groupSubjects].filter(subject=>Object.hasOwn(expertise,subject));
+    const generic=entries.filter(entry=>!entry.choices.length);
+    if(generic.length)axes.add(group.axis);
+    const choice=generic.length?requested[group.axis]:undefined;
+    const selected=activeSubjects.length
+      ? entries.find(entry=>activeSubjects.every(subject=>entry.choices.some(item=>item.subject===subject&&item.level===expertise[subject])))?.variant
+      : generic.find(entry=>entry.variant.value===choice)?.variant;
+    const variant=selected??group.variants.find(item=>variantKey(group.axis,item.value)===variantKey(group.axis,group.defaultValue));
+    if(!selected){
+      for(const subject of activeSubjects)unsupportedPreferences.push({objectId:value.id,groupId:group.id,axis:group.axis,subject,value:expertise[subject],reason:activeSubjects.length>1?'unsupported-combination':'unsupported-value'});
+      if(!activeSubjects.length&&choice!==undefined)unsupportedPreferences.push({objectId:value.id,groupId:group.id,axis:group.axis,value:choice,reason:'unsupported-value'});
+    }
     return {id:group.id,axis:group.axis,selectedValue:variant.value,anchor:variant.anchor,
-      reason:selected?'reader-preference':choice===undefined?'author-default':'unsupported-preference'};
+      reason:selected?'reader-preference':choice===undefined&&!activeSubjects.length?'author-default':'unsupported-preference'};
   })}));
   for(const axis of ADAPTATION_AXES)if(requested[axis]!==undefined&&!axes.has(axis))unsupportedPreferences.push({axis,value:requested[axis],reason:'axis-unavailable'});
+  for(const [subject,level]of Object.entries(expertise))if(!subjects.has(subject))unsupportedPreferences.push({axis:'exposition',subject,value:level,reason:'subject-unavailable'});
   return freeze({version:1,pageId:page.page.id,sourceDigest:page.page.sourceDigest,objects,unsupportedPreferences});
 }
 
-return {ADAPTATION_VERSION,ADAPTATION_AXES,ADAPTATION_LIMITS,validateAdaptationPage,resolveAdaptation};
+return {ADAPTATION_VERSION,ADAPTATION_AXES,EXPERTISE_LEVELS,ADAPTATION_LIMITS,subjectExpertise,validateAdaptationPage,normalizeAdaptationPreferences,resolveAdaptation};
 })();
 
 const assertions = (() => {
@@ -2120,7 +2203,7 @@ return {nativeReadiness,mountNumbasActivity};
 
 const features_main = (() => {
 // Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0
-const {validateAdaptationPage,resolveAdaptation,ADAPTATION_AXES} = adaptation;
+const {validateAdaptationPage,normalizeAdaptationPreferences,resolveAdaptation,subjectExpertise,ADAPTATION_AXES,EXPERTISE_LEVELS} = adaptation;
 const {validatePublicPage,parseDeliveryJSON,loadPublication,selectClosure,prepareOffline,inspectOffline,clearOffline,applyOfflineWithdrawals} = delivery;
 const {checkAnswer,createExercise} = exercises;
 const {buildOerZip} = oer;
@@ -2145,34 +2228,76 @@ function journeyControlState({loading=false,exporting=false,catalogue=false,rout
  const busy=loading||exporting,ready=!!catalogue&&route?.status==='complete'&&Array.isArray(route.steps)&&route.steps.length>0;
  return{load:busy,cancel:!busy,goal:busy||!catalogue||!goals,build:busy||!catalogue||!goals||detours>0,complete:busy||!ready||current>=route.steps.length-1,explore:busy||!ready||detours>=32,back:busy||!(detours||savedReturn),download:busy||!ready,transfer:busy,offline:busy||!ready||!consent};
 }
-function uniqueAnchor(id){const all=[...document.querySelectorAll('[id]')].filter(el=>el.id===id);if(all.length!==1)throw Error('A reviewed native anchor is missing or ambiguous.');return all[0];}
+function uniqueAnchor(id){const all=[...document.querySelectorAll('[id]')].filter(el=>el.id===id);if(all.length!==1)throw Error('A native anchor is missing or ambiguous.');return all[0];}
 
 function preferences(page,config){
  if(!page.adaptation)return;
+ const panels=[...document.querySelectorAll('.learning-preferences')].filter(panel=>!managed.has(panel));
+ if(!panels.length)return;
  const adaptation=validateAdaptationPage(page.adaptation,{baseURL:config.baseURL});
- for(const panel of document.querySelectorAll('.learning-preferences')){
-  if(managed.has(panel))continue;managed.add(panel);
-  const box=node('div');box.className='generative-feature-controls';const status=node('p','Choose reviewed alternatives. This does not infer your knowledge or translate the page.');status.setAttribute('role','status');
-  const authoredDefaults={...config.defaults};if(authoredDefaults.exposition===undefined&&authoredDefaults.level!==undefined)authoredDefaults.exposition=authoredDefaults.level;delete authoredDefaults.level;
-  const choices={...authoredDefaults},controls=[],more=node('details');more.className='generative-feature-advanced';more.append(node('summary','More reviewed preferences'));
-  for(const axis of ADAPTATION_AXES){
-   const values=[...new Set(adaptation.objects.flatMap(object=>object.groups.filter(group=>group.axis===axis).flatMap(group=>group.variants.map(variant=>variant.value))))];
-   if(!values.length)continue;const entry=select(({exposition:'Exposition',terminology:'Terminology',scaffolding:'Scaffolding','prerequisite-knowledge':'Prerequisite familiarity','reading-complexity':'Reading complexity','context-interest':'Context and interest',representation:'Representation',challenge:'Challenge'})[axis],[{value:'',label:'Author defaults'},...values.map(value=>({value,label:value}))]);
-   entry.control.value=choices[axis]??'';entry.control.addEventListener('change',()=>{if(entry.control.value)choices[axis]=entry.control.value;else if(authoredDefaults[axis]!==undefined)choices[axis]=authoredDefaults[axis];else delete choices[axis];apply();});(['exposition','representation','terminology'].includes(axis)?box:more).append(entry.wrapper);controls.push({...entry,axis});
+ const axes=new Map(),subjects=new Map(),original=[],controls=[],statuses=[];
+ const add=(map,key,value)=>{
+  if(!map.has(key))map.set(key,new Set());
+  map.get(key).add(value);
+ };
+ for(const object of adaptation.objects)for(const group of object.groups)for(const variant of group.variants){
+  const el=uniqueAnchor(variant.anchor);
+  if(el.getAttribute('data-gw-object')!==object.id)throw Error('A native variant changed.');
+  original.push({el,hidden:el.hidden});
+  const values=Array.isArray(variant.value)?variant.value:[variant.value];
+  for(const value of values){
+   const scope=group.axis==='exposition'?subjectExpertise(value):null;
+   if(scope)add(subjects,scope.subject,scope.level);
+   else add(axes,group.axis,value);
   }
-  const allVariants=adaptation.objects.flatMap(object=>object.groups.flatMap(group=>group.variants));
-  const original=allVariants.map(variant=>{const el=uniqueAnchor(variant.anchor);if(el.getAttribute('data-gw-object')!==adaptation.objects.find(object=>object.groups.some(group=>group.variants.includes(variant))).id)throw Error('A native variant changed.');return{el,hidden:el.hidden};});
-  let current;
-  function apply(){
-   current=resolveAdaptation(adaptation,choices);const selected=new Set(current.objects.flatMap(object=>object.groups.map(group=>group.anchor)));
-   for(const entry of original)entry.el.hidden=!selected.has(entry.el.id);
-   status.textContent=current.unsupportedPreferences.length?'Some choices are unavailable here; their author defaults are retained.':'Reviewed alternatives selected. Tasks, protected assertions, citations and mathematical notation retain their authored forms.';
-  }
-  box.append(button('Restore author defaults',()=>{for(const key of Object.keys(choices))delete choices[key];Object.assign(choices,authoredDefaults);for(const entry of controls)entry.control.value=choices[entry.axis]??'';apply();}),node('p','Choices select reviewed alternatives; they do not infer your knowledge or translate the page. Tasks, protected assertions, citations and mathematical notation remain authored.'),status);
-  if(more.childNodes.length>1)box.append(more);
-  describe(box,'Inspect source revisions and review declarations',{page:adaptation.page,objects:adaptation.objects,assertions:page.assertions});panel.append(box);apply();
-  const restore=()=>{for(const entry of original)entry.el.hidden=entry.hidden;};window.addEventListener('pagehide',restore);window.addEventListener('pageshow',apply);
  }
+ const defaults=normalizeAdaptationPreferences(config.defaults);
+ const subjectDefaults=Object.fromEntries(Object.entries(defaults.expertise??{}).filter(([subject])=>subjects.has(subject)));
+ defaults.expertise=subjectDefaults;
+ const reset=()=>({...defaults,expertise:{...subjectDefaults}});
+ let choices=reset();
+ function apply(){
+  const result=resolveAdaptation(adaptation,choices);
+  const selected=new Set(result.objects.flatMap(object=>object.groups.map(group=>group.anchor)));
+  for(const entry of original)entry.el.hidden=entry.hidden||!selected.has(entry.el.id);
+  for(const {control,subject,key,values} of controls){
+   const source=subject?choices.expertise:choices;
+   control.value=Object.hasOwn(source,key)&&values.includes(source[key])?source[key]:'';
+  }
+  for(const status of statuses)status.textContent=result.unsupportedPreferences.length
+   ? 'Some choices are unavailable here. Those sections use their author defaults.'
+   : 'Published alternatives selected.';
+ }
+ const labels={exposition:'Exposition',terminology:'Terminology',scaffolding:'Scaffolding','prerequisite-knowledge':'Prerequisite familiarity','reading-complexity':'Reading complexity','context-interest':'Context and interest',representation:'Representation',challenge:'Challenge'};
+ const title=value=>value.split('-').map(word=>word[0].toUpperCase()+word.slice(1)).join(' ');
+ for(const panel of panels){
+  managed.add(panel);
+  const box=node('div');box.className='generative-feature-controls';const status=node('p','Choose a published alternative.');status.setAttribute('role','status');
+  statuses.push(status);
+  const more=node('details');more.className='generative-feature-advanced';more.append(node('summary','More preferences'));
+  function mount(label,key,values,parent,subject=false){
+   const entry=select(label,[{value:'',label:'Author defaults'},...values.map(value=>({value,label:subject?title(value):value}))]);
+   entry.control.addEventListener('change',()=>{
+    const target=subject?choices.expertise:choices,initial=subject?defaults.expertise??{}:defaults;
+    if(entry.control.value)target[key]=entry.control.value;
+    else if(Object.hasOwn(initial,key))target[key]=initial[key];
+    else delete target[key];
+    apply();
+   });
+   parent.append(entry.wrapper);
+   controls.push({control:entry.control,key,subject,values});
+  }
+  for(const axis of ADAPTATION_AXES){
+   if(axes.has(axis))mount(labels[axis],axis,[...axes.get(axis)],['exposition','representation','terminology'].includes(axis)?box:more);
+  }
+  for(const [subject,levels] of subjects)mount(`${title(subject)} expertise`,subject,EXPERTISE_LEVELS.filter(level=>levels.has(level)),box,true);
+  box.append(button('Restore author defaults',()=>{choices=reset();apply();}),status);
+  if(more.childNodes.length>1)box.append(more);
+  describe(box,'Source authorship, revisions and review',{page:adaptation.page,objects:adaptation.objects,assertions:page.assertions});panel.append(box);
+ }
+ apply();
+ window.addEventListener('pagehide',()=>{for(const entry of original)entry.el.hidden=entry.hidden;});
+ window.addEventListener('pageshow',apply);
 }
 function practice(exercises,activityController=null){
  for(const instance of exercises??[]){const panel=uniqueAnchor(instance.spec.id);if(managed.has(panel))continue;managed.add(panel);let current=instance;
@@ -2216,7 +2341,7 @@ function journeys(page,config,oer){
   });
   const bookmark=()=>route&&catalogue?createJourney(catalogue,route,{current:active,detours:[...detours]}):null;
   const store=()=>{const value=bookmark();if(!value)return;try{sessionStorage.setItem(key,JSON.stringify(value));}catch{status.textContent='This tab cannot save its route. Ordinary page links remain available.';}};
-  function renderRoute(){refreshControls();replaceOutput();if(!route||route.status!=='complete'){output.append(node('p',route?.reason??'No route selected.'));return;}const list=node('ol');route.steps.forEach((step,index)=>{const li=node('li'),link=node('a',(index===active?'Current: ':'')+step.key);link.href=step.url;link.addEventListener('click',()=>{active=index;store();refreshControls();});li.append(link,node('span',' — '+step.reason));list.append(li);});output.append(list);status.textContent='Route prepared from reviewed records. Following a link does not establish completion or mastery.';store();}
+  function renderRoute(){refreshControls();replaceOutput();if(!route||route.status!=='complete'){output.append(node('p',route?.reason??'No route selected.'));return;}const list=node('ol');route.steps.forEach((step,index)=>{const li=node('li'),link=node('a',(index===active?'Current: ':'')+step.key);link.href=step.url;link.addEventListener('click',()=>{active=index;store();refreshControls();});li.append(link,node('span',' — '+step.reason));list.append(li);});output.append(list);status.textContent='Route prepared from the published records.';store();}
   const build=actionButton('Build cross-page route',()=>{if(!catalogue)return;const parts=goal.control.value.split('#');route=selectClosure(catalogue,{pageId:parts[0],objectId:parts[1]});active=0;detours.length=0;renderRoute();});build.disabled=true;
   const complete=actionButton('Mark current step complete and continue',()=>{if(!route?.steps.length)return;active=Math.min(active+1,route.steps.length-1);renderRoute();});
   const resume=actionButton('Resume this tab’s route',async()=>{
@@ -2248,7 +2373,7 @@ function journeys(page,config,oer){
    for(const [control,key]of controls){const waiting=control.tagName==='BUTTON'&&state[key]&&!idle[key],disabled=state[key]&&!waiting;if(disabled&&focused===control)handoff=true;control.disabled=disabled;if(waiting)control.setAttribute('aria-disabled','true');else control.removeAttribute('aria-disabled');}
    if(handoff){const target=!state.cancel?abortRequest:load;if(!target.disabled&&target.getAttribute('aria-disabled')!=='true')target.focus();else status.focus();}
   };
-  box.append(node('p','Routes use reviewed source declarations and hard prerequisites. Unavailable pages remain unknown; following a route does not establish learning or mastery.'),status,output,advanced);refreshControls();panel.append(box);
+  box.append(node('p','Routes use published learning objects and their declared prerequisites.'),status,output,advanced);refreshControls();panel.append(box);
   window.addEventListener('pagehide',()=>{epoch++;abort?.abort();});
  }
 }
@@ -2269,7 +2394,7 @@ function boot(){
   if(activityControls)activityControls.ready.then(()=>practice(exercises,activityControls)).catch(()=>practice(exercises));else practice(exercises);sandbox(marker('generative-sandbox-data'),page,config,marker('generative-sandbox-session-mappings-data'));journeys(page,config,marker('generative-oer-data',2097152));
   restorePendingSessionReturn(page,config).catch(()=>{});
   applyOfflineWithdrawals(config.publication,{baseURL}).catch(()=>{});
- }catch{for(const panel of document.querySelectorAll('.learning-preferences,.learning-journey,.learning-export'))if(!managed.has(panel)){managed.add(panel);panel.append(node('p','Optional reviewed controls are unavailable. The authored content remains readable.'));}}
+ }catch{for(const panel of document.querySelectorAll('.learning-preferences,.learning-journey,.learning-export'))if(!managed.has(panel)){managed.add(panel);panel.append(node('p','Optional controls are unavailable. The authored content remains readable.'));}}
 }
 if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('pageshow',boot);window.addEventListener('pagehide',()=>{for(const controls of numbasControls)controls.dispose();numbasControls=[];waiControls?.dispose();waiControls=null;});}
 

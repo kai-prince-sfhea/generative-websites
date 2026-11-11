@@ -4,7 +4,7 @@
 const route = (() => {
 /* Copyright 2026 Kai Prince. SPDX-License-Identifier: Apache-2.0 */
 
-// GW-0 uses reviewed, authored relationships. It does not infer missing knowledge.
+// GW-0 uses authored relationships. It does not infer missing knowledge.
 const LEVELS = ["introductory", "advanced"];
 const ID = /^[A-Za-z][A-Za-z0-9._:-]*$/;
 const HASH = /^[a-f0-9]{40}$/;
@@ -77,6 +77,14 @@ function validateCatalog(catalog) {
   if (!LEVELS.includes(catalog.defaultLevel)) fail("catalog.defaultLevel", "unknown expertise level");
 
   const ids = new Set();
+  function validateSourceOrigin(entry, path) {
+    if (Object.hasOwn(entry, 'authorship') && !['human', 'ai-assisted', 'ai-generated'].includes(entry.authorship)) {
+      fail(`${path}.authorship`, 'expected a recognised source authorship');
+    }
+    if (Object.hasOwn(entry, 'reviewedBy') || !Object.hasOwn(entry, 'authorship')) {
+      text(entry.reviewedBy, `${path}.reviewedBy`, 256);
+    }
+  }
   let expressionCount = 0;
   const validateExpression = (expression, path, depth) => {
     if (depth > 16) fail(path, "prerequisites exceed depth 16");
@@ -96,8 +104,8 @@ function validateCatalog(catalog) {
   catalog.objects.forEach((object, index) => {
     const path = `catalog.objects[${index}]`;
     const fields = ["id", "conceptId", "revision", "label", "context", "reviewedBy", "views", "prerequisite"];
-    record(object, fields, path);
-    required(object, fields, path);
+    record(object, [...fields, 'authorship'], path);
+    required(object, fields.filter(key => key !== 'reviewedBy'), path);
     identifier(object.id, `${path}.id`);
     if (ids.has(object.id)) fail(`${path}.id`, "duplicate object identifier");
     ids.add(object.id);
@@ -106,18 +114,18 @@ function validateCatalog(catalog) {
     text(object.revision, `${path}.revision`, 128);
     text(object.label, `${path}.label`, 256);
     text(object.context, `${path}.context`, 128);
-    text(object.reviewedBy, `${path}.reviewedBy`, 256);
+    validateSourceOrigin(object, path);
     array(object.views, `${path}.views`, 2, 2);
     const levels = new Set();
     object.views.forEach((view, viewIndex) => {
       const viewPath = `${path}.views[${viewIndex}]`;
       const viewFields = ["level", "revision", "reviewedBy", "anchor", "digest"];
-      record(view, viewFields, viewPath);
-      required(view, viewFields, viewPath);
+      record(view, [...viewFields, 'authorship'], viewPath);
+      required(view, viewFields.filter(key => key !== 'reviewedBy'), viewPath);
       if (!LEVELS.includes(view.level) || levels.has(view.level)) fail(`${viewPath}.level`, "expected one view of each expertise level");
       levels.add(view.level);
       text(view.revision, `${viewPath}.revision`, 128);
-      text(view.reviewedBy, `${viewPath}.reviewedBy`, 256);
+      validateSourceOrigin(view, viewPath);
       identifier(view.anchor, `${viewPath}.anchor`, 160);
       hash(view.digest, `${viewPath}.digest`);
     });
@@ -154,12 +162,12 @@ function planRoute(catalog, options = {}) {
   const objects = new Map(catalog.objects.map((object) => [object.id, object]));
   const goalObject = objects.get(goal);
   const failure = (issues) => ({ ok: false, ...base, steps: [], issues });
-  if (!goalObject) return failure([issue("unavailable-goal", "The selected goal is unavailable; choose an object from this reviewed catalogue.", "options.goal")]);
+  if (!goalObject) return failure([issue("unavailable-goal", "The selected goal is unavailable; choose an object from this catalogue.", "options.goal")]);
 
   const knownIssues = [];
   for (const id of known) {
     const object = objects.get(id);
-    if (!object) knownIssues.push(issue("unavailable-known", "The selected known object is unavailable; choose an object from this reviewed catalogue.", "options.known"));
+    if (!object) knownIssues.push(issue("unavailable-known", "The selected known object is unavailable; choose an object from this catalogue.", "options.known"));
     else if (object.context !== goalObject.context) knownIssues.push(issue("incompatible-context", `Known object ${id} has a different declared context from ${goal}.`, id));
   }
   if (knownIssues.length) return failure(knownIssues);
@@ -200,7 +208,7 @@ function planRoute(catalog, options = {}) {
   const visitObject = (id, parent, path) => {
     if (++visits > MAX_VISITS) return issue("search-limit", "Route search exceeded its bounded work limit.", path);
     const object = objects.get(id);
-    if (!object) return issue("unavailable-object", `Required reviewed object ${id} is unavailable.`, path);
+    if (!object) return issue("unavailable-object", `Required object ${id} is unavailable.`, path);
     if (object.context !== goalObject.context) return issue("incompatible-context", `Required object ${id} has a different declared context from ${goal}.`, path);
     if (id !== goal && knownSet.has(id)) return null;
     if (active.has(id)) return issue("cycle", `Prerequisite cycle encountered at ${id}.`, path);
@@ -270,7 +278,7 @@ function sameData(actual, expected, path) {
     const keys = Object.keys(left);
     return keys.length === Object.keys(right).length && keys.every(key => Object.hasOwn(right, key) && equal(left[key], right[key]));
   };
-  if (!equal(actual, expected)) fail(path, 'does not match the current reviewed content and deterministic route');
+  if (!equal(actual, expected)) fail(path, 'does not match the current published content and deterministic route');
 }
 
 function validateChoices(choices, path) {
@@ -342,7 +350,7 @@ function currentRoute(catalog, route) {
   });
   validateChoices(route.choices, 'route.choices');
   const canonical = planRoute(catalog, {goal: route.goal, known: route.known});
-  if (!canonical.ok) fail('route', 'the requested route is no longer available in this reviewed catalogue');
+  if (!canonical.ok) fail('route', 'the requested route is no longer available in this catalogue');
   sameData(route.known, canonical.known, 'route.known');
   sameData(route.choices, canonical.choices, 'route.choices');
   const reasons = new Map(canonical.steps.map(step => [step.id, step.reason]));
@@ -477,13 +485,13 @@ function createRouteRecord(catalog, route, options) {
   return record;
 }
 
-/** Replan against current reviewed inputs and reconstruct trusted author reasons. */
+/** Replan against current published inputs and reconstruct trusted author reasons. */
 function restoreRouteRecord(catalog, record) {
   validateCatalog(catalog);
   dataRecord(record, ['version', 'language', 'snapshot', 'goal', 'known', 'level', 'cursor', 'steps', 'choices', 'revisions'], 'record');
   boundJSON(record);
   if (record.version !== 1) fail('record.version', 'only route record version 1 is supported');
-  if (record.language !== catalog.language || record.snapshot !== catalog.snapshot) fail('record.snapshot', 'language or reviewed content snapshot has changed; build a new route');
+  if (record.language !== catalog.language || record.snapshot !== catalog.snapshot) fail('record.snapshot', 'language or content snapshot has changed; build a new route');
   identifier(record.goal, 'record.goal');
   dataArray(record.known, 'record.known', 0, 50);
   record.known.forEach((id, index) => identifier(id, `record.known[${index}]`));
@@ -498,7 +506,7 @@ function restoreRouteRecord(catalog, record) {
     for (const field of ['level', 'revision', 'digest']) if (typeof revision.view[field] !== 'string' || UTF8.encode(revision.view[field]).length > 512) fail(`${path}.view.${field}`, 'expected bounded view identity text');
   }
   const canonical = planRoute(catalog, {goal: record.goal, known: record.known});
-  if (!canonical.ok) fail('record', 'the requested route is unavailable in this reviewed catalogue');
+  if (!canonical.ok) fail('record', 'the requested route is unavailable in this catalogue');
   sameData(record.known, canonical.known, 'record.known');
   sameData(record.choices, canonical.choices, 'record.choices');
   const route = orderedCanonical(canonical, record.steps, orderConstraints(catalog, canonical));
@@ -770,7 +778,7 @@ function resolveNativeViews(catalog, doc = document) {
           source.getAttribute('data-learning-level') !== view.level ||
           source.getAttribute('data-learning-object') !== object.id ||
           source.closest('.learning-object') !== node) {
-        throw new Error(`Native view ${view.anchor} does not match its reviewed object and level.`);
+        throw new Error(`Native view ${view.anchor} does not match its published object and level.`);
       }
       views.set(view.level, source);
     }
@@ -854,7 +862,7 @@ function enhance(panel) {
   const controls = element('form', undefined, 'generative-websites-controls');
   const goal = labelledSelect('Learning goal ', objectOptions);
   goal.select.value = catalog.defaultGoal;
-  const expertise = labelledSelect('Reviewed level ', [
+  const expertise = labelledSelect('Explanation level ', [
     {value: 'introductory', label: 'Introductory'},
     {value: 'advanced', label: 'Advanced'}
   ]);
@@ -914,7 +922,7 @@ function enhance(panel) {
   const exploreActions = element('div', undefined, 'generative-websites-actions');
   exploreActions.append(explore, back);
   exploration.append(exploreChoice.label, exploreActions, excursionStatus);
-  const snapshot = element('p', `Reviewed content snapshot ${catalog.snapshot.slice(0, 12)}. Routes use the fixed revisions included on this page.`, 'generative-websites-snapshot');
+  const snapshot = element('p', `Content snapshot ${catalog.snapshot.slice(0, 12)}. Routes use the fixed revisions included on this page.`, 'generative-websites-snapshot');
   slot.replaceChildren(controls, status, routeRegion, exploration, transfer, snapshot);
   slot.hidden = false;
 
@@ -954,8 +962,8 @@ function enhance(panel) {
       expertise.select.value = level;
       if (route) applyLevel();
       status.textContent = route
-        ? `Native link selected reviewed ${level} views. Your route and its prerequisites are unchanged.`
-        : `Native link selected the reviewed ${level} level. All authored views remain available until you build a route.`;
+        ? `Native link selected ${level} views. Your route and its prerequisites are unchanged.`
+        : `Native link selected the ${level} level. All authored views remain available until you build a route.`;
     }
     const revealed = visibility.reveal(fragment.target);
     if (!revealed.ok) {
@@ -1072,7 +1080,7 @@ function enhance(panel) {
       renderRoute();
       applyLevel();
       exportRoute.disabled = false;
-      status.textContent = `Route built for ${objects.get(route.goal).label}: ${route.steps.length} reviewed ${route.steps.length === 1 ? 'object' : 'objects'}. Changes to the goal or starting knowledge take effect when you build another route.`;
+      status.textContent = `Route built for ${objects.get(route.goal).label}: ${route.steps.length} ${route.steps.length === 1 ? 'object' : 'objects'}. Changes to the goal or starting knowledge take effect when you build another route.`;
     } catch (error) {
       route = null;
       activeObject = null;
@@ -1151,8 +1159,8 @@ function enhance(panel) {
     level = expertise.select.value;
     if (route) applyLevel();
     status.textContent = route
-      ? `Reviewed ${level} views selected. The route and its prerequisites are unchanged.`
-      : `Reviewed ${level} level selected for the next valid route. All authored views remain available until then.`;
+      ? `Selected ${level} views for this route.`
+      : `Selected the ${level} explanation level. Build a route to use it for the steps.`;
   });
   listen(previous, 'click', () => selectStep(cursor - 1));
   listen(next, 'click', () => selectStep(cursor + 1));
@@ -1218,7 +1226,7 @@ function enhance(panel) {
     importRoute.value = '';
     exportRoute.disabled = true;
     renderRoute();
-    status.textContent = 'Route controls reset to the authored defaults and all authored views restored. Build a route to select a reviewed level again. No reader state is stored between visits.';
+    status.textContent = 'Route controls reset to the authored defaults and all authored views restored. Build a route to select an explanation level again. No reader state is stored between visits.';
   });
   listen(exportRoute, 'click', () => {
     if (!route || excursions.depth) return;
@@ -1237,7 +1245,7 @@ function enhance(panel) {
       URL.revokeObjectURL(url); downloadURLs.delete(url); downloadTimers.delete(timer);
     }, 60000);
     downloadTimers.add(timer);
-    status.textContent = 'Route download requested with its snapshot, current step and selected revisions. The file contains route settings, not reviewed content.';
+    status.textContent = 'Route download requested with its snapshot, current step and selected revisions. The file contains route settings, with links and revision identifiers.';
     } catch (error) {status.textContent = `Route download unavailable; your route is unchanged. ${error.message}`;}
   });
   listen(importRoute, 'change', async () => {
@@ -1255,7 +1263,7 @@ function enhance(panel) {
       const known = new Set(route.known);
       for (const [id, input] of knownInputs) input.checked = known.has(id);
       renderRoute(); applyLevel();
-      status.textContent = 'Saved route restored against this exact reviewed snapshot. No file was uploaded. Select a step to continue.';
+      status.textContent = 'Saved route restored against the matching snapshot. Select a step to continue.';
     } catch (error) {if (!disposed && epoch === actionEpoch) status.textContent = `Saved route refused; your current route is unchanged. ${error.message}`;}
     finally {if (!disposed && epoch === actionEpoch) importRoute.value = '';}
   });

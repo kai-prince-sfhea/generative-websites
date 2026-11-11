@@ -19,7 +19,7 @@ end
 local known={objective=true,task=true,hint=true,solution=true,debrief=true,feedback=true,['reflection-prompt']=true}
 local function role(el)local a=el.attributes or{};return a['learning-role']or a['data-learning-role']end
 local function projection(el)return pandoc.write(pandoc.Pandoc(el.content),'json')end
-function M.capture(doc)
+function M.capture(doc, selected)
   local anchors,all,count={}, {},0
   local reserved=false
   local function anchor(el)
@@ -73,7 +73,8 @@ function M.capture(doc)
     if depth>32 then fail()end
     for _,el in ipairs(blocks)do if el.t=='Div'then
       local hiddenHere=hidden or blocked(el)
-      if not hiddenHere and(has(el,'learning-object')or has(el,'adaptive-object')or has(el,'controlled-assertion'))and el.attributes.review=='author-reviewed'then
+      if not hiddenHere and (has(el,'learning-object') or has(el,'adaptive-object') or has(el,'controlled-assertion'))
+        and (el.attributes.review=='author-reviewed' or selected and selected[el.identifier]) then
         local sourceId=token(el.identifier);if anchors[sourceId]~=1 or #publicSources>=50 then fail()end;publicSources:insert(sourceId)
       end
       if has(el,'learning-activity')then if not hiddenHere then inspect(el)end
